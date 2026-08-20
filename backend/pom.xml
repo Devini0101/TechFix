@@ -94,7 +94,7 @@
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
-					<execution>
+					<exvecution>
 						<id>default-testCompile</id>
 						<phase>test-compile</phase>
 						<goals>
@@ -108,7 +108,7 @@
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
-					</execution>
+					</exvecution>
 				</executions>
 			</plugin>
 		</plugins>

@@ -31,7 +31,8 @@ CREATE TABLE payment (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE users (
+-- aspas por ser uma palavra reservada
+CREATE TABLE "user" (
     id SERIAL PRIMARY KEY,
     cpf VARCHAR(11) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -57,8 +58,8 @@ CREATE TABLE maintenance_request (
     fix_description TEXT DEFAULT NULL,
     orientation TEXT DEFAULT NULL,
     status_id INT NOT NULL REFERENCES status(id),
-    client_id INT NOT NULL REFERENCES users(id),
-    responsible_employee_id INT DEFAULT NULL REFERENCES users(id),
+    client_id INT NOT NULL REFERENCES "user"(id),
+    responsible_employee_id INT DEFAULT NULL REFERENCES "user"(id),
     category_id INT NOT NULL REFERENCES category(id),
     payment_id INT DEFAULT NULL REFERENCES payment(id)
 );
@@ -69,6 +70,6 @@ CREATE TABLE request_history (
     action VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     maintenance_request_id INT NOT NULL REFERENCES maintenance_request(id),
-    employee_id INT NOT NULL REFERENCES users(id),
-    destination_employee_id INT REFERENCES users(id)
+    employee_id INT NOT NULL REFERENCES "user"(id),
+    destination_employee_id INT REFERENCES "user"(id)
 );

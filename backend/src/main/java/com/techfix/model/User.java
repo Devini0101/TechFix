@@ -1,8 +1,5 @@
 package com.techfix.model;
 
-public class User {
-    
-}
 package com.techfix.model;
 
 import com.techfix.model.enums.UserRole;

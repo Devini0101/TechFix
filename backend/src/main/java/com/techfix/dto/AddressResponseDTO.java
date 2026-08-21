@@ -11,7 +11,7 @@ public record AddressResponseDTO(
         String uf,
         String city
 ) {
-    // Mapeador estático de Entidade -> DTO
+    //pega entidade salva no banco e transforma em um dto pro front 
     public static AddressResponseDTO fromEntity(Address address) {
         return new AddressResponseDTO(
                 address.getId(),

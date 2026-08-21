@@ -20,7 +20,6 @@ public class AddressService {
     }
 
     public List<Address> findByCep (String cep){
-        //todo: implementar dto para converter para JSON
         Optional<Address> address = repository.findByCep(cep);
         if (address.isPresent()) {
             return address.stream().toList();

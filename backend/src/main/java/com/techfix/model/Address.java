@@ -1,15 +1,16 @@
 package com.techfix.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.UUID;
 
 // lombok auto generates the getters and setter to the attributes
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="address")
 public class Address {
 

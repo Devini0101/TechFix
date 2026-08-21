@@ -12,7 +12,7 @@ import java.sql.Statement;
 @SpringBootApplication
 public class TechfixApplication {
 
-	public static void main(String[] args) {
+    static void main(String[] args) {
         createDatabaseIfNotExist();
         runFlyway();
 		SpringApplication.run(TechfixApplication.class, args);

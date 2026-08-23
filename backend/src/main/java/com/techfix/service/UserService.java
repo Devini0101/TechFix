@@ -48,8 +48,8 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setAddress(newAddress);
 
-        UserRole userRole = (request.role() != null) ? request.role() : UserRole.client;
-        newUser.setRole(userRole);
+        UserRole role = (request.role() != null) ? request.role() : UserRole.client;
+        newUser.setRole(role);
 
         User savedUser = userRepository.save(newUser);
         return new RegisterUserResponseDTO(savedUser.getName(), savedUser.getEmail());

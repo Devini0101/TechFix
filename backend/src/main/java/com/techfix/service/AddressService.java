@@ -1,7 +1,7 @@
 package com.techfix.service;
 
-import com.techfix.dto.AddressRequestDTO;
-import com.techfix.dto.AddressResponseDTO;
+import com.techfix.dto.request.AddressRequestDTO;
+import com.techfix.dto.response.AddressResponseDTO;
 import com.techfix.model.Address;
 import com.techfix.repository.AddressRepository;
 import org.springframework.stereotype.Service;

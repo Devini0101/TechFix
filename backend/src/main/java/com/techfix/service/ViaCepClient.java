@@ -1,6 +1,6 @@
 package com.techfix.service;
 
-import com.techfix.dto.ViaCepRespondeDTO;
+import com.techfix.dto.response.ViaCepResponseDTO;
 import com.techfix.exception.CepNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -15,7 +15,7 @@ public class ViaCepClient {
                 .build();
     }
 
-    public ViaCepRespondeDTO findAddressByCep(String cep) {
+    public ViaCepResponseDTO findAddressByCep(String cep) {
         //transforma em somente nums
         String sanitizedCep = cep.replaceAll("\\D","");
 
@@ -23,9 +23,9 @@ public class ViaCepClient {
             throw new IllegalArgumentException("Formato de CEP inválido, o CEP deve conter 8 dígitos.");
         }
 
-        ViaCepRespondeDTO response = restClient.get()
+        ViaCepResponseDTO response = restClient.get()
                 .uri("/{cep}/json", sanitizedCep)
-                .retrieve().body(ViaCepRespondeDTO.class);
+                .retrieve().body(ViaCepResponseDTO.class);
 
         if(response != null  && response.erro() != null && response.erro()) {
             throw new CepNotFoundException("CEP " + sanitizedCep + "não encontrado na base da ViaCep.");

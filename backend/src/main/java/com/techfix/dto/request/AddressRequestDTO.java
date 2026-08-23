@@ -1,4 +1,4 @@
-package com.techfix.dto;
+package com.techfix.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.techfix.dto;
+package com.techfix.dto.response;
 
 import com.techfix.model.Address;
 

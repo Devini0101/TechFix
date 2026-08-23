@@ -1,5 +1,6 @@
 package com.techfix.dto.request;
 
+import com.techfix.model.enums.UserRole;
 import jakarta.validation.constraints.NotEmpty;
 
 public record RegisterUserRequestDTO(
@@ -13,6 +14,7 @@ public record RegisterUserRequestDTO(
         @NotEmpty(message = "Bairro é obrigatório") String neighborhood,
         @NotEmpty(message = "Cidade é obrigatória") String city,
         @NotEmpty(message = "UF é obrigatória") String uf,
-        String complement
+        String complement,
+        UserRole role
 ) {
 }

@@ -7,6 +7,7 @@ import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
 import com.techfix.model.Address;
 import com.techfix.model.User;
+import com.techfix.model.enums.UserRole;
 import com.techfix.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,6 +47,9 @@ public class UserService {
         newUser.setPhone(request.phone());
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setAddress(newAddress);
+
+        UserRole role = (request.role() != null) ? request.role() : UserRole.client;
+        newUser.setRole(role);
 
         User savedUser = userRepository.save(newUser);
         return new RegisterUserResponseDTO(savedUser.getName(), savedUser.getEmail());

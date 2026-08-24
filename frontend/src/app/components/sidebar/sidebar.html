@@ -1,37 +1,92 @@
-<aside class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-gray-900 border-r rtl:border-r-0 rtl:border-l dark:border-gray-700">
-    <h2 class="text-2xl font-bold text-white text-center mb-6">TechFix</h2>
+<aside
+  [class]="isCollapsed ? 'w-20 px-2' : 'w-64 px-4'"
+  class="flex flex-col h-screen py-8 overflow-y-auto bg-gray-900 border-r dark:border-gray-700 transition-all duration-300"
+>
+    <!-- Cabeçalho -->
+    <div class="flex items-center" [class]="isCollapsed ? 'justify-center' : 'justify-between px-2'">
+        @if (!isCollapsed) {
+          <h2 class="text-2xl font-bold text-white">TechFix</h2>
+        }
+        <button (click)="toggleSidebar()" class="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
 
-    <div class="flex flex-col justify-between flex-1 mt-6">
-        <nav class="space-y-4">
-            <a href="#" class="flex items-center px-4 py-2 text-gray-100 bg-gray-800 rounded-lg">
-                <span class="mx-2 font-medium flex gap-3 items-center"><i class="fas fa-home"></i>Dashboard</span>
+    <!-- Lista de Links -->
+    <div class="menu-list flex flex-col justify-between flex-1 mt-6">
+        <nav class="space-y-2">
+            <a routerLink="/dashboard" routerLinkActive="bg-gray-800 text-white" 
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-home text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Dashboard</span>
+                }
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium"><i class="fas fa-tasks"></i> Solicitações</span>
+            <a routerLink="/requests"
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-tasks text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Solicitações</span>
+                }
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium"><i class="fa-solid fa-money-bills"></i> Orçamentos</span>
+            <a routerLink="/budgets" 
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fa-solid fa-money-bills text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Orçamentos</span>
+                }
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium"><i class="fas fa-users"></i> Clientes</span>
+            <a routerLink="/clients" 
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-users text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Clientes</span>
+                }
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium"><i class="fas fa-tags"></i> Categorias</span>
+            <a routerLink="/categories" 
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-tags text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Categorias</span>
+                }
             </a>
 
         </nav>
 
-        <div class="flex flex-col border-t-2 border-gray-600 pt-2">
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium"><i class="fas fa-cog"></i> Configurações</span>
+        <!-- Menu Inferior -->
+        <div class="flex flex-col border-t border-gray-700 pt-4 space-y-2">
+            <a routerLink="/settings" 
+               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-cog text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Configurações</span>
+                }
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors">
-                <span class="mx-2 font-medium text-red-400"><i class="fas fa-sign-out-alt"></i> Sair</span>
+            <a (click)="logout()" 
+               class="flex items-center p-3 text-red-400 hover:bg-gray-800 hover:text-red-300 rounded-lg transition-colors cursor-pointer" 
+               [class.justify-center]="isCollapsed"
+               [class.gap-3]="!isCollapsed">
+                <i class="fas fa-sign-out-alt text-lg w-6 text-center"></i>
+                @if (!isCollapsed) {
+                  <span class="font-medium">Sair</span>
+                }
             </a>
         </div>
     </div>

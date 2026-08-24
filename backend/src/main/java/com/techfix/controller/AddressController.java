@@ -20,6 +20,6 @@ public class AddressController {
     @GetMapping("/via-cep/{cep}")
     public ResponseEntity<ViaCepResponseDTO> getAddressByCep (@PathVariable String cep) {
         ViaCepResponseDTO address = viaCepClient.findAddressByCep(cep);
-        return ResponseEntity.ok(address);
+        return ResponseEntity.ok().body(address);
     }
 }

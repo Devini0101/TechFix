@@ -5,6 +5,7 @@ import com.techfix.dto.request.LoginRequestDTO;
 import com.techfix.dto.request.RegisterUserRequestDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
+import com.techfix.exception.UserAlreadyExistsException;
 import com.techfix.model.Address;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
@@ -31,7 +32,12 @@ public class UserService {
     }
 
     @Transactional
-    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) {
+    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) throws UserAlreadyExistsException{
+
+        if ( userRepository.findByEmail(request.email()).isPresent() ) {
+            throw new UserAlreadyExistsException("Email já cadastrado.");
+        }
+
         Address newAddress = new Address();
         newAddress.setCep(request.cep());
         newAddress.setStreet(request.street());

@@ -34,8 +34,8 @@ public class UserService {
     @Transactional
     public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) throws UserAlreadyExistsException{
 
-        if ( userRepository.findByEmail(request.email()).isPresent() ) {
-            throw new UserAlreadyExistsException("Email já cadastrado.");
+        if ( userRepository.findByEmail(request.email()).isPresent() || userRepository.findByCpf(request.cpf()).isPresent() ) {
+            throw new UserAlreadyExistsException("Usuário já cadastrado.");
         }
 
         Address newAddress = new Address();

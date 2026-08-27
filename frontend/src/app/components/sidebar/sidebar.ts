@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
+  isCollapsed = false;
+
+  toggleSidebar(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  logout(): void {
+    console.log("to implement");
+  }
 }

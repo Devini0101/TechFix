@@ -46,4 +46,15 @@ public class GlobalExceptionHandler extends RuntimeException {
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<StandardError> handleUserAlreadyExistsException (UserAlreadyExistsException ex, HttpServletRequest req) {
+        StandardError error =  new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(), //409,
+                "Conflict",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 }

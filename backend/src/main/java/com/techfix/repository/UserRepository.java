@@ -32,4 +32,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> searchByNameFullTextPaged(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     Optional<UserDetails> findByEmail(String email);
+
+    Optional<UserDetails> findByCpf (String cpf);
 }

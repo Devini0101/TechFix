@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_maintenance_requests")
+@Table(name = "maintenance_request")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,7 +52,8 @@ public class MaintenanceRequest {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToOne(mappedBy = "maintenanceRequest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private Payment payment;
 
     @OneToMany(mappedBy = "maintenanceRequest", cascade = CascadeType.ALL, orphanRemoval = true)

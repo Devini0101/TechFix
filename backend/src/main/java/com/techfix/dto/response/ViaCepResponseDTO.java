@@ -1,8 +1,8 @@
-package com.techfix.dto;
+package com.techfix.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ViaCepRespondeDTO (
+public record ViaCepResponseDTO(
         String cep,
         @JsonProperty("logradouro") String street,
         @JsonProperty("complemento") String complement,

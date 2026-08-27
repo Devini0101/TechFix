@@ -1,6 +1,6 @@
 package com.techfix.controller;
 
-import com.techfix.dto.ViaCepRespondeDTO;
+import com.techfix.dto.response.ViaCepResponseDTO;
 import com.techfix.service.ViaCepClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +18,8 @@ public class AddressController {
     }
 
     @GetMapping("/via-cep/{cep}")
-    public ResponseEntity<ViaCepRespondeDTO> getAddressByCep (@PathVariable String cep) {
-        ViaCepRespondeDTO address = viaCepClient.findAddressByCep(cep);
-        return ResponseEntity.ok(address);
+    public ResponseEntity<ViaCepResponseDTO> getAddressByCep (@PathVariable String cep) {
+        ViaCepResponseDTO address = viaCepClient.findAddressByCep(cep);
+        return ResponseEntity.ok().body(address);
     }
 }

@@ -39,10 +39,10 @@ CREATE TABLE "user" (
     email VARCHAR(255) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role user_role NOT NULL,
-    telephone VARCHAR(15) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
     birth_date DATE DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-address_id INT REFERENCES address(id)
+    address_id INT REFERENCES address(id)
 );
 
 CREATE TABLE maintenance_request (

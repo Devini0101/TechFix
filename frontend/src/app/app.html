@@ -1,4 +1,6 @@
-
-
-<app-sidebar></app-sidebar>
-<router-outlet></router-outlet> <!-- Ou <app-dashboard></app-dashboard> caso ainda não use rotas -->
+<div class="flex">
+  <app-sidebar></app-sidebar>
+  <main class="bg-gray-800 flex-1 p-8">
+    <router-outlet></router-outlet>
+  </main>
+</div>

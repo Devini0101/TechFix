@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Input } from '../../components/input/input';
+import { InputComponent } from '../../components/input/input';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [Input, FormsModule],
+  imports: [InputComponent, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -17,9 +17,14 @@ export class Login {
 	private authService = inject(AuthService);
 	private router = inject(Router);
 
+	hasError = false;
+
 	onSubmit() : void {
+
+		this.hasError = false;
+
 		if (!this.email || !this.password) {
-			alert("Preencha email e senha !!");
+			this.hasError = true;
 			return;
 		}
 
@@ -30,12 +35,11 @@ export class Login {
 
 		this.authService.login(credentials).subscribe({
 			next: () => {
-				console.log("login successful");
 				this.router.navigate(['/dashboard']);
 			},
-			error(err) {
-				console.error("Login failed:", err)
-				alert("Credenciais inválidas")
+			error: (err) => {
+				console.error("Login failed:", err);
+				this.hasError = true;
 			},
 		})
 	}

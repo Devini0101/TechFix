@@ -5,24 +5,38 @@
     </div>
     <div class="flex flex-col ">
         <div class="flex flex-row w-full h-15">
-            <button class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border-[1px] border-gray-600 rounded-tl-2xl w-[50%] border-b-4 border-b-[#94a3b8]">Entrar</button>
-             <button class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border-[1px] border-gray-600 rounded-tr-2xl w-[50%]">Registrar-se</button>
+            <button class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border border-gray-600 rounded-tl-2xl w-[50%] border-b-4 border-b-[#94a3b8]">Entrar</button>
+             <button class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border border-gray-600 rounded-tr-2xl w-[50%]">Registrar-se</button>
         </div>
         <div class="bg-[#1e293b] border-l border-r shadow-[0_0_80px_10px_rgba(0,0,0,0.5)] drop-shadow-gray-950 border-gray-600 flex flex-col gap-5 p-10">
             <div class="flex flex-col gap-2">
                 <p class="font-mono text-gray-400 font-bold">ENDEREÇO DE EMAIL</p>
-                <app-input></app-input>
+                <app-input
+                    [(value)]="email"
+                    [hasError]="hasError">
+                </app-input>
             </div>
             <div class="flex flex-col gap-2">
                 <div class="flex justify-between">
                     <p class="font-mono text-gray-400 font-bold">SENHA</p>
-                    <p class="font-medium text-gray-300 font-bold">Esqueceu a senha?</p>
+                    <p class="text-gray-300 font-bold">Esqueceu a senha?</p>
                 </div>
-                <app-input></app-input>
+                <input type="password" placeholder="Insira sua senha"
+                class="w-full h-12 bg-[#0f172a] border outline-none focus:border-blue-500 transition-colors rounded-lg text-gray-400 pl-5"
+                [class.border-red-600]="hasError"
+                [class.border-gray-600]="!hasError"
+                name="password"
+                [(ngModel)]="password"
+                >
             </div>
-            <button class="bg-blue-50 font-semibold p-3 mt-4 rounded-md">Entrar</button>
+
+            @if (hasError) {
+                <span class="text-red-500 text-sm font-semibold text-center">Login ou senha incorretos.</span>
+            }
+
+            <button (click)="onSubmit()" class="bg-blue-50 font-semibold p-3 mt-4 rounded-md">Entrar</button>
         </div>
-            <div class="bg-[#111C2D] flex justify-center items-center w-full h-15 border-[1px] border-gray-600 rounded-bl-2xl rounded-br-2xl">
+            <div class="bg-[#111C2D] flex justify-center items-center w-full h-15 border border-gray-600 rounded-bl-2xl rounded-br-2xl">
                 <p class="text-[#94a3b8] text-sm">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
             </div>
 

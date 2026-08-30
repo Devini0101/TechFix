@@ -1,1 +1,8 @@
-<input type="text" placeholder="Insira seu email aqui" class="w-100 h-12 bg-[#0f172a] border-[1px] border-gray-600 rounded-lg text-gray-400 pl-5">
+<input type="text"
+[value]="value"
+(input)="onTyping($event)"
+placeholder="Insira seu email aqui"
+class="w-100 h-12 bg-[#0f172a] border rounded-lg text-gray-400 pl-5"
+[class.border-red-600]="hasError"
+[class.border-gray-600]="!hasError"
+>

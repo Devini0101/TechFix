@@ -4,6 +4,7 @@ import com.techfix.dto.request.LoginRequestDTO;
 import com.techfix.dto.request.RegisterUserRequestDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
+import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login (@Valid @RequestBody LoginRequestDTO request){
+    public ResponseEntity<UserRole> login (@Valid @RequestBody LoginRequestDTO request){
         LoginResponseDTO response = userService.loginUser(request);
 
         ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", response.token())

@@ -36,7 +36,7 @@ public class AuthController {
                 .sameSite("Strict") //CSRF
                 .build();
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response.role());
     }
 
     @PostMapping("/register")

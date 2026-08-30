@@ -6,6 +6,8 @@ import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
 import com.techfix.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +27,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login (@Valid @RequestBody LoginRequestDTO request){
         LoginResponseDTO response = userService.loginUser(request);
-        return ResponseEntity.ok().body(response);
+
+        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", response.token())
+                .httpOnly(true)
+                .path("/")
+                // .secure(true) // somente para HTTPS, para local, nao
+                .maxAge(86400) //1 dia de vencimento do token
+                .sameSite("Strict") //CSRF
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).build();
     }
 
     @PostMapping("/register")

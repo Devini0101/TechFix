@@ -1,0 +1,11 @@
+<!-- Wrapper principal que ocupa a tela toda -->
+<div class="flex h-screen w-screen bg-[#0f172a] text-gray-200 overflow-hidden">
+  <app-sidebar></app-sidebar>
+
+  <!--conteúdo dinâmico-->
+  <main class="flex-1 p-8 overflow-y-auto">
+      <!-- router outlet renderiza página -->
+      <router-outlet></router-outlet>
+  </main>
+
+</div>

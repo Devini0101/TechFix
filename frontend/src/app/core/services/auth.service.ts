@@ -13,9 +13,9 @@ export interface LoginRequest{
 
 export class AuthService {
     private http = inject(HttpClient)
-    private apiUrl = "localhost:8080/api/auth/"
+    private apiUrl = "http://localhost:8080/api/auth"
 
-    login(credentials : LoginRequest): Observable<void> {
+    login(credentials : LoginRequest): Observable<any> {
         return this.http.post<void>(`${this.apiUrl}/login`, credentials, {
             withCredentials : true
         });

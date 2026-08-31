@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,6 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
+  private authService = inject(AuthService);
   isCollapsed = false;
 
   toggleSidebar(): void {
@@ -14,6 +16,6 @@ export class Sidebar {
   }
 
   logout(): void {
-    console.log("to implement");
+    this.authService.logout();
   }
 }

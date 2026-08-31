@@ -12,7 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
     <!-- O Angular decide qual componente carregar com base na role -->
     @if (role === 'employee') {
         <app-employee-dashboard></app-employee-dashboard>
-    } @else if (role === 'user') {
+    } @else if (role === 'client') {
         <app-user-dashboard></app-user-dashboard>
     } @else {
         <p class="text-white">Carregando painel...</p>

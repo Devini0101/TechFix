@@ -20,4 +20,16 @@ public class TokenConfig {
                 .withExpiresAt(Instant.now().plusSeconds(86400))
                 .withIssuedAt(Instant.now()).sign(algorithm);
     }
+
+    public String validateToken (String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .build()
+                    .verify(token)
+                    .getSubject(); // Pega o email que guardamos no withSubject()
+        } catch (Exception exception){
+            return ""; // vazio se o token for expirado ou inválido
+        }
+    }
 }

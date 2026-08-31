@@ -2,9 +2,9 @@ package com.techfix.controller;
 
 import com.techfix.dto.request.LoginRequestDTO;
 import com.techfix.dto.request.RegisterUserRequestDTO;
+import com.techfix.dto.response.AuthUserInfoResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
-import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserRole> login (@Valid @RequestBody LoginRequestDTO request){
+    public ResponseEntity<AuthUserInfoResponseDTO> login (@Valid @RequestBody LoginRequestDTO request){
         LoginResponseDTO response = userService.loginUser(request);
 
         ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", response.token())
@@ -37,7 +37,7 @@ public class AuthController {
                 .sameSite("Strict") //CSRF
                 .build();
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response.role());
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(new AuthUserInfoResponseDTO(response.role()));
     }
 
     @PostMapping("/register")

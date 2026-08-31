@@ -6,6 +6,9 @@ export interface LoginRequest{
     email : string;
     password : string;
 }
+export interface AuthResponse {
+  role: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -18,17 +21,25 @@ export class AuthService {
     logged$ = this.logged.asObservable();
     private http = inject(HttpClient)
     private apiUrl = "http://localhost:8080/api/auth"
+    private userRole = new BehaviorSubject<string | null>(null);
 
     login(credentials : LoginRequest): Observable<any> {
-        return this.http.post<void>(`${this.apiUrl}/login`, credentials, {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, {
             withCredentials : true
         }).pipe(
-            tap(() => this.logged.next(true))
+        tap((res) => {
+            this.logged.next(true);
+            this.userRole.next(res.role);
+            })
         );
     }
 
     isAuthenticated() :boolean {
         return this.logged.value;
+    }
+
+    getRole () : string | null {
+        return this.userRole.value;
     }
 
     logout() {

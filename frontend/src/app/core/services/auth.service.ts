@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { Router } from "@angular/router";
+import { BehaviorSubject, catchError, Observable, tap, of } from "rxjs";
 
 export interface LoginRequest{
     email : string;
@@ -22,6 +23,7 @@ export class AuthService {
     private http = inject(HttpClient)
     private apiUrl = "http://localhost:8080/api/auth"
     private userRole = new BehaviorSubject<string | null>(null);
+    private router = inject(Router);
 
     login(credentials : LoginRequest): Observable<any> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, {
@@ -38,12 +40,39 @@ export class AuthService {
         return this.logged.value;
     }
 
+    checkAuth(): Observable<AuthResponse | null> {
+        return this.http.get<AuthResponse>(`${this.apiUrl}/check`,{withCredentials : true})
+            .pipe(
+                tap((res) => {
+                    this.logged.next(true);
+                    this.userRole.next(res.role);
+                }),
+                catchError(() => {
+                    this.logged.next(false);
+                    this.userRole.next(null);
+                    return of(null);
+                })
+            )
+    }
+
     getRole () : string | null {
         return this.userRole.value;
     }
 
+    //manda o request para anular o token e revogar independentemente de ser aceito ou não
     logout() {
-        this.logged.next(false);
-        //TODO: implementar request para limpeza/ invalidar cookies pro backend
+        this.http.post(`${this.apiUrl}/logout`, {}, {withCredentials : true})
+            .subscribe({
+                next: () => {
+                    this.logged.next(false);
+                    this.userRole.next(null);
+                    this.router.navigate(['/login']);
+                },
+                error: () => {
+                    this.logged.next(false);
+                    this.userRole.next(null);
+                    this.router.navigate(['/login']);
+                }
+            });
     }
 }

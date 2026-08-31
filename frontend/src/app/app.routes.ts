@@ -17,6 +17,14 @@ export const routes: Routes = [
     ]
   },
 
+  // exemplo de rota protegida apenas para funcionários
+  // {
+  //   path: 'report',
+  //   component: ReportComponent,
+  //   canActivate: [roleGuard],
+  //   data: { role: 'employee' } //passa a exigência do papel
+  // },
+
   //redirecionamento padrão
   { path: '**', redirectTo: 'login', pathMatch: 'full' }
 ];

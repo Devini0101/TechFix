@@ -1,31 +1,77 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 
 @Component({
   selector: 'app-service-request-modal',
   standalone: true,
-  template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
-		<div class="relative w-full max-w-md p-6 bg-gray-700 rounded-xl shadow-2xl border border-gray-300">
-		<h3 class="text-xl font-semibold">Criar nova solicitação de serviço:</h3>
-		<form class="flex flex-col mt-2">
-			<div class="form-group flex flex-col gap-2">
-				<p>Digite o Item do serviço</p>
-				<input type="text" placeholder="Digite aqui o tem no serviço" class="rounded p-2 border border-gray-200 focus:border-blue-900">
-			</div>
-			<div class="form-group flex flex-col gap-2">
-				<p>Digite o Item do serviço</p>
-				<input type="text" placeholder="Digite aqui o tem no serviço" class="rounded p-2 border border-gray-200 focus:border-blue-900">
-			</div>
-		</form>
-		<div class="flex justify-end gap-3 mt-2">
-			<button (click)="closeModal.emit()" class="px-4 py-2 bg-gray-100 rounded-lg text-black border border-gray-200 hover:scale-105  hover:cursor-pointer">Cancel</button>
-			<button (click)="closeModal.emit()" class="px-4 py-2 text-white border border-white bg-green-800 rounded-lg hover:scale-105 hover:cursor-pointer">Confirm</button>
-		</div>
-		</div>
-	</div>
-  `
+  imports: [ReactiveFormsModule],
+  templateUrl: './service-request-modal.html',
+  styleUrl: './service-request-modal.css',
 })
 export class ServiceRequestModal {
-  // @Output permite que o modal avise quem o chamou que é hora de fechar
   @Output() closeModal = new EventEmitter<void>();
+
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly requestService = inject(MaintenanceRequestService);
+
+  protected readonly categories = [
+    { id: 1, name: 'Smartphone' },
+    { id: 2, name: 'Notebook' },
+    { id: 3, name: 'Computador Desktop' },
+    { id: 4, name: 'Console de Videogame' },
+    { id: 5, name: 'Tablet' },
+    { id: 6, name: 'Smartwatch' },
+    { id: 7, name: 'Periféricos e Acessórios' },
+    { id: 8, name: 'Placa de Vídeo (GPU)' },
+  ];
+
+  protected readonly requestForm = this.formBuilder.nonNullable.group({
+    item: ['', [Validators.required, Validators.maxLength(255)]],
+    itemDescription: ['', [Validators.required]],
+    itemDefect: ['', [Validators.required]],
+    categoryId: [0, [Validators.required, Validators.min(1)]],
+  });
+
+  protected isSubmitting = false;
+  protected successMessage = '';
+  protected errorMessage = '';
+
+  protected submit(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    if (this.requestForm.invalid) {
+      this.requestForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.requestService.create(this.requestForm.getRawValue()).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.successMessage = 'Solicitação registrada com sucesso.';
+        this.requestForm.reset({
+          item: '',
+          itemDescription: '',
+          itemDefect: '',
+          categoryId: 0,
+        });
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          'Não foi possível registrar a solicitação. Tente novamente.';
+      },
+    });
+  }
+
+  protected hasError(fieldName: string): boolean {
+    const field = this.requestForm.get(fieldName);
+    return !!field && field.invalid && field.touched;
+  }
 }

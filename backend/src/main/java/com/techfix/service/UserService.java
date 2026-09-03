@@ -67,6 +67,6 @@ public class UserService {
 
         User user = (User) authentication.getPrincipal();
         String token = tokenConfig.generateToken(user);
-        return new LoginResponseDTO(token, user.getRole());
+        return new LoginResponseDTO(token, user.getRole(), user.getName());
     }
 }

@@ -13,6 +13,15 @@ import { Router } from '@angular/router';
 export class Login {
 	email : string = '';
 	password : string = '';
+	isLoginMode : boolean = true;
+
+	registerName : string = '';
+	registerCpf : string = '';
+	registerEmail : string = '';
+	registerPhone : string = '';
+	registerCep : string = '';
+	registerPassword : string = '';
+	registerConfirmPassword : string = '';
 
 	private authService = inject(AuthService);
 	private router = inject(Router);
@@ -42,5 +51,13 @@ export class Login {
 				this.hasError = true;
 			},
 		})
+	}
+
+	showLogin(): void {
+		this.isLoginMode = true;
+	}
+
+	showRegister(): void {
+		this.isLoginMode = false;
 	}
 }

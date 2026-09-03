@@ -31,7 +31,7 @@ public class MaintenanceRequestService {
 
     @Transactional
     public MaintenanceRequest create(MaintenanceRequestDTO request, User client) {
-        Category category = categoryRepository.findByIdAndActiveTrue(request.categoryId())
+        Category category = categoryRepository.findByCodeAndActiveTrue(request.categoryCode())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Categoria não encontrada"));
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css',
 })
-export class EmployeeDashboard {}
+export class EmployeeDashboard {
+  @Input() name: string | null = ''; 
+}

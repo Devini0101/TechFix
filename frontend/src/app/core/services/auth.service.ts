@@ -8,7 +8,8 @@ export interface LoginRequest{
     password : string;
 }
 export interface AuthResponse {
-  role: string;
+    role: string;
+    name: string;
 }
 
 @Injectable({
@@ -23,6 +24,7 @@ export class AuthService {
     private http = inject(HttpClient)
     private apiUrl = "http://localhost:8080/api/auth"
     private userRole = new BehaviorSubject<string | null>(null);
+    private name = new BehaviorSubject<string | null>(null);
     private router = inject(Router);
 
     login(credentials : LoginRequest): Observable<any> {
@@ -32,6 +34,7 @@ export class AuthService {
         tap((res) => {
             this.logged.next(true);
             this.userRole.next(res.role);
+            this.name.next(res.name);
             })
         );
     }
@@ -46,10 +49,12 @@ export class AuthService {
                 tap((res) => {
                     this.logged.next(true);
                     this.userRole.next(res.role);
+                    this.name.next(res.name);
                 }),
                 catchError(() => {
                     this.logged.next(false);
                     this.userRole.next(null);
+                    this.name.next(null);
                     return of(null);
                 })
             )
@@ -59,6 +64,10 @@ export class AuthService {
         return this.userRole.value;
     }
 
+    getName() : string | null {
+        return this.name.value;
+    }
+
     //manda o request para anular o token e revogar independentemente de ser aceito ou não
     logout() {
         this.http.post(`${this.apiUrl}/logout`, {}, {withCredentials : true})
@@ -66,11 +75,13 @@ export class AuthService {
                 next: () => {
                     this.logged.next(false);
                     this.userRole.next(null);
+                    this.name.next(null);
                     this.router.navigate(['/login']);
                 },
                 error: () => {
                     this.logged.next(false);
                     this.userRole.next(null);
+                    this.name.next(null);
                     this.router.navigate(['/login']);
                 }
             });

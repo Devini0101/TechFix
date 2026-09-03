@@ -5,6 +5,7 @@ import com.techfix.dto.request.RegisterUserRequestDTO;
 import com.techfix.dto.response.AuthUserInfoResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
+import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
 import jakarta.validation.Valid;
@@ -37,7 +38,7 @@ public class AuthController {
                 .sameSite("Strict") //CSRF
                 .build();
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(new AuthUserInfoResponseDTO(response.role()));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(new AuthUserInfoResponseDTO(response.role(), response.name()));
     }
 
     @PostMapping("/register")
@@ -49,10 +50,14 @@ public class AuthController {
 
     @GetMapping("/check")
     public ResponseEntity<AuthUserInfoResponseDTO> check (Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        String name = user.getName();
+
         String role = authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority)
                 .orElse("client");
 
-        return ResponseEntity.ok(new AuthUserInfoResponseDTO(UserRole.valueOf(role)));
+        return ResponseEntity.ok(new AuthUserInfoResponseDTO(UserRole.valueOf(role), name));
     }
 
     @PostMapping("/logout")

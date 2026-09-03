@@ -11,9 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <!-- O Angular decide qual componente carregar com base na role -->
     @if (role === 'employee') {
-        <app-employee-dashboard></app-employee-dashboard>
+        <app-employee-dashboard [name]="name"></app-employee-dashboard>
     } @else if (role === 'client') {
-        <app-user-dashboard></app-user-dashboard>
+        <app-user-dashboard [name]="name"></app-user-dashboard>
     } @else {
         <p class="text-white">Carregando painel...</p>
     }
@@ -22,5 +22,5 @@ import { AuthService } from '../../core/services/auth.service';
 export class Dashboard {
   private authService = inject(AuthService);
   role: string | null = this.authService.getRole();
-
+  name: string | null = this.authService.getName();
 }

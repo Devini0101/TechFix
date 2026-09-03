@@ -1,0 +1,66 @@
+<div class="modal-backdrop">
+  <section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="request-title">
+    <header class="modal-header">
+      <div>
+        <p class="eyebrow">NOVA SOLICITAÇÃO</p>
+        <h2 id="request-title">Solicitação de manutenção</h2>
+        <p>Informe os dados do equipamento para iniciar o atendimento.</p>
+      </div>
+      <button type="button" class="close-button" aria-label="Fechar" (click)="closeModal.emit()">×</button>
+    </header>
+
+    <form [formGroup]="requestForm" (ngSubmit)="submit()" novalidate>
+      <div class="form-field">
+        <label for="item">Equipamento</label>
+        <input id="item" type="text" formControlName="item" placeholder="Ex.: Notebook Dell Inspiron" />
+        @if (hasError('item')) {
+          <small>Informe o equipamento.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="categoryId">Categoria</label>
+        <select id="categoryId" formControlName="categoryId">
+          <option [ngValue]="0">Selecione uma categoria</option>
+          @for (category of categories; track category.id) {
+            <option [ngValue]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        @if (hasError('categoryId')) {
+          <small>Selecione uma categoria.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="itemDescription">Descrição do equipamento</label>
+        <textarea id="itemDescription" rows="3" formControlName="itemDescription" placeholder="Descreva o equipamento, marca e modelo."></textarea>
+        @if (hasError('itemDescription')) {
+          <small>Descreva o equipamento.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="itemDefect">Descrição do defeito</label>
+        <textarea id="itemDefect" rows="4" formControlName="itemDefect" placeholder="Explique o problema apresentado."></textarea>
+        @if (hasError('itemDefect')) {
+          <small>Informe o defeito.</small>
+        }
+      </div>
+
+      @if (successMessage) {
+        <p class="success-message" role="status">{{ successMessage }}</p>
+      }
+
+      @if (errorMessage) {
+        <p class="error-message" role="alert">{{ errorMessage }}</p>
+      }
+
+      <footer class="modal-actions">
+        <button type="button" class="cancel-button" (click)="closeModal.emit()">Cancelar</button>
+        <button type="submit" class="submit-button" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Enviando...' : 'Registrar solicitação' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

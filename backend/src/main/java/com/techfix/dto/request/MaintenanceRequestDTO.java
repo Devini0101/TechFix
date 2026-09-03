@@ -1,21 +1,11 @@
 package com.techfix.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 
 public record MaintenanceRequestDTO(
-        @NotBlank(message = "A descrição do equipamento é obrigatória")
-        @Size(max = 255, message = "A descrição do equipamento deve ter no máximo 255 caracteres")
-        String item,
-
-        @NotBlank(message = "A descrição do equipamento é obrigatória")
+        @NotEmpty(message = "É obrigatório informar o item") String item,
         String itemDescription,
-
-        @NotBlank(message = "A descrição do defeito é obrigatória")
-        String itemDefect,
-
-        @NotNull(message = "A categoria é obrigatória")
-        Long categoryId
+        @NotEmpty(message = "É obrigatório informar o defeito do item") String itemDefect,
+        @NotEmpty(message = "É obrigatório uma categoria para o item") String categoryCode
 ) {
 }

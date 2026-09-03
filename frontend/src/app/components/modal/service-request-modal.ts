@@ -1,77 +1,54 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+import { Component, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Category, CategoryService } from '../../core/services/CategoryService';
 
 @Component({
   selector: 'app-service-request-modal',
   standalone: true,
-  imports: [ReactiveFormsModule],
-  templateUrl: './service-request-modal.html',
-  styleUrl: './service-request-modal.css',
+  template: `
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
+		<div class="relative w-full max-w-md p-6 bg-gray-700 rounded-xl shadow-2xl border border-gray-300">
+		<h3 class="text-xl font-semibold">Criar nova solicitação de serviço:</h3>
+		<form class="flex flex-col mt-2 gap-1.5">
+			<div class="form-group flex flex-col gap-2">
+				<div class="flex gap-1">Item do serviço <p class="text-red-700">*</p></div>
+				<input type="text" placeholder="Digite aqui o item no serviço" class="rounded p-2 border border-gray-200 focus:border-blue-900">
+			</div>
+			<div class="form-group flex flex-col gap-2">
+				<p>Descrição do item (opcional)</p>
+				<input type="text" placeholder="Descreva o item" class="rounded p-2 border border-gray-200 focus:border-blue-900">
+			</div>
+            <div class="form-group flex flex-col gap-2">
+				<div class="flex gap-1">Defeito do Item <p class="text-red-700">*</p></div>
+				<input type="text" placeholder="Digite aqui o defeito do item" class="rounded p-2 border border-gray-200 focus:border-blue-900">
+			</div>
+            <div class="form-group flex flex-col gap-2">
+				<div class="flex gap-1">Categoria <p class="text-red-700">*</p></div>
+                <select class="rounded p-2 border border-gray-200 focus:border-blue-900">
+                    <option selected hidden value="">-- Selecione uma categoria --</option>
+                    @for (cat of categories(); track cat.code) {
+                        <option class="bg-gray-700" [value]="cat.code">{{ cat.name }}</option>
+                    }
+                </select>
+			</div>
+		</form>
+		<div class="flex justify-end gap-3 mt-2">
+			<button (click)="closeModal.emit()" class="px-4 py-2 bg-gray-100 rounded-lg text-black border border-gray-200 hover:scale-105  hover:cursor-pointer">Cancelar</button>
+			<button (click)="closeModal.emit()" class="px-4 py-2 text-white border border-white bg-green-800 rounded-lg hover:scale-105 hover:cursor-pointer">Confirmar</button>
+		</div>
+		</div>
+	</div>
+  `
 })
-export class ServiceRequestModal {
+export class ServiceRequestModal implements OnInit {
   @Output() closeModal = new EventEmitter<void>();
+  private categoryService = inject(CategoryService);
+  categories = signal<Category[]>([]);
 
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly requestService = inject(MaintenanceRequestService);
-
-  protected readonly categories = [
-    { id: 1, name: 'Smartphone' },
-    { id: 2, name: 'Notebook' },
-    { id: 3, name: 'Computador Desktop' },
-    { id: 4, name: 'Console de Videogame' },
-    { id: 5, name: 'Tablet' },
-    { id: 6, name: 'Smartwatch' },
-    { id: 7, name: 'Periféricos e Acessórios' },
-    { id: 8, name: 'Placa de Vídeo (GPU)' },
-  ];
-
-  protected readonly requestForm = this.formBuilder.nonNullable.group({
-    item: ['', [Validators.required, Validators.maxLength(255)]],
-    itemDescription: ['', [Validators.required]],
-    itemDefect: ['', [Validators.required]],
-    categoryId: [0, [Validators.required, Validators.min(1)]],
-  });
-
-  protected isSubmitting = false;
-  protected successMessage = '';
-  protected errorMessage = '';
-
-  protected submit(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
-
-    if (this.requestForm.invalid) {
-      this.requestForm.markAllAsTouched();
-      return;
-    }
-
-    this.isSubmitting = true;
-    this.requestService.create(this.requestForm.getRawValue()).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.successMessage = 'Solicitação registrada com sucesso.';
-        this.requestForm.reset({
-          item: '',
-          itemDescription: '',
-          itemDefect: '',
-          categoryId: 0,
-        });
-      },
-      error: () => {
-        this.isSubmitting = false;
-        this.errorMessage =
-          'Não foi possível registrar a solicitação. Tente novamente.';
-      },
+  ngOnInit(): void {
+    this.categoryService.getAll().subscribe({
+      next: (data) => {
+        this.categories.set(data);
+      }
     });
-  }
-
-  protected hasError(fieldName: string): boolean {
-    const field = this.requestForm.get(fieldName);
-    return !!field && field.invalid && field.touched;
   }
 }

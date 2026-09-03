@@ -18,4 +18,6 @@ export class UserDashboard {
   closeModal() {
     this.isModalOpen = false;
   }
+
+  categories : Array<String> | null = [];
 }

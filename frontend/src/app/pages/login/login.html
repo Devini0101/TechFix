@@ -5,124 +5,48 @@
     </div>
     <div class="flex flex-col ">
         <div class="flex flex-row w-full h-15">
-            <button (click)="showLogin()" [class.border-b-4]="isLoginMode" [class.border-b-[#94a3b8]]="isLoginMode" class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border border-gray-600 rounded-tl-2xl w-[50%]">Entrar</button>
-            <button (click)="showRegister()" [class.border-b-4]="!isLoginMode" [class.border-b-[#94a3b8]]="!isLoginMode" class="bg-[#1e293b] z-100 text-[#94a3b8] font-bold border border-gray-600 rounded-tr-2xl w-[50%]">Registrar-se</button>
+            <p class="bg-[#273347] z-100 flex items-center justify-center text-white font-bold border border-gray-600 text-2xl rounded-t-2xl h-15 w-full">Login</p>
         </div>
-        @if(isLoginMode) {
-            <div class="bg-[#1e293b] border-l border-r shadow-[0_0_80px_10px_rgba(0,0,0,0.5)] drop-shadow-gray-950 border-gray-600 flex flex-col gap-5 p-10">
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">ENDEREÇO DE EMAIL</p>
-                    <app-input
-                        [(value)]="email"
-                        [hasError]="hasError">
-                    </app-input>
+        <div class="bg-[#1e293b] border-l border-r shadow-[0_0_80px_10px_rgba(0,0,0,0.5)] drop-shadow-gray-950 border-gray-600 flex flex-col gap-5 p-10">
+            <div class="flex flex-col gap-2">
+                <p class="font-mono text-gray-400 font-bold">ENDEREÇO DE EMAIL</p>
+                <app-input
+                    [(value)]="email"
+                    [hasError]="hasError">
+                </app-input>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                    <p class="font-mono text-gray-400 font-bold">SENHA</p>
+                    <p class="text-gray-300 font-bold">Esqueceu a senha?</p>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between">
-                        <p class="font-mono text-gray-400 font-bold">SENHA</p>
-                        <p class="text-gray-300 font-bold">Esqueceu a senha?</p>
-                    </div>
-                    <input type="password" placeholder="Insira sua senha"
-                    class="w-full h-12 bg-[#0f172a] border outline-none focus:border-blue-500 transition-colors rounded-lg text-gray-400 pl-5"
-                    [class.border-red-600]="hasError"
-                    [class.border-gray-600]="!hasError"
-                    name="password"
-                    [(ngModel)]="password"
-                    >
-                </div>
+                <input type="password" placeholder="Insira sua senha"
+                class="w-full h-12 bg-[#0f172a] border outline-none focus:border-blue-500 transition-colors rounded-lg text-gray-400 pl-5"
+                [class.border-red-600]="hasError"
+                [class.border-gray-600]="!hasError"
+                name="password"
+                [(ngModel)]="password"
+                >
+            </div>
         
                 @if (hasError) {
                     <span class="text-red-500 text-sm font-semibold text-center">Login ou senha incorretos.</span>
                 }
 
                 <button (click)="onSubmit()" class="bg-blue-50 font-semibold p-3 mt-4 rounded-md">Entrar</button>
-            </div>
-        }
-
-        @else {
-            <div class="bg-[#1e293b] border-l border-r shadow-[0_0_80px_10px_rgba(0,0,0,0.5)] drop-shadow-gray-950 border-gray-600 flex flex-col gap-5 p-10 max-h-[350px] overflow-y-auto">
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">NOME</p>
-                    <app-input
-                        [(value)]="registerName"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">ENDEREÇO DE EMAIL</p>
-                    <app-input
-                        [(value)]="email"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">CPF</p>
-                    <app-input
-                        [(value)]="registerCpf"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">TELEFONE</p>
-                    <app-input
-                        [(value)]="registerPhone"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">CEP</p>
-                    <app-input
-                        [(value)]="registerCep"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">CPF</p>
-                    <app-input
-                        [(value)]="registerCpf"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">CPF</p>
-                    <app-input
-                        [(value)]="registerCpf"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <p class="font-mono text-gray-400 font-bold">CPF</p>
-                    <app-input
-                        [(value)]="registerCpf"
-                        [hasError]="hasError">
-                    </app-input>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between">
-                        <p class="font-mono text-gray-400 font-bold">SENHA</p>
-                        <p class="text-gray-300 font-bold">Esqueceu a senha?</p>
+            
+                <div class="w-full flex items-center mt-2 justify-between">
+                    <div class="h-[1px] w-[20%] bg-gray-400"></div>
+                    <div class="flex flex-row">
+                        <p class="text-gray-300     font-semibold text-sm">Não tem uma conta? <span class="text-blue-500 cursor-pointer" (click)="showRegister()">Registre-se</span></p>
                     </div>
-                    <input type="password" placeholder="Insira sua senha"
-                    class="w-full h-12 bg-[#0f172a] border outline-none focus:border-blue-500 transition-colors rounded-lg text-gray-400 pl-5"
-                    [class.border-red-600]="hasError"
-                    [class.border-gray-600]="!hasError"
-                    name="password"
-                    [(ngModel)]="password"
-                    >
+                    <div class="h-[1px] w-[20%] bg-gray-400"></div>
                 </div>
-        
-                @if (hasError) {
-                    <span class="text-red-500 text-sm font-semibold text-center">Login ou senha incorretos.</span>
-                }
-
-                <button (click)="onSubmit()" class="bg-blue-50 font-semibold p-3 mt-4 rounded-md">Entrar</button>
             </div>
-        }
 
-
-                <div class="bg-[#111C2D] flex justify-center items-center w-full h-15 border border-gray-600 rounded-bl-2xl rounded-br-2xl">
-                    <p class="text-[#94a3b8] text-sm">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
-                </div>
+            <div class="bg-[#111C2D] flex justify-center items-center w-full h-15 border border-gray-600 rounded-bl-2xl rounded-br-2xl">
+                <p class="text-[#94a3b8] text-sm">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
+            </div>
 
         </div>
         

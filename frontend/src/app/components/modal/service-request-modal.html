@@ -1,66 +1,70 @@
-<div class="modal-backdrop">
-  <section class="request-modal" role="dialog" aria-modal="true" aria-labelledby="request-title">
-    <header class="modal-header">
-      <div>
-        <p class="eyebrow">NOVA SOLICITAÇÃO</p>
-        <h2 id="request-title">Solicitação de manutenção</h2>
-        <p>Informe os dados do equipamento para iniciar o atendimento.</p>
-      </div>
-      <button type="button" class="close-button" aria-label="Fechar" (click)="closeModal.emit()">×</button>
-    </header>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
 
-    <form [formGroup]="requestForm" (ngSubmit)="submit()" novalidate>
-      <div class="form-field">
-        <label for="item">Equipamento</label>
-        <input id="item" type="text" formControlName="item" placeholder="Ex.: Notebook Dell Inspiron" />
-        @if (hasError('item')) {
-          <small>Informe o equipamento.</small>
-        }
-      </div>
+    <div class="relative w-full max-w-md p-6 bg-gray-700 text-white rounded-xl shadow-2xl border border-gray-300" role="dialog" aria-modal="true" aria-labelledby="request-title">
+      <h3 id="request-title" class="text-xl font-semibold">Criar nova solicitação de serviço:</h3>
 
-      <div class="form-field">
-        <label for="categoryId">Categoria</label>
-        <select id="categoryId" formControlName="categoryId">
-          <option [ngValue]="0">Selecione uma categoria</option>
-          @for (category of categories; track category.id) {
-            <option [ngValue]="category.id">{{ category.name }}</option>
+      <form [formGroup]="requestForm" (ngSubmit)="submit()" novalidate class="flex flex-col mt-4 gap-3">
+
+        <div class="form-group flex flex-col gap-1 ">
+          <label for="item" class="flex gap-1 text-sm font-medium">Item do serviço <span class="text-red-400">*</span></label>
+          <input id="item" type="text" formControlName="item" placeholder="Digite aqui o item no serviço" class="rounded p-2 border border-gray-200 focus:border-blue-900 outline-none">
+
+          @if (hasError('item')) {
+            <small class="text-red-400 text-xs font-medium">Informe o equipamento.</small>
           }
-        </select>
-        @if (hasError('categoryId')) {
-          <small>Selecione uma categoria.</small>
+        </div>
+
+        <div class="form-group flex flex-col gap-1">
+          <label for="itemDescription" class="text-sm font-medium">Descrição do item (opcional)</label>
+          <!-- Trocado de input para textarea para textos longos -->
+          <textarea id="itemDescription" rows="2" formControlName="itemDescription" placeholder="Descreva o item" class="rounded p-2 border border-gray-200 focus:border-blue-900 outline-none"></textarea>
+
+          <!-- @if (hasError('itemDescription')) {
+            <small class="text-red-400 text-xs font-medium">Descreva o equipamento.</small>
+          } -->
+        </div>
+
+        <div class="form-group flex flex-col gap-1">
+          <label for="itemDefect" class="flex gap-1 text-sm font-medium">Defeito do Item <span class="text-red-400">*</span></label>
+          <textarea id="itemDefect" rows="3" formControlName="itemDefect" placeholder="Digite aqui o defeito do item" class="rounded p-2 border border-gray-200 focus:border-blue-900 outline-none"></textarea>
+
+          @if (hasError('itemDefect')) {
+            <small class="text-red-400 text-xs font-medium">Informe o defeito.</small>
+          }
+        </div>
+
+        <div class="form-group flex flex-col gap-1">
+          <label for="categoryCode" class="flex gap-1 text-sm font-medium">Categoria <span class="text-red-400">*</span></label>
+          <select id="categoryCode" formControlName="categoryCode" class="rounded p-2  border border-gray-200 focus:border-blue-900 outline-none">
+            <option selected hidden value="">-- Selecione uma categoria --</option>
+            @for (cat of categories(); track cat.code) {
+              <option class="bg-gray-700 text-white" [value]="cat.code">{{ cat.name }}</option>
+            }
+          </select>
+
+          @if (hasError('categoryCode')) {
+            <small class="text-red-400 text-xs font-medium">Selecione uma categoria.</small>
+          }
+        </div>
+
+        <!-- Mensagens globais de Status do PR, agora com Tailwind -->
+        @if (successMessage) {
+          <p class="text-green-400 text-sm mt-1" role="status">{{ successMessage }}</p>
         }
-      </div>
-
-      <div class="form-field">
-        <label for="itemDescription">Descrição do equipamento</label>
-        <textarea id="itemDescription" rows="3" formControlName="itemDescription" placeholder="Descreva o equipamento, marca e modelo."></textarea>
-        @if (hasError('itemDescription')) {
-          <small>Descreva o equipamento.</small>
+        @if (errorMessage) {
+          <p class="text-red-400 text-sm mt-1" role="alert">{{ errorMessage }}</p>
         }
-      </div>
 
-      <div class="form-field">
-        <label for="itemDefect">Descrição do defeito</label>
-        <textarea id="itemDefect" rows="4" formControlName="itemDefect" placeholder="Explique o problema apresentado."></textarea>
-        @if (hasError('itemDefect')) {
-          <small>Informe o defeito.</small>
-        }
-      </div>
+        <div class="flex justify-end gap-3 mt-4">
+          <!-- Botão Cancelar apenas emite o evento para fechar -->
+          <button type="button" (click)="closeModal.emit()" class="px-4 py-2 bg-gray-100 rounded-lg text-black border border-gray-200 hover:scale-105 hover:cursor-pointer transition">
+            Cancelar
+          </button>
 
-      @if (successMessage) {
-        <p class="success-message" role="status">{{ successMessage }}</p>
-      }
-
-      @if (errorMessage) {
-        <p class="error-message" role="alert">{{ errorMessage }}</p>
-      }
-
-      <footer class="modal-actions">
-        <button type="button" class="cancel-button" (click)="closeModal.emit()">Cancelar</button>
-        <button type="submit" class="submit-button" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Enviando...' : 'Registrar solicitação' }}
-        </button>
-      </footer>
-    </form>
-  </section>
-</div>
+          <button type="submit" [disabled]="isSubmitting" class="px-4 py-2 text-white border border-white bg-green-800 rounded-lg hover:scale-105 hover:cursor-pointer disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed transition">
+            {{ isSubmitting ? 'Enviando...' : 'Confirmar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

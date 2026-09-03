@@ -6,7 +6,7 @@ export interface MaintenanceRequestPayload {
   item: string;
   itemDescription: string;
   itemDefect: string;
-  categoryId: number;
+  categoryCode: string;
 }
 
 @Injectable({
@@ -17,7 +17,7 @@ export class MaintenanceRequestService {
   private readonly apiUrl = 'http://localhost:8080/api/maintenance-request';
 
   create(payload: MaintenanceRequestPayload ): Observable<unknown> {
-    return this.http.post<unknown>(this.apiUrl, payload, {
+    return this.http.post<MaintenanceRequestPayload>(this.apiUrl, payload, {
       withCredentials: true,
     } );
   }

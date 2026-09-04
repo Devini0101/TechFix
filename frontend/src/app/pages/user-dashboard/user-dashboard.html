@@ -57,7 +57,7 @@
 			<div class="flex justify-center items-center rounded-md bg-gray-600 p-3 hover:scale-105 hover:bg-gray-400 hover:cursor-pointer hover:text-gray-50">
 				<div class="flex flex-col items-center justify-center hover:cursor-pointer">
 					<i class="fa-regular fa-square-plus"></i>
-					<button (click)="openModal()">Criar nova solicitação</button>
+					<button (click)="openCreateModal()">Criar nova solicitação</button>
 				</div>
 			</div>
 
@@ -75,21 +75,44 @@
 					<i class="fa-solid fa-address-book"></i>
 					<p>Orçamentos pendentes:</p>
 				</div>
-				<div class="mt-2 bg-gray-800 flex flex-col text-white p-2 rounded">
-					<p class="font-bold">Troca de tela do notebook</p>
-					<div class="flex justify-between items-center">
-						<p class="font-bold">Prazo: Hoje</p>
-						<p class="font-bold text-2xl">R$ 200</p>
+				@for(req of maintenanceRequests(); track req) {
+					<div class="mt-2 bg-gray-800 flex flex-col text-white p-2 rounded ">
+						<p class="font-bold border-b border-gray-200">{{ req.item }}</p>
+						<p class="font-bold truncate mt-0.5 text-sm">Defeito: {{ req.itemDefect }}</p>
+						<div class="flex justify-between items-center mt-1">
+							<p class="font-bold text-sm"> Preço estimado: </p>
+							@if (req.estimatedPrice != null;) {
+								<p class="font-bold text-2xl"> R$ {{req.estimatedPrice}} </p>
+							} @else {
+								<p class="font-bold text-sm">Em avaliação.</p>
+							}
+						</div>
+						@if (req.price != null) {
+						<div class="rounded-md bg-amber-50 text-black text-center mt-2 cursor-pointer">
+							Rever e pagar
+						</div>
+						} @else {
+						<div (click)="openDetailModal(req.id)" class="rounded-md bg-amber-50 text-black text-center mt-2 cursor-pointer">
+							Visualizar
+						</div>
+						}
 					</div>
-					<div class="rounded-md bg-amber-50 text-black text-center mt-2">Rever e pagar</div>
-				</div>
+				} @empty {
+					<p class="text-gray-400">Nenhuma solicitação encontrada.</p>
+				}
 			</div>
 		</div>
 
 	</div>
 </div>
 
-<!-- Modal de novo serviço de conserto -->
-@if (isModalOpen) {
-	<app-service-request-modal (closeModal)="isModalOpen = false"></app-service-request-modal>
+@if (isCreateModalOpen) {
+	<app-service-request-modal
+		(closeModal)="isCreateModalOpen = false">
+	</app-service-request-modal>
+}
+
+@if (isDetailModalOpen && selectedRequestDetails()) {
+  <app-maintenance-request-modal [request]="selectedRequestDetails()" (closeModal)="closeDetailModal()">
+  </app-maintenance-request-modal>
 }

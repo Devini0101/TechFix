@@ -18,7 +18,6 @@ export class CategoryService  {
         return this.http.get<Category[]>(`${this.apiUrl}/`, {withCredentials: true})
         .pipe(
             catchError((error) => {
-                console.error('Erro ao buscar categorias:', error);
                 return of([]);
             })
         );

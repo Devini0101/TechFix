@@ -1,6 +1,7 @@
 package com.techfix.exception;
 
 import com.techfix.dto.StandardError;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,5 +57,16 @@ public class GlobalExceptionHandler extends RuntimeException {
                 ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<StandardError> EntityNotFoundException (EntityNotFoundException ex, HttpServletRequest req) {
+        StandardError error =  new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(), //404,
+                "Not Found",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

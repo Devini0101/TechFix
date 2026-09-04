@@ -1,7 +1,9 @@
 import { Component, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
-import { Category, CategoryService } from '../../core/services/CategoryService';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+
+import { Category, CategoryService } from '../../../core/services/category.service';
+import { MaintenanceRequestService } from '../../../core/services/maintenance-request.service';
 
 @Component({
     selector: 'app-service-request-modal',

@@ -1,0 +1,84 @@
+@if (request) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+        <div class="relative w-full max-w-lg p-6 bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-700">
+
+          <!-- Cabeçalho -->
+          <div class="flex justify-between items-start border-b border-gray-700 pb-3">
+            <div>
+              <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                Solicitação #{{ request.id }}
+              </span>
+              <h2 class="text-xl font-semibold mt-1">{{ request.item }}</h2>
+            </div>
+            <button
+              (click)="closeModal.emit()"
+              class="text-gray-400 hover:text-white text-2xl font-bold hover:cursor-pointer">
+              &times;
+            </button>
+          </div>
+
+          <!-- Corpo dos detalhes -->
+          <div class="flex flex-col gap-4 mt-4 text-sm">
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                <span class="text-xs text-gray-400 block">Categoria</span>
+                <span class="font-medium text-gray-200">{{ request.categoryCode || 'N/A' }}</span>
+              </div>
+
+              <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                <span class="text-xs text-gray-400 block">Status</span>
+                <span class="font-semibold" [style.color]="request.statusColor">{{ request.statusCode || 'Aberto' }}</span>
+              </div>
+            </div>
+
+            <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+              <span class="text-xs text-gray-400 block">Descrição do Equipamento</span>
+              <p class="mt-1 text-gray-300">
+                {{ request.itemDescription || 'Nenhuma descrição informada.' }}
+              </p>
+            </div>
+
+            <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+              <span class="text-xs text-gray-400 block">Defeito Apresentado</span>
+              <p class="mt-1 text-red-300 font-medium">
+                {{ request.itemDefect }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                <span class="text-xs text-gray-400 block">Orçamento Estimado</span>
+                <span class="font-semibold text-green-400">
+                  {{ request.estimatedPrice ? (request.estimatedPrice | currency: 'BRL':'symbol') : 'Em avaliação' }}
+                </span>
+              </div>
+
+              <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                <span class="text-xs text-gray-400 block">Data de Abertura</span>
+                <span class="text-gray-300">
+                  {{ request.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </div>
+            </div>
+
+            @if (request.orientation) {
+              <div class="bg-blue-950/40 p-3 rounded-lg border border-blue-800">
+                <span class="text-xs text-blue-300 font-bold block">Orientação do Técnico</span>
+                <p class="mt-1 text-blue-200">{{ request.orientation }}</p>
+              </div>
+            }
+          </div>
+
+          <!-- Rodapé -->
+          <div class="flex justify-end mt-6">
+            <button
+              (click)="closeModal.emit()"
+              class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer">
+              Fechar
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }

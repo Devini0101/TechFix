@@ -2,9 +2,10 @@ package com.techfix.controller;
 
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
-import com.techfix.dto.response.MaintenanceResponseDTO;
+import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.User;
+import com.techfix.model.enums.UserRole;
 import com.techfix.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,12 +34,31 @@ public class MaintenanceRequestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/pending")
-    public List<MaintenanceResponseDTO> openMaintenances(Authentication authentication) {
+    @GetMapping("/summary")
+    public MaintenanceSummaryResponseDTO getMaintenanceSummary(Authentication authentication) {
         User client = (User) authentication.getPrincipal();
-        List<MaintenanceResponseDTO> pendingList = service.getPendingMaintenances(client.getId());
-        return pendingList;
+
+        if (client.getRole().equals(UserRole.employee)) {
+            MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummary();
+            return summary;
+        }
+
+        MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummaryByClient(client.getId());
+        return summary;
     }
+
+    @GetMapping
+    public List<MaintenanceDetailsResponseDTO> getAll (Authentication authentication, @RequestParam(required = false) String status) {
+        User client = (User) authentication.getPrincipal();
+        String formattedStatus = (status != null) ? status.toUpperCase() : null;
+
+        if (client.getRole().equals(UserRole.employee)) {
+            return service.getAll(formattedStatus);
+        }
+
+        return service.getAllByClient(client.getId(), formattedStatus);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MaintenanceDetailsResponseDTO> findById(@PathVariable String id, Authentication authentication) {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, Observable, of, throwError } from 'rxjs';
 
@@ -30,9 +30,17 @@ export interface MaintenanceDetailsResponse {
   categoryCode: string | null;
   statusCode: string | null;
   statusColor: string | null;
-  createdAt: string; // ISO string sent by Java LocalDateTime
+  createdAt: string; // java local time vai vir como string
   orientation: string | null;
   responsibleEmployeeName: string | null;
+}
+
+export interface Summary {
+  pendingBudgets: number | null,
+  waitingApproval : number | null,
+  inMaintenance: number | null,
+  finished: number | null,
+  canceled: number | null
 }
 
 @Injectable({
@@ -48,14 +56,6 @@ export class MaintenanceRequestService {
     } );
   }
 
-  getOpened() : Observable<MaintenanceRequest[]> {
-    return this.http.get<MaintenanceRequest[]>(`${this.apiUrl}/pending`, {withCredentials : true})
-    .pipe(catchError((error) => {
-        console.error('Erro ao buscar manutenções abertas:', error);
-        return of([]);
-    }));
-  }
-
   getById(id : Number ) : Observable<MaintenanceDetailsResponse> {
     return this.http
       .get<MaintenanceDetailsResponse>(`${this.apiUrl}/${id}`, {
@@ -63,9 +63,32 @@ export class MaintenanceRequestService {
       })
       .pipe(
         catchError((error) => {
-          console.error(`Erro ao buscar detalhes da manutenção #${id}:`, error);
-          return throwError(() => error); // Re-throws so component error callbacks handle HTTP 404/403 properly
+          return throwError(() => error);
         })
       );
   }
+
+  getSummary () : Observable<Summary> {
+    return this.http.get<Summary>(`${this.apiUrl}/summary`, { withCredentials : true })
+      .pipe(
+        catchError( (error) => {
+          return throwError( () => error);
+        })
+      );
+  }
+
+  getMaintenances(status?: string): Observable<MaintenanceDetailsResponse[]> {
+    let params = new HttpParams();
+
+    // only adds "status=" param into url when status different than ALL
+    if (status && status !== 'ALL') {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<MaintenanceDetailsResponse[]>(this.apiUrl, {
+      withCredentials: true,
+      params: params
+    });
+  }
+
 }

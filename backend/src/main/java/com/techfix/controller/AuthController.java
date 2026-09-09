@@ -31,10 +31,10 @@ public class AuthController {
         LoginResponseDTO response = userService.loginUser(request);
 
         ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", response.token())
-                .httpOnly(true)
+                .httpOnly(true) //token inacessível pelo usuário
                 .path("/")
                 // .secure(true) // somente para HTTPS, para local, nao
-                .maxAge(86400) //1 dia de vencimento do token
+                .maxAge(8 * 3600) //8hrs
                 .sameSite("Strict") //CSRF
                 .build();
 

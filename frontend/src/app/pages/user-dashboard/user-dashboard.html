@@ -60,20 +60,16 @@
 					<button (click)="openCreateModal()">Criar nova solicitação</button>
 				</div>
 			</div>
-
-			<div class="flex justify-center items-center rounded-md bg-gray-600 p-3 hover:scale-105 hover:bg-gray-400 hover:cursor-pointer hover:text-gray-50">
-				<div class="flex flex-col items-center justify-center">
-					<i class="fa-solid fa-clipboard-list"></i>
-					<p>Solicitações de serviço</p>
-				</div>
-			</div>
 		</div>
 
 		<div class="mt-2 p-4">
 			<div class="bg-gray-600 p-2 rounded-md text-orange-400">
-				<div class="flex justify-items-start items-center gap-2">
-					<i class="fa-solid fa-address-book"></i>
-					<p>Orçamentos pendentes:</p>
+				<div class="flex justify-between items-center gap-6">
+					<div class="flex items-center gap-1">
+						<i class="fa-solid fa-address-book"></i>
+						<p>Orçamentos pendentes:</p>
+					</div>
+					<a href="#" class="ml-auto underline-offset-1">Ver todas</a>
 				</div>
 				@for(req of maintenanceRequests(); track req) {
 					<div class="mt-2 bg-gray-800 flex flex-col text-white p-2 rounded ">

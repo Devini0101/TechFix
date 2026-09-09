@@ -16,7 +16,7 @@ export class UserDashboard implements OnInit {
 
   categories: string[] = [];
   selectedRequestDetails = signal<MaintenanceDetailsResponse | null>(null);
-  maintenanceRequests = signal<MaintenanceRequest[]>([]);
+  maintenanceRequests = signal<MaintenanceDetailsResponse[] | null>(null);
 
   private maintenanceService = inject(MaintenanceRequestService);
 
@@ -26,7 +26,7 @@ export class UserDashboard implements OnInit {
   }
 
   fetchRequests(): void {
-    this.maintenanceService.getOpened().subscribe({
+    this.maintenanceService.getMaintenances("OPEN").subscribe({
       next: (data) => {
         this.maintenanceRequests.set(data);
       },

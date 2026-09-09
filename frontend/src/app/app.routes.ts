@@ -3,6 +3,7 @@ import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { MainLayout } from './pages/main-layout/main-layout';
 import { authGuard } from './core/guards/auth-guard';
+import { Maintenances } from './pages/maintenance/maintenances';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -13,9 +14,11 @@ export const routes: Routes = [
     canActivate: [authGuard], // Protege todas as rotas filhas
     children: [
       { path: 'dashboard', component: Dashboard },
+      { path: 'maintenances', component: Maintenances },
       // { path: 'dashboard', component: Dashboard }, // outras páginas protegidas devem ter o msm padrão e estar aq
     ]
   },
+
 
   // exemplo de rota protegida apenas para funcionários
   // {

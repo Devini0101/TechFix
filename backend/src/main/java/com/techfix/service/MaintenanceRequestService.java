@@ -3,6 +3,7 @@ package com.techfix.service;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceResponseDTO;
+import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.Status;
@@ -77,6 +78,68 @@ public class MaintenanceRequestService {
         return responseList;
     }
 
+
+    public List<MaintenanceResponseDTO> getAllPending() {
+        List<MaintenanceRequest> pendingMaintenances = requestRepository.findAllPending();
+
+         return pendingMaintenances.stream()
+                .map(
+                    m -> {
+                        String employeeName = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
+                        return new MaintenanceResponseDTO(
+                                m.getId(),
+                                m.getItem(),
+                                m.getItemDescription(),
+                                m.getItemDefect(),
+                                m.getEstimatedPrice(),
+                                m.getPrice(),
+                                m.getCategory().getCode(),
+                                employeeName
+                        );
+                    }
+                ).toList();
+    }
+
+    public List<MaintenanceDetailsResponseDTO> getAll(String statusCode) {
+        List<MaintenanceRequest> maintenances;
+
+        if ( statusCode == null) {
+            maintenances = requestRepository.findByDeletedAtIsNull();
+        } else {
+            maintenances = requestRepository.findByStatusCodeAndDeletedAtIsNull(statusCode);
+        }
+
+        return maintenances.stream().map(
+                m -> {
+                        return new MaintenanceDetailsResponseDTO(m);
+                }
+        ).toList();
+    }
+
+    public List<MaintenanceDetailsResponseDTO> getAllByClient(Long clientId, String statusCode) {
+        List<MaintenanceRequest> maintenances;
+
+        if ( statusCode == null) {
+            maintenances = requestRepository.findByClientIdAndDeletedAtIsNull(clientId);
+        } else {
+            maintenances = requestRepository.findByStatusCodeAndClientIdAndDeletedAtIsNull(statusCode, clientId);
+        }
+
+        return maintenances.stream().map(
+                m -> {
+                    return new MaintenanceDetailsResponseDTO(m);
+                }
+        ).toList();
+    }
+
+    public MaintenanceSummaryResponseDTO getMaintenancesSummary () {
+        return requestRepository.getMaintenancesSummary();
+    }
+
+    public MaintenanceSummaryResponseDTO getMaintenancesSummaryByClient (Long clientId) {
+        return requestRepository.getMaintenancesSummaryByClient(clientId);
+    }
+
     @Transactional(readOnly = true)
     public MaintenanceDetailsResponseDTO findById(String id, Long clientId) {
         Long maintenanceId = Long.parseLong(id);
@@ -84,4 +147,6 @@ public class MaintenanceRequestService {
                 .map(MaintenanceDetailsResponseDTO::new)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitação de serviço não encontrada"));
     }
+
+
 }

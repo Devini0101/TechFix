@@ -8,6 +8,7 @@ import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.Status;
 import com.techfix.model.User;
+import com.techfix.model.enums.UserRole;
 import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
 import com.techfix.repository.StatusRepository;
@@ -141,9 +142,17 @@ public class MaintenanceRequestService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceDetailsResponseDTO findById(String id, Long clientId) {
+    public MaintenanceDetailsResponseDTO findById(String id, User client) {
         Long maintenanceId = Long.parseLong(id);
-        return requestRepository.findByIdAndClientId(maintenanceId, clientId)
+
+        //caso do funcionário (pode ver todos)
+        if (client.getRole().equals(UserRole.employee)){
+            return requestRepository.findById(maintenanceId)
+                    .map(MaintenanceDetailsResponseDTO::new)
+                    .orElseThrow( () -> new EntityNotFoundException("Solicitação não existente"));
+        }
+
+        return requestRepository.findByIdAndClientId(maintenanceId, client.getId())
                 .map(MaintenanceDetailsResponseDTO::new)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitação de serviço não encontrada"));
     }

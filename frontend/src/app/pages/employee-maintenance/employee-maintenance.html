@@ -209,9 +209,9 @@
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.categoryCode }}</td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.estimatedPrice ? item.estimatedPrice : 'Aguardando orçamento' }}</td>
                                 <td class="px-6 py-4 text-center">
-                                    <button class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs rounded-md transition border border-gray-600">
+                                    <a routerLink="/maintenances/{{item.id}}" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs rounded-md transition border border-gray-600">
                                         Visualizar
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                         } @empty {

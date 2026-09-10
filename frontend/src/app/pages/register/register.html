@@ -1,1 +1,132 @@
-<p>register works!</p>
+<main class="register-page">
+  <section class="register-card" aria-labelledby="register-title">
+    <div class="brand-block">
+      <div class="brand-mark">TF</div>
+      <div>
+        <p class="brand-name">TechFix</p>
+        <p class="brand-subtitle">Manutenção de equipamentos</p>
+      </div>
+    </div>
+
+    <header class="register-header">
+      <p class="eyebrow">NOVO CLIENTE</p>
+      <h1 id="register-title">Crie sua conta</h1>
+      <p>Preencha seus dados para solicitar serviços de manutenção.</p>
+    </header>
+
+    <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="name">Nome completo</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Digite seu nome completo"
+            autocomplete="name"
+          />
+          @if (hasError('name', 'required')) {
+            <small>Informe seu nome completo.</small>
+          } @else if (hasError('name', 'minlength')) {
+            <small>O nome deve ter pelo menos 3 caracteres.</small>
+          }
+        </div>
+
+        <div class="form-field full-width">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="seuemail@exemplo.com"
+            autocomplete="email"
+          />
+          @if (hasError('email', 'required')) {
+            <small>Informe seu e-mail.</small>
+          } @else if (hasError('email', 'email')) {
+            <small>Digite um e-mail válido.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="cpf">CPF</label>
+          <input
+            id="cpf"
+            type="text"
+            formControlName="cpf"
+            placeholder="00000000000"
+            maxlength="11"
+            inputmode="numeric"
+            autocomplete="off"
+          />
+          @if (hasError('cpf', 'required')) {
+            <small>Informe o CPF.</small>
+          } @else if (hasError('cpf', 'minlength')) {
+            <small>Informe os 11 dígitos do CPF.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Telefone</label>
+          <input
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            placeholder="11999999999"
+            maxlength="11"
+            inputmode="tel"
+            autocomplete="tel"
+          />
+          @if (hasError('phone', 'required')) {
+            <small>Informe o telefone.</small>
+          } @else if (hasError('phone', 'minlength')) {
+            <small>Informe um telefone válido.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="password">Senha</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Mínimo de 6 caracteres"
+            autocomplete="new-password"
+          />
+          @if (hasError('password', 'required')) {
+            <small>Informe uma senha.</small>
+          } @else if (hasError('password', 'minlength')) {
+            <small>A senha deve ter pelo menos 6 caracteres.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="passwordConfirmation">Confirmar senha</label>
+          <input
+            id="passwordConfirmation"
+            type="password"
+            formControlName="passwordConfirmation"
+            placeholder="Repita sua senha"
+            autocomplete="new-password"
+          />
+          @if (hasError('passwordConfirmation', 'required')) {
+            <small>Confirme sua senha.</small>
+          } @else if (hasPasswordMismatch()) {
+            <small>As senhas precisam ser iguais.</small>
+          }
+        </div>
+      </div>
+
+      @if (successMessage) {
+        <p class="success-message" role="status">{{ successMessage }}</p>
+      }
+
+      <button class="submit-button" type="submit">Criar minha conta</button>
+
+      <p class="login-link">
+        Já possui uma conta?
+        <button type="button" (click)="goToLogin()">Voltar para o login</button>
+      </p>
+    </form>
+  </section>
+</main>

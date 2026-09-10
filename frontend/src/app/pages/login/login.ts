@@ -58,6 +58,6 @@ export class Login {
 	}
 
 	showRegister(): void {
-		this.isLoginMode = false;
+  		this.router.navigate(['/cadastro']);
 	}
 }

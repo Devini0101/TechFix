@@ -4,9 +4,11 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { MainLayout } from './pages/main-layout/main-layout';
 import { authGuard } from './core/guards/auth-guard';
 import { Maintenances } from './pages/maintenance/maintenances';
+import { Register } from './pages/register/register';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
+  { path: 'register', component: Register },
 
   {
     path: '',

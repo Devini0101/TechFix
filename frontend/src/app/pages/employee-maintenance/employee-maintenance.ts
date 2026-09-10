@@ -1,10 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
 import { MaintenanceDetailsResponse, MaintenanceRequest, MaintenanceRequestService, Summary } from '../../core/services/maintenance-request.service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-employee-maintenance',
-  imports: [ServiceRequestModal],
+  imports: [ServiceRequestModal, RouterLink],
   templateUrl: './employee-maintenance.html',
   styleUrl: './employee-maintenance.css',
 })

@@ -5,6 +5,7 @@ import { MainLayout } from './pages/main-layout/main-layout';
 import { authGuard } from './core/guards/auth-guard';
 import { Maintenances } from './pages/maintenance/maintenances';
 import { Register } from './pages/register/register';
+import { MaintenanceDetails } from './pages/maintenance-details/maintenance-details';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -17,6 +18,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: Dashboard },
       { path: 'maintenances', component: Maintenances },
+      { path: 'maintenances/:id', component: MaintenanceDetails}
       // { path: 'dashboard', component: Dashboard }, // outras páginas protegidas devem ter o msm padrão e estar aq
     ]
   },

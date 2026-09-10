@@ -46,6 +46,8 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     """)
     MaintenanceSummaryResponseDTO getMaintenancesSummaryByClient(@Param("clientId") Long clientId);
 
+    Optional<MaintenanceRequest> findById(Long id);
+
     Optional<MaintenanceRequest> findByIdAndClientId(Long id, Long clientId);
 
     @Query("SELECT m FROM MaintenanceRequest m WHERE " +

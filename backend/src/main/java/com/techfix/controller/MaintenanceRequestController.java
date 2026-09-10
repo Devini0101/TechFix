@@ -63,7 +63,7 @@ public class MaintenanceRequestController {
     @GetMapping("/{id}")
     public ResponseEntity<MaintenanceDetailsResponseDTO> findById(@PathVariable String id, Authentication authentication) {
         User client = (User) authentication.getPrincipal();
-        MaintenanceDetailsResponseDTO response = service.findById(id, client.getId());
+        MaintenanceDetailsResponseDTO response = service.findById(id, client);
         return ResponseEntity.ok(response);
     }
 }

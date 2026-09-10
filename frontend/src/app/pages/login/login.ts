@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { InputComponent } from '../../components/input/input';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
@@ -17,14 +17,14 @@ export class Login {
 	private authService = inject(AuthService);
 	private router = inject(Router);
 
-	hasError = false;
+	hasError = signal<Boolean>(false);
 
 	onSubmit() : void {
 
-		this.hasError = false;
+		this.hasError.set(false);
 
 		if (!this.email || !this.password) {
-			this.hasError = true;
+			this.hasError.set(true);
 			return;
 		}
 
@@ -39,7 +39,7 @@ export class Login {
 			},
 			error: (err) => {
 				console.error("Login failed:", err);
-				this.hasError = true;
+				this.hasError.set(true);
 			},
 		})
 	}

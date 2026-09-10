@@ -12,8 +12,7 @@
             <div class="flex flex-col gap-2">
                 <p class="font-mono text-gray-400 font-bold">ENDEREÇO DE EMAIL</p>
                 <app-input
-                    [(value)]="email"
-                    [hasError]="hasError">
+                    [(value)]="email">
                 </app-input>
             </div>
             <div class="flex flex-col gap-2">
@@ -23,14 +22,14 @@
                 </div>
                 <input type="password" placeholder="Insira sua senha"
                 class="w-full h-12 bg-[#0f172a] border outline-none focus:border-blue-500 transition-colors rounded-lg text-gray-400 pl-5"
-                [class.border-red-600]="hasError"
-                [class.border-gray-600]="!hasError"
+                [class.border-red-600]="hasError()"
+                [class.border-gray-600]="!hasError()"
                 name="password"
                 [(ngModel)]="password"
                 >
             </div>
 
-            @if (hasError) {
+            @if (hasError()) {
                 <span class="text-red-500 text-sm font-semibold text-center">Login ou senha incorretos.</span>
             }
 

@@ -1,0 +1,401 @@
+@if (details(); as order) {
+<div class="h-screen text-slate-200 font-sans">
+    <!-- Header / Top Bar -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+            <div class="text-slate-400 text-xs font-semibold mb-1 tracking-wide uppercase">
+                Ordens de Serviço > OS #{{ order.id }}
+            </div>
+            <div class="flex items-center gap-3">
+
+                <button
+                    (click)="goBack()"
+                    class="group relative flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-300 cursor-pointer"
+                >
+                    <i class="fa-solid fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1"></i>
+                    <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-white scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+                </button>
+
+                <h1 class="text-3xl font-bold text-white">Ordem de Serviço <span class="text-slate-500 font-mono text-2xl">#{{ order.id }}</span></h1>
+
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 border border-slate-700 text-slate-300"
+                >
+                    <span class="w-2 h-2 rounded-full mr-2"
+                    [class]="'bg-[' + order.statusColor + ']'" >
+                    </span>
+                    {{ order.statusCode || 'N/A' }}
+                </span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-file-export"></i>
+                Exportar Laudo
+            </button>
+            <button class="px-4 py-2 bg-slate-100 hover:bg-white text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-check"></i>
+                Avançar Etapa
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+        <!-- col da esquerda (Infos e Valores) -->
+        <div class="xl:col-span-5 flex flex-col gap-6">
+
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+                <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-white">
+                    <i class="fa-regular fa-clipboard text-slate-400"></i> Informações Gerais e Responsáveis
+                </h3>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Data de Criação</p>
+                        <!-- Supondo uso do DatePipe do Angular -->
+                        <p class="text-sm font-semibold text-slate-300">{{ order.createdAt | date:'dd/M/yyyy HH:mm' }}</p>
+                    </div>
+                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Categoria</p>
+                        <p class="text-sm font-semibold text-slate-300">{{ order.categoryCode || 'Não categorizado' }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/50 rounded-lg p-4 border border-slate-800/50 mb-6 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Funcionário Responsável</p>
+                        <p class="font-semibold text-slate-200">
+                            @if (order.responsibleEmployeeName) {
+                                {{ order.responsibleEmployeeName }}
+                            } @else {
+                                <span class="text-slate-500 italic">Aguardando atribuição</span>
+                            }
+                        </p>
+                    </div>
+                    <i class="fa-solid fa-user-gear text-slate-600 text-xl"></i>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-end mb-1">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Equipamento / Item</p>
+                    </div>
+                    <p class="text-xl font-bold text-white mb-1">{{ order.item }}</p>
+                    <p class="text-sm text-slate-400">{{ order.itemDescription }}</p>
+                </div>
+
+                <div class="bg-slate-950 rounded-lg p-4 border-l-4 border-l-amber-500/70 border-t border-r border-b border-slate-800 shadow-inner mt-4">
+                    <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Falha Relatada</p>
+                    <p class="text-sm text-slate-300 leading-relaxed">{{ order.itemDefect }}</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Orçamento e Valores -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+                <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-white">
+                    <i class="fa-solid fa-money-bill-wave text-slate-400"></i> Orçamento e Valores
+                </h3>
+
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Orçamento Estimado</p>
+                        <p class="text-2xl font-bold text-slate-300">
+                            @if (order.estimatedPrice) {
+                                {{ order.estimatedPrice | currency:'BRL' }}
+                            } @else {
+                                <span class="text-base text-slate-500 font-normal italic">Em avaliação</span>
+                            }
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">Proposta Inicial</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Orçamento Atual</p>
+                        <p class="text-2xl font-bold text-white">
+                            @if (order.price) {
+                                {{ order.price | currency:'BRL' }}
+                            } @else {
+                                <span class="text-base text-slate-500 font-normal italic">Não definido</span>
+                            }
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">Valor Vigente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita (Histórico / Orientações Técnicas) -->
+        <div class="xl:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="font-bold text-xl flex items-center gap-2 text-white">
+                    <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Orientações & Histórico
+                </h3>
+            </div>
+
+            <!-- Bloco de Orientação Técnica (Renderizado se existir orientation no DTO) -->
+            @if (order.orientation) {
+                <div class="mb-8 p-4 bg-slate-800/50 border border-blue-900/30 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-circle-info text-blue-400"></i>
+                        <h4 class="font-bold text-blue-100 text-sm">Nota Técnica / Orientação</h4>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        {{ order.orientation }}
+                    </p>
+                </div>
+            }
+
+            <!-- Timeline dos status -->
+            <div class="relative border-l border-slate-700 ml-3 space-y-8 pb-4">
+
+                <!-- 1. OPEN (Abertura de Chamado) -->
+                <div class="relative pl-6">
+                    @if (isCurrent('OPEN')) {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                    } @else {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-[8px] text-white"></i>
+                        </span>
+                    }
+
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-sm" [class.text-blue-100]="isCurrent('OPEN')" [class.text-slate-200]="!isCurrent('OPEN')">
+                            Abertura de Chamado
+                        </h4>
+                        @if (isCurrent('OPEN')) {
+                            <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                        } @else {
+                            <span class="text-xs text-slate-500">{{ order.createdAt | date:'dd/MMM HH:mm' }}</span>
+                        }
+                    </div>
+                    <p class="text-xs text-slate-400">Ordem de serviço registrada no sistema, aguardando orçamento.</p>
+                </div>
+
+                <!-- 2. QUOTING (Em Orçamento) -->
+                <div class="relative pl-6">
+                    @if (isCurrent('QUOTING')) {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                    } @else if (isCompleted('QUOTING')) {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-[8px] text-white"></i>
+                        </span>
+                    } @else {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                    }
+
+                    <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('QUOTING')">
+                        <h4 class="font-bold text-sm"
+                            [class.text-blue-100]="isCurrent('QUOTING')"
+                            [class.text-slate-200]="isCompleted('QUOTING')"
+                            [class.text-slate-400]="isPending('QUOTING')">
+                            Em Orçamento
+                        </h4>
+                        @if (isCurrent('QUOTING')) {
+                            <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                        } @else if (isCompleted('QUOTING')) {
+                            <span class="text-xs text-slate-500">Concluído</span>
+                        } @else {
+                            <span class="text-xs text-slate-600">Pendente</span>
+                        }
+                    </div>
+                    <p class="text-xs" [class.text-slate-400]="!isPending('QUOTING')" [class.text-slate-500]="isPending('QUOTING')" [class.opacity-50]="isPending('QUOTING')">
+                        Aguardando resposta para orçamento proposto.
+                    </p>
+                </div>
+
+                <!-- 3. WAITING_APPROVAL (Aguardando Aprovação) -->
+                <div class="relative pl-6">
+                    @if (isCurrent('WAITING_APPROVAL')) {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                    } @else if (isCompleted('WAITING_APPROVAL')) {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-[8px] text-white"></i>
+                        </span>
+                    } @else {
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                    }
+
+                    <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('WAITING_APPROVAL')">
+                        <h4 class="font-bold text-sm"
+                            [class.text-blue-100]="isCurrent('WAITING_APPROVAL')"
+                            [class.text-slate-200]="isCompleted('WAITING_APPROVAL')"
+                            [class.text-slate-400]="isPending('WAITING_APPROVAL')">
+                            Aguardando Aprovação
+                        </h4>
+                        @if (isCurrent('WAITING_APPROVAL')) {
+                            <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                        } @else if (isCompleted('WAITING_APPROVAL')) {
+                            <span class="text-xs text-slate-500">Concluído</span>
+                        } @else {
+                            <span class="text-xs text-slate-600">Pendente</span>
+                        }
+                    </div>
+                    <p class="text-xs" [class.text-slate-400]="!isPending('WAITING_APPROVAL')" [class.text-slate-500]="isPending('WAITING_APPROVAL')" [class.opacity-50]="isPending('WAITING_APPROVAL')">
+                        Aguardando aprovação de ordem de serviço.
+                    </p>
+                </div>
+
+                <!-- 4. FLUXO CONDICIONAL (REJECTED OU PROSSEGUIMENTO) -->
+                @if (order.statusCode === 'REJECTED') {
+                    <!-- REJECTED (Finaliza a linha do tempo) -->
+                    <div class="relative pl-6">
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-red-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(239,68,68,0.5)] flex items-center justify-center">
+                            <i class="fa-solid fa-xmark text-[8px] text-white"></i>
+                        </span>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-bold text-sm text-red-200">Rejeitado</h4>
+                            <span class="text-[10px] font-bold tracking-wider text-red-400 uppercase">Encerrado</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Ordem de serviço rejeitada.</p>
+                    </div>
+                } @else {
+                    <!-- 4A. APPROVED (Aprovado) -->
+                    <div class="relative pl-6">
+                        @if (isCurrent('APPROVED')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                        } @else if (isCompleted('APPROVED')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                                <i class="fa-solid fa-check text-[8px] text-white"></i>
+                            </span>
+                        } @else {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                        }
+
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('APPROVED')">
+                            <h4 class="font-bold text-sm"
+                                [class.text-blue-100]="isCurrent('APPROVED')"
+                                [class.text-slate-200]="isCompleted('APPROVED')"
+                                [class.text-slate-400]="isPending('APPROVED')">
+                                Aprovado
+                            </h4>
+                            @if (isCurrent('APPROVED')) {
+                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                            } @else if (isCompleted('APPROVED')) {
+                                <span class="text-xs text-slate-500">Concluído</span>
+                            } @else {
+                                <span class="text-xs text-slate-600">Pendente</span>
+                            }
+                        </div>
+                        <p class="text-xs" [class.text-slate-400]="!isPending('APPROVED')" [class.text-slate-500]="isPending('APPROVED')" [class.opacity-50]="isPending('APPROVED')">
+                            Ordem de serviço aprovada, pós orçamento.
+                        </p>
+                    </div>
+
+                    <!-- 5. IN_PROGRESS (Em Progresso) -->
+                    <div class="relative pl-6">
+                        @if (isCurrent('IN_PROGRESS')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                        } @else if (isCompleted('IN_PROGRESS')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                                <i class="fa-solid fa-check text-[8px] text-white"></i>
+                            </span>
+                        } @else {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                        }
+
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('IN_PROGRESS')">
+                            <h4 class="font-bold text-sm"
+                                [class.text-blue-100]="isCurrent('IN_PROGRESS')"
+                                [class.text-slate-200]="isCompleted('IN_PROGRESS')"
+                                [class.text-slate-400]="isPending('IN_PROGRESS')">
+                                Em Progresso
+                            </h4>
+                            @if (isCurrent('IN_PROGRESS')) {
+                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                            } @else if (isCompleted('IN_PROGRESS')) {
+                                <span class="text-xs text-slate-500">Concluído</span>
+                            } @else {
+                                <span class="text-xs text-slate-600">Pendente</span>
+                            }
+                        </div>
+                        <p class="text-xs" [class.text-slate-400]="!isPending('IN_PROGRESS')" [class.text-slate-500]="isPending('IN_PROGRESS')" [class.opacity-50]="isPending('IN_PROGRESS')">
+                            Manutenção do equipamento em andamento.
+                        </p>
+                    </div>
+
+                    <!-- 6. FINISHED (Finalizada) -->
+                    <div class="relative pl-6">
+                        @if (isCurrent('FINISHED')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                        } @else if (isCompleted('FINISHED')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
+                                <i class="fa-solid fa-check text-[8px] text-white"></i>
+                            </span>
+                        } @else {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                        }
+
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('FINISHED')">
+                            <h4 class="font-bold text-sm"
+                                [class.text-blue-100]="isCurrent('FINISHED')"
+                                [class.text-slate-200]="isCompleted('FINISHED')"
+                                [class.text-slate-400]="isPending('FINISHED')">
+                                Finalizada
+                            </h4>
+                            @if (isCurrent('FINISHED')) {
+                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
+                            } @else if (isCompleted('FINISHED')) {
+                                <span class="text-xs text-slate-500">Concluído</span>
+                            } @else {
+                                <span class="text-xs text-slate-600">Pendente</span>
+                            }
+                        </div>
+                        <p class="text-xs" [class.text-slate-400]="!isPending('FINISHED')" [class.text-slate-500]="isPending('FINISHED')" [class.opacity-50]="isPending('FINISHED')">
+                            Manutenção encerrada, aguardando pagamento para entrega do equipamento.
+                        </p>
+                    </div>
+
+                    <!-- 7. DELIVERED (Entregue) -->
+                    <div class="relative pl-6">
+                        @if (isCurrent('DELIVERED')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                        } @else {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                        }
+
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="!isCurrent('DELIVERED')">
+                            <h4 class="font-bold text-sm" [class.text-blue-100]="isCurrent('DELIVERED')" [class.text-slate-400]="!isCurrent('DELIVERED')">
+                                Entregue
+                            </h4>
+                            @if (isCurrent('DELIVERED')) {
+                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Concluído</span>
+                            } @else {
+                                <span class="text-xs text-slate-600">Pendente</span>
+                            }
+                        </div>
+                        <p class="text-xs" [class.text-slate-400]="isCurrent('DELIVERED')" [class.text-slate-500]="!isCurrent('DELIVERED')" [class.opacity-50]="!isCurrent('DELIVERED')">
+                            Manutenção encerrada, pagamento realizado e equipamento entregue.
+                        </p>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+} @else if (errorMessage()) {
+    <!-- Estado de Erro (403, 404, etc) -->
+    <div class="h-screen flex flex-col justify-center items-center font-sans">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-8 max-w-md w-full text-center shadow-2xl">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2">Nenhum resultado encontrado</h2>
+
+            <p class="text-slate-400 mb-8">{{ errorMessage() }}</p>
+
+            <button (click)="goBack()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-lg transition-colors border border-slate-700 w-full flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar
+            </button>
+        </div>
+    </div>
+} @else {
+    <!-- Skeleton / Loading State -->
+    <div class="h-screen flex justify-center items-center">
+        <div class="flex flex-col items-center gap-3">
+            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-slate-600"></i>
+            <p class="text-slate-400 font-semibold animate-pulse">Carregando detalhes da OS...</p>
+        </div>
+    </div>
+}

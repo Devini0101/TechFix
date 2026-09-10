@@ -61,11 +61,6 @@ export class MaintenanceRequestService {
       .get<MaintenanceDetailsResponse>(`${this.apiUrl}/${id}`, {
         withCredentials: true,
       })
-      .pipe(
-        catchError((error) => {
-          return throwError(() => error);
-        })
-      );
   }
 
   getSummary () : Observable<Summary> {

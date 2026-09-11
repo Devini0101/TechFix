@@ -1,131 +1,179 @@
-<main class="register-page">
-  <section class="register-card" aria-labelledby="register-title">
-    <div class="brand-block">
-      <div class="brand-mark">TF</div>
-      <div>
-        <p class="brand-name">TechFix</p>
-        <p class="brand-subtitle">Manutenção de equipamentos</p>
-      </div>
-    </div>
-
-    <header class="register-header">
-      <p class="eyebrow">NOVO CLIENTE</p>
-      <h1 id="register-title">Crie sua conta</h1>
-      <p>Preencha seus dados para solicitar serviços de manutenção.</p>
+<main class="min-h-screen grid place-items-center px-4 py-8 text-[#e2e8f0] bg-[#0f172a] bg-[radial-gradient(circle_at_15%_20%,rgba(37,99,235,0.22),transparent_32%),radial-gradient(circle_at_85%_80%,rgba(14,165,233,0.16),transparent_30%)]">
+  <section class="bg-[#1e293b] p-10 min-h-screen rounded-3xl w-max-full">
+    <header class="gap-2 flex flex-col pb-8">
+      <h1 class="font-bold text-3xl">Crie sua conta</h1>
+      <p class="text-sm text-gray-400">Preencha seus dados para solicitar serviços de manutenção.</p>
     </header>
 
     <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
-      <div class="form-grid">
-        <div class="form-field full-width">
-          <label for="name">Nome completo</label>
-          <input
-            id="name"
-            type="text"
-            formControlName="name"
-            placeholder="Digite seu nome completo"
-            autocomplete="name"
-          />
-          @if (hasError('name', 'required')) {
-            <small>Informe seu nome completo.</small>
-          } @else if (hasError('name', 'minlength')) {
-            <small>O nome deve ter pelo menos 3 caracteres.</small>
-          }
-        </div>
+      <div class="grid-cols-2 grid gap-10 p-3">
+        <div class="col-span-1 flex flex-col gap-4 w-75">
 
-        <div class="form-field full-width">
-          <label for="email">E-mail</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            placeholder="seuemail@exemplo.com"
-            autocomplete="email"
-          />
-          @if (hasError('email', 'required')) {
-            <small>Informe seu e-mail.</small>
-          } @else if (hasError('email', 'email')) {
-            <small>Digite um e-mail válido.</small>
-          }
+            <div class="flex flex-col gap-1">
+              <label for="name" class=" font-bold text-sm">Nome completo</label>
+              <input
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                id="name"
+                type="text"
+                formControlName="name"
+                placeholder="Digite seu nome completo"
+                autocomplete="name"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('name', 'required')) {
+                  <small class="text-red-400">Informe seu nome completo.</small>
+                } @else if (hasError('name', 'minlength')) {
+                  <small class="text-red-400">O nome deve ter pelo menos 3 caracteres.</small>
+                }
+              </div>
+            </div>
+    
+            <div class="flex flex-col gap-1">
+              <label for="email" class=" font-bold text-sm">E-mail</label>
+              <input
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="seuemail@exemplo.com"
+                autocomplete="email"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('email', 'required')) {
+                  <small class="text-red-400">Informe seu e-mail.</small>
+                } @else if (hasError('email', 'email')) {
+                  <small class="text-red-400">Digite um e-mail válido.</small>
+                }
+              </div>
+            </div>
+    
+            <div class="flex flex-col gap-1">
+              <label for="cpf" class=" font-bold text-sm">CPF</label>
+              <input
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                id="cpf"
+                type="text"
+                formControlName="cpf"
+                placeholder="00000000000"
+                maxlength="11"
+                inputmode="numeric"
+                autocomplete="off"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('cpf', 'required')) {
+                  <small class="text-red-400">Informe o CPF.</small>
+                } @else if (hasError('cpf', 'minlength')) {
+                  <small class="text-red-400">Informe os 11 dígitos do CPF.</small>
+                }
+              </div>
+            </div>
+    
+            <div class="flex flex-col gap-1">
+              <label for="phone" class=" font-bold text-sm">Telefone</label>
+              <input
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                placeholder="11999999999"
+                maxlength="11"
+                inputmode="tel"
+                autocomplete="tel"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('phone', 'required')) {
+                  <small class="text-red-400">Informe o telefone.</small>
+                } @else if (hasError('phone', 'minlength')) {
+                  <small class="text-red-400">Informe um telefone válido.</small>
+                }
+              </div>
+            </div>
+       
         </div>
-
-        <div class="form-field">
-          <label for="cpf">CPF</label>
-          <input
-            id="cpf"
-            type="text"
-            formControlName="cpf"
-            placeholder="00000000000"
-            maxlength="11"
-            inputmode="numeric"
-            autocomplete="off"
-          />
-          @if (hasError('cpf', 'required')) {
-            <small>Informe o CPF.</small>
-          } @else if (hasError('cpf', 'minlength')) {
-            <small>Informe os 11 dígitos do CPF.</small>
-          }
+        <div class="col-span-1 flex flex-col gap-4 w-75">
+          <div class="flex flex-col gap-1">
+            <label for="password" class=" font-bold text-sm">Senha</label>
+            <input
+              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"  
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Mínimo de 6 caracteres"
+              autocomplete="new-password"
+            />
+            <div class="min-h-[1.1rem]">
+              @if (hasError('password', 'required')) {
+                <small class="text-red-400">Informe uma senha.</small>
+              } @else if (hasError('password', 'minlength')) {
+                <small class="text-red-400">A senha deve ter pelo menos 6 caracteres.</small>
+              }
+            </div>
+          </div>
+  
+          <div class="flex flex-col gap-1">
+            <label for="passwordConfirmation" class=" font-bold text-sm">Confirmar senha</label>
+            <input
+              id="passwordConfirmation"
+              type="password"
+              formControlName="passwordConfirmation"
+              placeholder="Repita sua senha"
+              autocomplete="new-password"
+              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+            />
+            <div class="min-h-[1.1rem]">
+              @if (hasError('passwordConfirmation', 'required')) {
+                <small class="text-red-400">Confirme sua senha.</small>
+              } @else if (hasPasswordMismatch()) {
+                <small class="text-red-400">As senhas precisam ser iguais.</small>
+              }
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="cep" class=" font-bold text-sm">CEP</label>
+            <input
+              id="cep"
+              type="text"
+              formControlName="cep"
+              placeholder="Informe seu CEP"
+              autocomplete="postal-code"
+              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+            />
+            <div class="min-h-[1.1rem]">
+              @if (hasError('cep', 'required')) {
+                <small class="text-red-400">Informe seu CEP.</small>
+              }
+            </div>
+          </div>
         </div>
-
-        <div class="form-field">
-          <label for="phone">Telefone</label>
-          <input
-            id="phone"
-            type="tel"
-            formControlName="phone"
-            placeholder="11999999999"
-            maxlength="11"
-            inputmode="tel"
-            autocomplete="tel"
-          />
-          @if (hasError('phone', 'required')) {
-            <small>Informe o telefone.</small>
-          } @else if (hasError('phone', 'minlength')) {
-            <small>Informe um telefone válido.</small>
-          }
-        </div>
-
-        <div class="form-field">
-          <label for="password">Senha</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Mínimo de 6 caracteres"
-            autocomplete="new-password"
-          />
-          @if (hasError('password', 'required')) {
-            <small>Informe uma senha.</small>
-          } @else if (hasError('password', 'minlength')) {
-            <small>A senha deve ter pelo menos 6 caracteres.</small>
-          }
-        </div>
-
-        <div class="form-field">
-          <label for="passwordConfirmation">Confirmar senha</label>
-          <input
-            id="passwordConfirmation"
-            type="password"
-            formControlName="passwordConfirmation"
-            placeholder="Repita sua senha"
-            autocomplete="new-password"
-          />
-          @if (hasError('passwordConfirmation', 'required')) {
-            <small>Confirme sua senha.</small>
-          } @else if (hasPasswordMismatch()) {
-            <small>As senhas precisam ser iguais.</small>
-          }
+        <div class="col-span-1 flex flex-col gap-4 w-75">
+          <div class="flex flex-col gap-1">
+            <label for="cep" class=" font-bold text-sm">CEP</label>
+            <input
+              id="cep"
+              type="text"
+              formControlName="cep"
+              placeholder="Informe seu CEP"
+              autocomplete="postal-code"
+              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+            />
+            <div class="min-h-[1.1rem]">
+              @if (hasError('cep', 'required')) {
+                <small class="text-red-400">Informe seu CEP.</small>
+              }
+            </div>
+          </div>
         </div>
       </div>
 
       @if (successMessage) {
-        <p class="success-message" role="status">{{ successMessage }}</p>
+        <p class="m-0 border border-[#166534] rounded-[0.55rem] p-3 text-[#bbf7d0] text-[0.8rem] bg-[rgba(20,83,45,0.36)]" role="status">{{ successMessage }}</p>
       }
 
-      <button class="submit-button" type="submit">Criar minha conta</button>
+      <button class="min-h-[2.85rem] border-0 rounded-[0.55rem] cursor-pointer text-white font-extrabold bg-[#2563eb] transition-[background,transform] duration-150 ease-out hover:bg-[#1d4ed8] hover:-translate-y-px" type="submit">Criar minha conta</button>
 
-      <p class="login-link">
+      <p class="m-0 text-[#94a3b8] text-[0.82rem] text-center">
         Já possui uma conta?
-        <button type="button" (click)="goToLogin()">Voltar para o login</button>
+        <button class="border-0 p-0 cursor-pointer text-[#60a5fa] font-bold bg-transparent hover:text-[#bfdbfe] hover:underline" type="button" (click)="goToLogin()">Voltar para o login</button>
       </p>
     </form>
   </section>

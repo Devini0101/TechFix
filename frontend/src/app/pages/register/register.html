@@ -169,12 +169,14 @@
         <p class="m-0 border border-[#166534] rounded-[0.55rem] p-3 text-[#bbf7d0] text-[0.8rem] bg-[rgba(20,83,45,0.36)]" role="status">{{ successMessage }}</p>
       }
 
-      <button class="min-h-[2.85rem] border-0 rounded-[0.55rem] cursor-pointer text-white font-extrabold bg-[#2563eb] transition-[background,transform] duration-150 ease-out hover:bg-[#1d4ed8] hover:-translate-y-px" type="submit">Criar minha conta</button>
-
-      <p class="m-0 text-[#94a3b8] text-[0.82rem] text-center">
-        Já possui uma conta?
-        <button class="border-0 p-0 cursor-pointer text-[#60a5fa] font-bold bg-transparent hover:text-[#bfdbfe] hover:underline" type="button" (click)="goToLogin()">Voltar para o login</button>
-      </p>
+      <div id="footer" class="flex flex-col gap-3">
+        <button class="min-h-[2.85rem] w-full border-0 rounded-[0.55rem] cursor-pointer text-black font-extrabold bg-white transition-[background,transform] duration-150 ease-out hover:bg-gray-900 hover:text-white hover:-translate-y-px" type="submit">Criar minha conta</button>
+  
+        <p class="m-0 text-[#94a3b8] text-[0.82rem] text-center">
+          Já possui uma conta?
+          <button class="border-0 p-0 cursor-pointer text-[#60a5fa] font-bold bg-transparent hover:text-[#bfdbfe] hover:underline" type="button" (click)="goToLogin()">Voltar para o login</button>
+        </p>
+      </div>
     </form>
   </section>
 </main>

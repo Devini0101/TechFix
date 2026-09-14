@@ -1,0 +1,118 @@
+<div class="bg-gray-900 w-screen h-screen flex overflow-hidden">
+    <app-sidebar></app-sidebar>
+    <div id="content" class="flex w-full h-full flex-col overflow-y-auto">
+        <header class="h-20 shrink-0 flex flex-row items-center px-10 justify-between border-b border-gray-600 w-full">
+            <input type="text"
+            class="h-10 w-[50%] flex px-5 text-gray-200 bg-gray-800 rounded-3xl"
+            placeholder="Pesquise orçamentos, clientes...">
+            <div id="icons "class="flex justify-between px-2 w-20">
+                <i class="fas fa-bell text-lg w-6 text-center text-gray-400 "></i>
+                <i class="fas fa-gear text-lg w-6 text-center text-gray-400 "></i>
+            </div>
+        </header>
+        <div id="title" class="h-20 shrink-0 w-full flex flex-col p-10 gap-3 mb-8">
+            <p class="text-gray-300 font-semibold text-4xl">Orçamento #0042</p>
+            <p class="text-gray-400">Troca de tela e bateria - Samsung Galaxy S23</p>
+        </div>
+        <div class="flex flex-col w-full p-10">
+            <div class="flex w-full h-full flex-row gap-5">
+                <div class="flex w-full h-full flex-col gap-5">
+                    <div class="w-full h-auto p-8 flex jus flex-col gap-5 bg-gray-700 border-[1px] border-gray-600 rounded rounded-2xl">
+                        <p class="text-white font-semibold text-lg">Informações do Serviço</p>
+                        <div class="h-[1px] bg-gray-600"></div>
+                        <div class="grid grid-cols-2">
+                            <div class="col-span-1 flex flex-col h-full gap-1">
+                                <p class="text-gray-400 font-mono font-semibold">Cliente</p>
+                                <p class="text-blue-100 font-semibold">Ana Paula Ferreira</p>
+                                <p class="text-gray-200 text-sm">CPF: 123.456.789-00</p>
+                            </div>
+                            <div class="col-span-1 flex flex-col h-full gap-1">
+                                <p class="text-gray-400 font-mono font-semibold">Equipamento</p>
+                                <p class="text-blue-100 font-semibold">Samsung Galaxy S23</p>
+                                <p class="text-gray-200 text-sm">S/N: SM-S911B-88213</p>
+                            </div>
+                        </div>
+                        <div id="description" class="w-full h-20 flex flex-col gap-2">
+                            <p class="text-gray-400 font-mono font-semibold">Descrição do Problema</p>
+                            <div class="w-full h-30 bg-gray-900 rounded-xl p-5">
+                                <p class="text-gray-300 text-sm">Tela trincada após queda e bateria descarregando rápido demais.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full h-auto">
+                        <div class="bg-gray-800 w-full h-auto rounded-t-2xl border border-gray-600 px-10 py-5 ">
+                            <p class="text-gray-200 text-xl font-semibold">Informações do orçamento</p>
+                        </div>
+                        <div class="w-full h-auto flex flex-col px-10 py-5 bg-gray-700 gap-8 rounded-b-2xl">
+                            <div class="grid grid-cols-2 w-full h-auto">
+                                <div class="cols-span-1 flex flex-row w-full h-auto gap-5">
+                                    <div class="border-gray-500 border p-3 rounded-xl w-auto h-auto">
+                                        <p class="fas fa-screwdriver-wrench text-gray-300"></p>
+                                    </div>
+                                    <div class="w-full h-auto flex flex-col">
+                                            <p class="text-gray-300 font-semibold text-lg">Troca de tela</p>
+                                            <p class="text-gray-400 text-md">Peça original + mão de obra</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1 flex flex-col items-end text-right font-mono">
+                                    <p class="text-gray-400">2h x R$75,00</p>
+                                    <p class="text-gray-300">R$150,00</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 w-full h-auto">
+                                <div class="cols-span-1 flex flex-row w-full h-auto gap-5">
+                                    <div class="border-gray-500 border p-3 rounded-xl w-auto h-auto">
+                                        <p class="fas fa-screwdriver-wrench text-gray-300"></p>
+                                    </div>
+                                    <div class="w-full h-auto flex flex-col">
+                                            <p class="text-gray-300 font-semibold text-lg">Substituição de bateria</p>
+                                            <p class="text-gray-400 text-md">Bateria original 3900mAh</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1 flex flex-col items-end text-right font-mono">
+                                    <p class="text-gray-400">1h x R$75,00</p>
+                                    <p class="text-gray-300">R$225,00</p>
+                                </div>
+                            </div>
+                    </div>
+
+                    </div>
+                </div>
+                <div class="w-[30%] h-auto p-8 bg-gray-800 flex flex-col rounded-2xl border gap-5 border-gray-600">
+                    <p class="text-gray-200 font-semibold text-xl">Resumo</p>
+                    <div id="infos" class="flex flex-col w-full gap-2 h-auto">
+                        <div class="flex flex-row justify-between text-gray-300 text-[16px]">
+                            <p>Subtotal</p>
+                            <p>R$ 375,00</p>
+                        </div>
+                        <div class="flex flex-row justify-between text-gray-300 text-[16px]">
+                            <p>Taxas</p>
+                            <p>R$ 18,75</p>
+                        </div>
+                        <div class="flex flex-row justify-between text-gray-300 text-[16px]">
+                            <p>Frete</p>
+                            <p>R$ 25,00</p>
+                        </div>
+                    </div>
+                    <div class="h-px bg-gray-400 w-full"></div>
+                    <div class="flex flex-row justify-between items-center w-full h-auto">
+                        <p class="text-gray-200 text-xl font-semibold">Total</p>
+                        <p class="text-white text-2xl font-bold">R$ 418,75</p>
+                    </div>
+                    <div class="flex flex-col w-full mt-10 gap-2 h-auto">
+                        <button class="w-full h-10 bg-white text-blue-950 font-semibold rounded-md flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i>
+                            Aceitar e pagar
+                        </button>
+                        <button class="w-full h-10 border border-white text-white font-semibold rounded-md flex items-center justify-center gap-2">
+                            <i class="fas fa-circle-xmark"></i>
+                            Recusar
+                        </button>
+                    </div>
+                    <p class="text-center text-[12px] text-gray-400">Ao aprovar o orçamento, você concorda com os Termos de Serviço e autoriza o início do processo de reparo imediatamente</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

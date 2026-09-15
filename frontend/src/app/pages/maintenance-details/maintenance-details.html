@@ -1,10 +1,10 @@
 @if (details(); as order) {
 <div class="h-screen text-slate-200 font-sans">
-    <!-- Header / Top Bar -->
+    <!-- Header  -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
             <div class="text-slate-400 text-xs font-semibold mb-1 tracking-wide uppercase">
-                Ordens de Serviço > OS #{{ order.id }}
+                Manutenção > #{{ order.id }}
             </div>
             <div class="flex items-center gap-3">
 
@@ -16,12 +16,12 @@
                     <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-white scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
                 </button>
 
-                <h1 class="text-3xl font-bold text-white">Ordem de Serviço <span class="text-slate-500 font-mono text-2xl">#{{ order.id }}</span></h1>
+                <h1 class="text-3xl font-bold text-white">Manutenção <span class="text-slate-500 font-mono text-2xl">#{{ order.id }}</span></h1>
 
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 border border-slate-700 text-slate-300"
                 >
                     <span class="w-2 h-2 rounded-full mr-2"
-                    [class]="'bg-[' + order.statusColor + ']'" >
+                    [style.backgroundColor]="order.statusColor || '#94a3b8'" >
                     </span>
                     {{ order.statusCode || 'N/A' }}
                 </span>
@@ -40,7 +40,6 @@
         </div>
     </div>
 
-    <!-- Main Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
         <!-- col da esquerda (Infos e Valores) -->
@@ -50,32 +49,6 @@
                 <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-white">
                     <i class="fa-regular fa-clipboard text-slate-400"></i> Informações Gerais e Responsáveis
                 </h3>
-
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
-                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Data de Criação</p>
-                        <!-- Supondo uso do DatePipe do Angular -->
-                        <p class="text-sm font-semibold text-slate-300">{{ order.createdAt | date:'dd/M/yyyy HH:mm' }}</p>
-                    </div>
-                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
-                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Categoria</p>
-                        <p class="text-sm font-semibold text-slate-300">{{ order.categoryCode || 'Não categorizado' }}</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-950/50 rounded-lg p-4 border border-slate-800/50 mb-6 flex justify-between items-center">
-                    <div>
-                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Funcionário Responsável</p>
-                        <p class="font-semibold text-slate-200">
-                            @if (order.responsibleEmployeeName) {
-                                {{ order.responsibleEmployeeName }}
-                            } @else {
-                                <span class="text-slate-500 italic">Aguardando atribuição</span>
-                            }
-                        </p>
-                    </div>
-                    <i class="fa-solid fa-user-gear text-slate-600 text-xl"></i>
-                </div>
 
                 <div class="mb-4">
                     <div class="flex justify-between items-end mb-1">
@@ -89,6 +62,33 @@
                     <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Falha Relatada</p>
                     <p class="text-sm text-slate-300 leading-relaxed">{{ order.itemDefect }}</p>
                 </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Data de Criação</p>
+                        <!-- Supondo uso do DatePipe do Angular -->
+                        <p class="text-sm font-semibold text-slate-300">{{ order.createdAt | date:'dd/M/yyyy HH:mm' }}</p>
+                    </div>
+                    <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Categoria</p>
+                        <p class="text-sm font-semibold text-slate-300">{{ order.categoryCode || 'Não categorizado' }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/50 rounded-lg p-4 border border-slate-800/50 mt-4 mb-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Funcionário Responsável</p>
+                        <p class="font-semibold text-slate-200">
+                            @if (order.responsibleEmployeeName) {
+                                {{ order.responsibleEmployeeName }}
+                            } @else {
+                                <span class="text-slate-500 italic">Aguardando atribuição</span>
+                            }
+                        </p>
+                    </div>
+                    <i class="fa-solid fa-user-gear text-slate-600 text-xl"></i>
+                </div>
+
             </div>
 
             <!-- Card 2: Orçamento e Valores -->
@@ -168,7 +168,7 @@
                             <span class="text-xs text-slate-500">{{ order.createdAt | date:'dd/MMM HH:mm' }}</span>
                         }
                     </div>
-                    <p class="text-xs text-slate-400">Ordem de serviço registrada no sistema, aguardando orçamento.</p>
+                    <p class="text-xs text-slate-400">Manutenção registrada no sistema, aguardando orçamento.</p>
                 </div>
 
                 <!-- 2. QUOTING (Em Orçamento) -->
@@ -231,7 +231,7 @@
                         }
                     </div>
                     <p class="text-xs" [class.text-slate-400]="!isPending('WAITING_APPROVAL')" [class.text-slate-500]="isPending('WAITING_APPROVAL')" [class.opacity-50]="isPending('WAITING_APPROVAL')">
-                        Aguardando aprovação de ordem de serviço.
+                        Aguardando aprovação de manutenção.
                     </p>
                 </div>
 
@@ -246,7 +246,7 @@
                             <h4 class="font-bold text-sm text-red-200">Rejeitado</h4>
                             <span class="text-[10px] font-bold tracking-wider text-red-400 uppercase">Encerrado</span>
                         </div>
-                        <p class="text-xs text-slate-400">Ordem de serviço rejeitada.</p>
+                        <p class="text-xs text-slate-400">Solicitação de manutenção rejeitada.</p>
                     </div>
                 } @else {
                     <!-- 4A. APPROVED (Aprovado) -->
@@ -277,7 +277,7 @@
                             }
                         </div>
                         <p class="text-xs" [class.text-slate-400]="!isPending('APPROVED')" [class.text-slate-500]="isPending('APPROVED')" [class.opacity-50]="isPending('APPROVED')">
-                            Ordem de serviço aprovada, pós orçamento.
+                            Solicitação de manutenção aprovada, pós orçamento.
                         </p>
                     </div>
 

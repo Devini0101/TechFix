@@ -2,12 +2,14 @@
     <div class="flex items-center">
         <h2 class="font-bold text-2xl">Gestão de Serviços e Manutenção</h2>
         <div class="ml-auto">
-            <div class="flex justify-center items-center rounded-md bg-gray-600 p-3 hover:scale-105 hover:bg-gray-400 hover:cursor-pointer hover:text-gray-50">
-                <button (click)="openCreateModal()" class="flex items-center gap-2 justify-center hover:cursor-pointer">
-                    <i class="fa-regular fa-square-plus"></i>
-                    Criar nova Ordem de Serviço
-                </button>
-			</div>
+
+                <button
+                (click)="openCreateModal()"
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl p-4 flex items-center justify-center gap-3 font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98] hover:cursor-pointer">
+                <i class="fa-solid fa-plus text-lg"></i>
+                Criar Nova Solicitação
+            </button>
+
         </div>
     </div>
 

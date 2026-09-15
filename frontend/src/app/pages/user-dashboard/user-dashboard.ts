@@ -1,64 +1,80 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { MaintenanceDetailsResponse, MaintenanceRequest, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
 import { MaintenanceRequestModal } from '../../components/modal/maintenance-request-modal/maintenance-request-modal';
+import { RouterLink } from "@angular/router";
 
 @Component({
-  selector: 'app-user-dashboard',
-  imports: [ServiceRequestModal, MaintenanceRequestModal],
-  templateUrl: './user-dashboard.html',
-  styleUrl: './user-dashboard.css',
+	selector: 'app-user-dashboard',
+	imports: [ServiceRequestModal, MaintenanceRequestModal, RouterLink],
+	templateUrl: './user-dashboard.html',
+	styleUrl: './user-dashboard.css',
 })
+
 export class UserDashboard implements OnInit {
-  @Input() name: string | null = '';
+  	@Input() name: string | null = '';
 	isCreateModalOpen = false;
-  isDetailModalOpen = false;
+  	isDetailModalOpen = false;
 
-  categories: string[] = [];
-  selectedRequestDetails = signal<MaintenanceDetailsResponse | null>(null);
-  maintenanceRequests = signal<MaintenanceDetailsResponse[] | null>(null);
+	categories: string[] = [];
+	selectedRequestDetails = signal<MaintenanceDetailsResponse | null>(null);
+	maintenanceRequests = signal<MaintenanceDetailsResponse[] | null>(null);
 
-  private maintenanceService = inject(MaintenanceRequestService);
+	runningMaintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 
-  ngOnInit(): void {
-    console.log("entrou no ng on init");
-    this.fetchRequests();
-  }
+  	private maintenanceService = inject(MaintenanceRequestService);
 
-  fetchRequests(): void {
-    this.maintenanceService.getMaintenances("OPEN").subscribe({
-      next: (data) => {
-        this.maintenanceRequests.set(data);
-      },
-      error: (err) => {
-        console.error('erro ao buscar', err);
-      }
-    });
-  }
+	ngOnInit(): void {
+		console.log("entrou no ng on init");
+		this.fetchRequests();
+		this.fetchRunningMaintenances();
+	}
 
-  openCreateModal(): void {
-    this.isCreateModalOpen = true;
-  }
+	fetchRequests(): void {
+		this.maintenanceService.getMaintenances("OPEN").subscribe({
+		next: (data) => {
+			this.maintenanceRequests.set(data);
+		},
+		error: (err) => {
+			console.error('erro ao buscar', err);
+		}
+		});
+	}
 
-  closeCreateModal(): void {
-    this.isCreateModalOpen = false;
-    this.fetchRequests();
-  }
+	openCreateModal(): void {
+		this.isCreateModalOpen = true;
+	}
 
-  openDetailModal(id: number): void {
-    this.maintenanceService.getById(id).subscribe({
-      next: (details) => {
-        this.selectedRequestDetails.set(details);
-        this.isDetailModalOpen = true;
-      },
-      error: (err) => {
-        console.error('Erro ao buscar detalhes:', err);
-      },
-    });
-  }
+	closeCreateModal(): void {
+		this.isCreateModalOpen = false;
+		this.fetchRequests();
+	}
 
-  closeDetailModal(): void {
-    this.isDetailModalOpen = false;
-    this.selectedRequestDetails.set(null);
-  }
+	openDetailModal(id: number): void {
+		this.maintenanceService.getById(id).subscribe({
+			next: (details) => {
+			this.selectedRequestDetails.set(details);
+			this.isDetailModalOpen = true;
+			},
+			error: (err) => {
+			console.error('Erro ao buscar detalhes:', err);
+			},
+		});
+	}
+
+	closeDetailModal(): void {
+		this.isDetailModalOpen = false;
+		this.selectedRequestDetails.set(null);
+	}
+
+	private fetchRunningMaintenances() : void {
+		this.maintenanceService.getMaintenances("IN_PROGRESS").subscribe({
+			next: (data) => {
+				this.runningMaintenances.set(data);
+			},
+			error: (error) => {
+				console.error(error);
+			},
+		});
+  	}
 }

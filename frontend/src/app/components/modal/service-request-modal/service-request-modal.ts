@@ -29,7 +29,7 @@ export class ServiceRequestModal implements OnInit {
 
   protected readonly requestForm = this.formBuilder.nonNullable.group({
     item: ['', [Validators.required, Validators.maxLength(255)]],
-    itemDescription: ['', [Validators.required]],
+    itemDescription: [''],
     itemDefect: ['', [Validators.required]],
     categoryCode: ['', [Validators.required, Validators.min(1)]],
   });

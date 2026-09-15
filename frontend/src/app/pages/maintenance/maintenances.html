@@ -168,6 +168,9 @@
                 >
                     Todos
                 </p>
+                @if (totalSum() > 0){
+                    <p class="bg-gray-700 text-sm font-bold rounded-lg text-gray-300 px-0.5">{{totalSum()}}</p>
+                }
             </button>
         </div>
     </div>

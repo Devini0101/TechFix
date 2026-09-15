@@ -1,7 +1,7 @@
 <div id="main-screen" class="flex flex-row gap-5 bg-gray-900">
     <app-sidebar></app-sidebar>
-    <div id="content" class="flex-1">
-        <div id="search-bar" class="flex flex-row w-full h-auto p-3 justify-between items-center">
+    <div id="content" class="flex-1 p-5 ">
+        <div id="search-bar" class="flex flex-row w-full h-auto justify-between items-center">
             <input 
                 class="bg-gray-800 h-10 w-[30%] rounded-xl text-white p-3 text-sm border border-gray-600"
                 placeholder="Search users..."
@@ -17,5 +17,138 @@
                 </div>
             </div>
         </div>
+        <div id="header" class="w-full h-auto flex flex-row justify-between items-center">
+            <div id="title" class="flex flex-col mt-10 gap-1">
+                <p class="text-white text-3xl font-bold">Equipe</p>
+                <p class='text-gray-400 text-sm font-mono'>Gerenciamento de funcionários</p>
+            </div>
+            <div id="buttons" class="flex flex-row gap-3">
+                <button
+                    class="w-40 h-10 bg-white text-sm transition-transform hover:scale-105 text-gray-900 font-semibold rounded-lg">+ Novo Funcionário</button>
+            </div>
+        </div>
+        <div id="cards" class="grid grid-cols-3 h-auto w-full gap-5 mt-5">
+            <div class=" col-span-1 bg-gray-800 w-auto h-auto p-5 rounded-xl flex flex-row justify-between items-center">
+                <div class=" flex flex-col">
+                    <p class="text-gray-500 text-sm font-mono">TOTAL DE FUNCIONÁRIOS</p>
+                    <p class="text-white text-3xl font-bold">24</p>
+                    <p class="text-gray-400 text-sm font-semibold">100% ativos no sistema</p>
+                </div>
+                <div class="bg-gray-900 p-3 rounded-xl w-auto h-auto">
+                    <p class="fas fa-sharp fa-thin fa-people-group text-white"></p>
+                </div>
+            </div>
+            <div class=" col-span-1 bg-gray-800 w-auto h-auto p-5 rounded-xl flex flex-row justify-between items-center">
+                <div class=" flex flex-col">
+                    <p class="text-gray-500 text-sm font-mono">TÉCNICOS EM OPERAÇÃO</p>
+                    <p class="text-white text-3xl font-bold">24</p>
+                    <p class="text-gray-400 text-sm font-semibold">18 bancada, 6 externos</p>
+                </div>
+                <div class="bg-gray-900 p-3 rounded-xl w-auto h-auto">
+                    <p class="fas fa-sharp fa-thin fa-gear text-white"></p>
+                </div>
+            </div>
+            <div class=" col-span-1 bg-gray-800 w-auto h-auto p-5 rounded-xl flex flex-row justify-between items-center">
+                <div class=" flex flex-col">
+                    <p class="text-gray-500 text-sm font-mono">AUSÊNCIAS E FÉRIAS</p>
+                    <p class="text-white text-3xl font-bold">4</p>
+                    <p class="text-gray-400 text-sm font-semibold">Retorno previsto em breve</p>
+                </div>
+                <div class="bg-gray-900 p-3 rounded-xl w-auto h-auto">
+                    <p class="fas fa-sharp fa-thin fa-calendar text-white"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="search" class="w-full h-auto mt-5 p-5 gap-5 flex flex-row justify-between items-center bg-gray-800 rounded-xl">
+            <div class="relative flex-1">
+                <i class="fas fa-magnifying-glass text-gray-400 text-sm absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input
+                    type="text"
+                    placeholder="Buscar por nome, cargo ou email..."
+                    class="w-full h-11 pl-10 pr-3 rounded-lg bg-gray-900 text-white text-sm placeholder-gray-400">
+            </div>
+            
+            <div id="filters" class="flex flex-row h-auto w-auto gap-5">
+                <div class="bg-gray-900 p-3 text-sm flex flex-row gap-2 rounded-lg">
+                    <p class="text-gray-400 font-semibold">Status:</p>
+                    <select name="oi" class="text-white bg-gray-900 rounded-lg font-semibold">
+                        <option value="">Todos os status</option>
+                        <option value="tecnico">Ativo</option>
+                        <option value="gerente">Inativo</option>
+                        <option value="administrativo">Suspenso</option>
+                    </select>
+    
+                </div>
+                <div class="bg-gray-900 p-3 text-sm flex flex-row gap-2 rounded-lg">
+                    <p class="text-gray-400 font-semibold">Setor:</p>
+                    <select name="oi" class="text-white bg-gray-900 rounded-lg font-semibold">
+                        <option value="">Todos os setores</option>
+                        <option value="tecnico">Administrativo</option>
+                        <option value="gerente">Operação</option>
+                        <option value="administrativo">Suporte</option>
+                    </select>
+    
+                </div>
+            </div>
+        </div>
+        <div class="w-full mt-5 bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+            <table class="w-full text-sm text-left border-collapse">
+                <thead class="bg-gray-900">
+                    <tr>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">FUNCIONÁRIO</th>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">SETOR</th>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">CARGO</th>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">STATUS</th>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">ORDENS ATIVAS</th>
+                        <th scope="col" class="px-4 py-3 text-gray-400 font-mono font-semibold text-sm uppercase tracking-wide">AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-t border-gray-700 hover:bg-gray-700/40 transition-colors">
+                        <th scope="row" class="px-4 py-3">
+                            <div class="flex flex-col">
+                                <span class="text-white font-semibold">Vinicius Eduardo</span>
+                                <span class="text-gray-400 text-xs font-normal">vinicius.eduardo@techfix.com</span>
+                            </div>
+                        </th>
+                        <td class="px-4 py-3 text-gray-300">Admin</td>
+                        <td class="px-4 py-3 text-gray-300">Gerente</td>
+                        <td class="px-4 py-3">
+                            <span class="bg-green-500/15 text-green-400 px-2 py-1 rounded-full text-xs font-semibold">Ativo</span>
+                        </td>
+                        <td class="px-4 py-3 text-gray-300">5</td>
+                        <td class="px-4 py-3">
+                            <button class=" hover:bg-white/10 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors">
+                                <i class="fas fa-pen mr-2"></i>Editar</button>
+                            <button class=" hover:bg-white/10 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors ml-2">
+                                <i class="fas fa-trash mr-2"></i>Excluir</button>
+                        </td>
+                    </tr>
+                    <tr class="border-t border-gray-700 hover:bg-gray-700/40 transition-colors">
+                        <th scope="row" class="px-4 py-3">
+                            <div class="flex flex-col">
+                                <span class="text-white font-semibold">Letícia Burlinski</span>
+                                <span class="text-gray-400 text-xs font-normal">leticia.burlinski@techfix.com</span>
+                            </div>
+                        </th>
+                        <td class="px-4 py-3 text-gray-300">TI</td>
+                        <td class="px-4 py-3 text-gray-300">Programadora</td>
+                        <td class="px-4 py-3">
+                            <span class="bg-green-500/15 text-green-400 px-2 py-1 rounded-full text-xs font-semibold">Ativo</span>
+                        </td>
+                        <td class="px-4 py-3 text-gray-300">5</td>
+                        <td class="px-4 py-3">
+                            <button class=" hover:bg-white/10 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors">
+                                <i class="fas fa-pen mr-2"></i>Editar</button>
+                            <button class=" hover:bg-white/10 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors ml-2">
+                                <i class="fas fa-trash mr-2"></i>Excluir</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
     </div>
 </div>

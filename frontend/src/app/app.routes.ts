@@ -6,10 +6,12 @@ import { authGuard } from './core/guards/auth-guard';
 import { Maintenances } from './pages/maintenance/maintenances';
 import { Register } from './pages/register/register';
 import { MaintenanceDetails } from './pages/maintenance-details/maintenance-details';
+import { Users } from './pages/users/users';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: 'users', component: Users },
 
   {
     path: '',

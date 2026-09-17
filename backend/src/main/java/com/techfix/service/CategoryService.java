@@ -1,6 +1,7 @@
 package com.techfix.service;
 
 import com.techfix.dto.request.CategoryRequestDTO;
+import com.techfix.dto.response.CategoryResponseDTO;
 import com.techfix.model.Category;
 import com.techfix.repository.CategoryRepository;
 import org.springframework.http.HttpStatus;
@@ -59,4 +60,15 @@ public class CategoryService {
         category.setActive(false);
         repository.save(category);
     }
+
+    public List<CategoryResponseDTO> getActive() {
+        List<CategoryResponseDTO> categories = repository.findByActiveTrue().stream().map(
+                c -> {
+                    return new CategoryResponseDTO(c.getId(), c.getName(),c.getCode(), true);
+                }
+        ).toList();
+
+        return categories;
+    }
+
 }

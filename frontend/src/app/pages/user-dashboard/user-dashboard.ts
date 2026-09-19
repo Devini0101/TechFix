@@ -3,10 +3,11 @@ import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../cor
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
 import { MaintenanceRequestModal } from '../../components/modal/maintenance-request-modal/maintenance-request-modal';
 import { RouterLink } from "@angular/router";
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-user-dashboard',
-	imports: [ServiceRequestModal, MaintenanceRequestModal, RouterLink],
+	imports: [ServiceRequestModal, MaintenanceRequestModal, RouterLink, DatePipe],
 	templateUrl: './user-dashboard.html',
 	styleUrl: './user-dashboard.css',
 })
@@ -31,7 +32,7 @@ export class UserDashboard implements OnInit {
 	}
 
 	fetchRequests(): void {
-		this.maintenanceService.getMaintenances("OPEN").subscribe({
+		this.maintenanceService.getMaintenances("ALL").subscribe({
 		next: (data) => {
 			this.maintenanceRequests.set(data);
 		},

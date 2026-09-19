@@ -29,6 +29,7 @@ export interface MaintenanceDetailsResponse {
   price: number | null;
   categoryCode: string | null;
   statusCode: string | null;
+  statusName: string | null;
   statusColor: string | null;
   createdAt: string; // java local time vai vir como string
   orientation: string | null;

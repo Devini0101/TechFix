@@ -57,9 +57,6 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             "AND m.status.code IN ('OPEN', 'WAITING_APPROVAL')")
     List<MaintenanceRequest> findAllPending();
 
-    //list all
-    List<MaintenanceRequest> findByDeletedAtIsNull();
-
     //list by status
     List<MaintenanceRequest> findByStatusCodeAndDeletedAtIsNull(String statusCode);
 
@@ -68,4 +65,8 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     //list by client id and status
     List<MaintenanceRequest> findByStatusCodeAndClientIdAndDeletedAtIsNull(String statusCode, Long clientId);
+
+    List<MaintenanceRequest> findByDeletedAtIsNullOrderByCreatedAtAsc();
+
+    List<MaintenanceRequest> findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(Long clientId);
 }

@@ -26,9 +26,7 @@ export class UserDashboard implements OnInit {
   	private maintenanceService = inject(MaintenanceRequestService);
 
 	ngOnInit(): void {
-		console.log("entrou no ng on init");
 		this.fetchRequests();
-		this.fetchRunningMaintenances();
 	}
 
 	fetchRequests(): void {
@@ -68,14 +66,5 @@ export class UserDashboard implements OnInit {
 		this.selectedRequestDetails.set(null);
 	}
 
-	private fetchRunningMaintenances() : void {
-		this.maintenanceService.getMaintenances("IN_PROGRESS").subscribe({
-			next: (data) => {
-				this.runningMaintenances.set(data);
-			},
-			error: (error) => {
-				console.error(error);
-			},
-		});
-  	}
+
 }

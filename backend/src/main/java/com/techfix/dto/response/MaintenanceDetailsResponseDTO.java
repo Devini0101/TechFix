@@ -18,7 +18,8 @@ public record MaintenanceDetailsResponseDTO (
         String statusColor,
         LocalDateTime createdAt,
         String orientation,
-        String responsibleEmployeeName
+        String responsibleEmployeeName,
+        String clientName
 ) {
     public MaintenanceDetailsResponseDTO(MaintenanceRequest m) {
         this(
@@ -34,7 +35,8 @@ public record MaintenanceDetailsResponseDTO (
                 m.getStatus() != null ? m.getStatus().getColor() : null,
                 m.getCreatedAt(),
                 m.getOrientation(),
-                m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null
+                m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null,
+                m.getClient() != null ? m.getClient().getName() : null
         );
     }
 }

@@ -34,6 +34,7 @@ export interface MaintenanceDetailsResponse {
   createdAt: string; // java local time vai vir como string
   orientation: string | null;
   responsibleEmployeeName: string | null;
+  clientName: string | null;
 }
 
 export interface Summary {

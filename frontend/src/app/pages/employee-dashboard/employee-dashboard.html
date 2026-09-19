@@ -1,50 +1,106 @@
-<div class="flex gap-8">
-  <div class="bg-gray-900 rounded-lg p-6">
-    <p class="text-gray-400 text-sm">SOLICITAÇÕES ATIVAS</p>
-    <h2 class="text-white text-3xl font-bold">24</h2>
-  </div>
+<div class="min-h-screen text-slate-100">
+	<h2 class="font-bold text-3xl">Dashboard</h2>
+	<p class="text-slate-400 text-sm mt-1">Acompanhe as manutenções pendentes.</p>
 
-  <div class="bg-gray-900 rounded-lg p-6">
-    <p class="text-gray-400 text-sm">ORÇAMENTOS PENDENTES</p>
-    <h2 class="text-white text-3xl font-bold">7</h2>
-  </div>
+	<div class="flex items-center justify-end gap-6 mt-3">
+		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
+			<p class="text-gray-400 text-sm uppercase">Solicitações ativas</p>
+			<h2 class="text-white text-3xl font-bold">
+				@if (dashboardSummary()?.inMaintenance){
+                    {{dashboardSummary()?.inMaintenance}}
+                } @else {
+                    0
+                }
+			</h2>
+		</div>
 
-  <div class="bg-gray-900 rounded-lg p-6">
-    <p class="text-gray-400 text-sm">SERVIÇOS FINALIZADOS</p>
-    <h2 class="text-white text-3xl font-bold">142</h2>
-  </div>
+		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
+			<p class="text-gray-400 text-sm uppercase">Orçamentos Pendentes</p>
+			<h2 class="text-white text-3xl font-bold">
+				@if (dashboardSummary()?.pendingBudgets) {
+                    {{ dashboardSummary()?.pendingBudgets }}
+                } @else {
+                    0
+                }
+			</h2>
+		</div>
+
+		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
+			<p class="text-gray-400 text-sm uppercase">Serviços Finalizados</p>
+			<h2 class="text-white text-3xl font-bold">
+				 @if (dashboardSummary()?.finished){
+                    {{dashboardSummary()?.finished}}
+                } @else {
+                    0
+                }
+			</h2>
+		</div>
+	</div>
+
+	<div class="pt-4">
+		<div class="flex items-center justify-between mb-4">
+			<h2 class="text-lg font-semibold text-slate-200">Pendentes de Orçamento:</h2>
+			<button routerLink="/maintenances" class="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors hover:cursor-pointer">Ver todos</button>
+		</div>
+
+		<div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900 shadow-xl">
+			<table class="w-full text-left border-collapse">
+				<thead class="bg-slate-800/50 text-xs uppercase tracking-wider text-slate-400 font-semibold">
+					<tr>
+						<th class="px-6 py-4">Item</th>
+						<th class="px-6 py-4">Descrição</th>
+						<th class="px-6 py-4">Status</th>
+						<th class="px-6 py-4">Criado em</th>
+						<th class="px-6 py-4">Cliente</th>
+						<th class="px-6 py-4 text-center">Ações</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-slate-800/60 text-sm">
+					@for (maintenance of maintenanceRequests(); track maintenance.id) {
+						<tr class="hover:bg-slate-800/30 transition-colors">
+
+							<td class="px-6 py-4 font-medium text-white">{{ maintenance.item }}</td>
+							<td class="px-6 py-4 text-slate-400 max-w-xs truncate">{{ maintenance.itemDescription }}</td>
+
+							<td class="px-6 py-4">
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 border"
+									[style.color]="maintenance.statusColor"
+									[style.border-color]="maintenance.statusColor"
+									[style.background-color]="maintenance.statusColor + '15'"
+								>
+									{{ maintenance.statusName ? maintenance.statusName : maintenance.statusCode }}
+								</span>
+							</td>
+
+							<td class="px-6 py-4 text-slate-400 whitespace-nowrap">
+								{{ maintenance.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+							</td>
+
+							<td class="px-6 py-4 text-slate-400 whitespace-nowrap truncate">{{ maintenance.clientName}}</td>
+
+							<td class="px-6 py-4 text-right whitespace-nowrap flex gap-2 items-center">
+								<a [routerLink]="['/maintenances', maintenance.id]"
+								class="inline-flex items-center justify-center text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700/60 transition-colors">
+									Ver Detalhes
+								</a>
+								@if (maintenance.statusCode == "OPEN") {
+									<a class="inline-flex items-center justify-center text-xs font-semibold text-blue-300 bg-slate-800 hover:bg-slate-700 hover:text-blue-400 hover:cursor-pointer px-3 py-1.5 rounded-lg border border-blue-400 hover:border-blue-500 transition-colors">
+										Efetuar Orçamento
+									</a>
+								}
+							</td>
+						</tr>
+					} @empty {
+						<tr>
+							<td colspan="5" class="px-6 py-12 text-center text-slate-500">
+								Nenhuma manutenção pendente de orçamento encontrada.
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
 </div>
 
-<div class="bg-gray-900 mt-8 border border-white/10 rounded-lg p-4 w-[600px]">
-  <div class="rounded-lg p-2">
-    <h2 class="text-white text-lg font-bold">Pedidos de Manutenção Recentes</h2>
-   <div class="flex justify-between mt-6 bg-gray-800 rounded-lg p-2 px-4 w-full">
-  <p class="text-white">TICKET</p>
-  <p class="text-white">EQUIPAMENTO</p>
-  <p class="text-white">STATUS</p>
-  <p class="text-white">DATA</p>
-</div>
-  </div>
-</div>
-
-<div class="flex gap-8">
-  <div class="bg-gray-900 rounded-lg p-6 flex flex-col justify-between space-y-4">
-    <div>
-      <p class="text-gray-400 text-sm font-semibold tracking-wider">REPARO IMEDIATO?</p>
-      <p class="text-white text-3xl font-bold mt-1">Registre um chamado de emergência.</p>
-    </div>
-    <button class="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2.5 rounded-md transition-colors w-fit">
-      Abrir Chamado
-    </button>
-  </div>
-</div>
-
-<div class="flex gap-8">
-  <div class="bg-gray-900 rounded-lg p-6 flex flex-col justify-between space-y-4">
-    <div>
-      <p class="text-gray-400 text-sm font-semibold tracking-wider">FINANCIAL OVERVIEW</p>
-      <h2 class="text-white text-3xl font-bold mt-1">Q4 Budget Utilization: 78%</h2>
-    </div>
-     <p class="text-gray-400 text-sm font-semibold tracking-wider">Allocated: $120,000  Remaining: $26,400</p>
-  </div>
-</div>

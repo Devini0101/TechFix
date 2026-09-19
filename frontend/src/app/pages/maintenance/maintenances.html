@@ -205,10 +205,11 @@
                                 <td class="px-6 py-4 font-medium text-white truncate">{{ item.item }}</td>
                                 <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border"
-                                [class]="'text-' + item.statusColor"
-                                [class]="'border-' + item.statusColor"
+                                [style.color]="item.statusColor"
+                                [style.border-color]="item.statusColor"
+                                [style.background-color]="item.statusColor + '15'"
                                 >
-                                    {{ item.statusCode }}
+                                    {{ item.statusName ? item.statusName : item.statusCode }}
                                 </span>
                                 </td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.categoryCode }}</td>

@@ -105,7 +105,7 @@ public class MaintenanceRequestService {
         List<MaintenanceRequest> maintenances;
 
         if ( statusCode == null) {
-            maintenances = requestRepository.findByDeletedAtIsNull();
+            maintenances = requestRepository.findByDeletedAtIsNullOrderByCreatedAtAsc();
         } else {
             maintenances = requestRepository.findByStatusCodeAndDeletedAtIsNull(statusCode);
         }
@@ -121,7 +121,7 @@ public class MaintenanceRequestService {
         List<MaintenanceRequest> maintenances;
 
         if ( statusCode == null) {
-            maintenances = requestRepository.findByClientIdAndDeletedAtIsNull(clientId);
+            maintenances = requestRepository.findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(clientId);
         } else {
             maintenances = requestRepository.findByStatusCodeAndClientIdAndDeletedAtIsNull(statusCode, clientId);
         }

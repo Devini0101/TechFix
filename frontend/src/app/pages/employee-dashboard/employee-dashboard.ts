@@ -17,6 +17,7 @@ export class EmployeeDashboard implements OnInit {
 
 	ngOnInit(): void {
 		this.fetchRequests();
+		this.fetchSummary();
 	}
 
 	fetchRequests() : void {
@@ -36,6 +37,7 @@ export class EmployeeDashboard implements OnInit {
 				this.dashboardSummary.set(data);
 			},
 			error: (err) => {
+				console.log(err);
 			},
 		});
 	}

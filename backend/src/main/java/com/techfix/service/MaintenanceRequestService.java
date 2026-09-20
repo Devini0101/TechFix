@@ -1,9 +1,11 @@
 package com.techfix.service;
 
+import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
+import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.Status;
@@ -13,6 +15,7 @@ import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
 import com.techfix.repository.StatusRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +63,7 @@ public class MaintenanceRequestService {
     public List<MaintenanceResponseDTO> getPendingMaintenances(Long clientId) {
         List<MaintenanceRequest> pendingMaintenances = requestRepository.findOpenAndPendingMaintenances(clientId);
 
-        List<MaintenanceResponseDTO> responseList = pendingMaintenances.stream().map(
+        return pendingMaintenances.stream().map(
                 m -> {
                     String responsibleEmployee = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
                     String categoryCode = m.getCategory().getCode();
@@ -76,30 +79,8 @@ public class MaintenanceRequestService {
                     );
                 }
         ).toList();
-        return responseList;
     }
 
-
-    public List<MaintenanceResponseDTO> getAllPending() {
-        List<MaintenanceRequest> pendingMaintenances = requestRepository.findAllPending();
-
-         return pendingMaintenances.stream()
-                .map(
-                    m -> {
-                        String employeeName = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
-                        return new MaintenanceResponseDTO(
-                                m.getId(),
-                                m.getItem(),
-                                m.getItemDescription(),
-                                m.getItemDefect(),
-                                m.getEstimatedPrice(),
-                                m.getPrice(),
-                                m.getCategory().getCode(),
-                                employeeName
-                        );
-                    }
-                ).toList();
-    }
 
     public List<MaintenanceDetailsResponseDTO> getAll(String statusCode) {
         List<MaintenanceRequest> maintenances;
@@ -111,9 +92,7 @@ public class MaintenanceRequestService {
         }
 
         return maintenances.stream().map(
-                m -> {
-                        return new MaintenanceDetailsResponseDTO(m);
-                }
+                MaintenanceDetailsResponseDTO::new
         ).toList();
     }
 
@@ -158,4 +137,21 @@ public class MaintenanceRequestService {
     }
 
 
+    @Transactional
+    public void setEstimatedBudget( BudgetRequestDTO dto, User user) {
+        MaintenanceRequest request = requestRepository.findById(dto.id())
+                .orElseThrow( () -> new EntityNotFoundException("Serviço não encontrado"));
+
+        if (!request.getStatus().getCode().equals("OPEN") && !request.getStatus().getCode().equals("QUOTED") ) {
+            throw new UpdateInvalidMaintenanceBudgetException("Não é possível alterar o orçamento de uma manuteção que não seja nova ou esteja em orçamento.");
+        }
+
+        request.setEstimatedPrice(dto.value());
+        Status quotedStatus = statusRepository.findByCode("QUOTED")
+                .orElseThrow( () -> new EntityNotFoundException("Status QUOTED não cadastrado no sistema"));
+
+        request.setStatus(quotedStatus);
+        request.setResponsibleEmployee(user);
+        requestRepository.save(request);
+    }
 }

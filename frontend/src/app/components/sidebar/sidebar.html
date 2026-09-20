@@ -38,17 +38,7 @@
                 }
             </a>
 
-            <a routerLink="/budgets" 
-               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
-               [class.justify-center]="isCollapsed"
-               [class.gap-3]="!isCollapsed">
-                <i class="fa-solid fa-money-bills text-lg w-6 text-center"></i>
-                @if (!isCollapsed) {
-                  <span class="font-medium">Orçamentos</span>
-                }
-            </a>
-
-            <a routerLink="/clients" 
+            <a routerLink="/clients"
                class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
                [class.justify-center]="isCollapsed"
                [class.gap-3]="!isCollapsed">

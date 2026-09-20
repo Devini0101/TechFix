@@ -12,7 +12,6 @@ import com.techfix.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,12 +41,10 @@ public class MaintenanceRequestController {
         User client = (User) authentication.getPrincipal();
 
         if (client.getRole().equals(UserRole.employee)) {
-            MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummary();
-            return summary;
+            return service.getMaintenancesSummary();
         }
 
-        MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummaryByClient(client.getId());
-        return summary;
+        return service.getMaintenancesSummaryByClient(client.getId());
     }
 
     @GetMapping

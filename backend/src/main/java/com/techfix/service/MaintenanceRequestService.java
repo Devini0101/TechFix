@@ -63,7 +63,7 @@ public class MaintenanceRequestService {
     public List<MaintenanceResponseDTO> getPendingMaintenances(Long clientId) {
         List<MaintenanceRequest> pendingMaintenances = requestRepository.findOpenAndPendingMaintenances(clientId);
 
-        List<MaintenanceResponseDTO> responseList = pendingMaintenances.stream().map(
+        return pendingMaintenances.stream().map(
                 m -> {
                     String responsibleEmployee = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
                     String categoryCode = m.getCategory().getCode();
@@ -79,30 +79,8 @@ public class MaintenanceRequestService {
                     );
                 }
         ).toList();
-        return responseList;
     }
 
-
-    public List<MaintenanceResponseDTO> getAllPending() {
-        List<MaintenanceRequest> pendingMaintenances = requestRepository.findAllPending();
-
-         return pendingMaintenances.stream()
-                .map(
-                    m -> {
-                        String employeeName = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
-                        return new MaintenanceResponseDTO(
-                                m.getId(),
-                                m.getItem(),
-                                m.getItemDescription(),
-                                m.getItemDefect(),
-                                m.getEstimatedPrice(),
-                                m.getPrice(),
-                                m.getCategory().getCode(),
-                                employeeName
-                        );
-                    }
-                ).toList();
-    }
 
     public List<MaintenanceDetailsResponseDTO> getAll(String statusCode) {
         List<MaintenanceRequest> maintenances;
@@ -114,9 +92,7 @@ public class MaintenanceRequestService {
         }
 
         return maintenances.stream().map(
-                m -> {
-                        return new MaintenanceDetailsResponseDTO(m);
-                }
+                MaintenanceDetailsResponseDTO::new
         ).toList();
     }
 

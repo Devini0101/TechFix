@@ -1,0 +1,112 @@
+@if (maintenanceDetails(); as details) {
+<div class="max-w-7xl mx-auto p-4 sm:p-6 text-slate-100">
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+            <h2 class="font-bold text-3xl">Orçamento</h2>
+            <p class="text-lg text-slate-400 mt-1">Solicitação #{{ details.id }}</p>
+        </div>
+
+        @if (details.statusName) {
+            <div [style.color]="details.statusColor" class="px-4 py-2 rounded-full font-semibold text-sm shadow-sm flex items-center gap-2 border">
+                <span class="w-2 h-2 rounded-full" [style.backgroundColor]="details.statusColor"></span>
+                {{ details.statusName }}
+            </div>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
+            <h3 class="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-4">
+                Detalhes do Serviço
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Item:</span>
+                    <span class="block text-base text-slate-100 font-semibold">{{ details.item }}</span>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Categoria:</span>
+                    <span class="block text-base text-slate-100">{{ details.categoryCode || 'Não informada' }}</span>
+                </div>
+            </div>
+
+            <!-- Grid Interno: Defeito e Descrição -->
+            <div class="space-y-4 mb-6">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Defeito:</span>
+                    <span class="block text-base text-slate-100">{{ details.itemDefect }}</span>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Descrição Detalhada</span>
+                    <p class="text-base text-slate-100 whitespace-pre-wrap">{{ details.itemDescription }}</p>
+                </div>
+            </div>
+
+            <!-- Grid Interno: Informações Complementares -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-700 pt-6">
+                <div>
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Cliente</span>
+                    <span class="block text-base text-slate-100">{{ details.clientName }}</span>
+                </div>
+                <div>
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Data da Solicitação</span>
+                    <span class="block text-base text-slate-100">{{ details.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                @if (details.responsibleEmployeeName) {
+                    <div class="md:col-span-2">
+                        <span class="block text-sm font-medium text-slate-400 mb-1">Técnico Responsável</span>
+                        <span class="block text-base text-slate-100">{{ details.responsibleEmployeeName }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg sticky top-6">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-white mb-1">Definir Valor</h3>
+                    <p class="text-sm text-slate-400">Preencha o valor estimado para a realização deste serviço.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex flex-col gap-2">
+                        <label for="preco" class="text-sm font-medium text-slate-300">Valor Estimado (R$)</label>
+                        <input
+                            type="text"
+                            id="preco"
+                            [formControl]="budgetValue"
+                            currencyMask
+                            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',', align: 'left' }"
+                            placeholder="R$ 0,00"
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            [class.border-red-500]="budgetValue.invalid && budgetValue.touched"
+                        />
+
+                        @if (budgetValue.invalid && budgetValue.touched) {
+                            <span class="text-sm text-red-400 mt-1">
+                                Insira um valor válido.
+                            </span>
+                        }
+                    </div>
+
+                    <button
+                        (click)="submitBudget()"
+                        class="w-full bg-slate-600 hover:bg-blue-500 text-white rounded-xl py-3 px-4 font-bold transition-all shadow-lg shadow-blue-900/20 mt-4 active:scale-95 hover:cursor-pointer"
+                        [disabled]="isSubmitting()">
+                        {{ isSubmitting() ? 'Enviando...' : 'Confirmar Orçamento' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+} @else {
+    <!-- Tela de Carregamento -->
+    <div class="flex justify-center items-center h-64 text-slate-400">
+        <p class="text-lg animate-pulse">Carregando detalhes do serviço...</p>
+    </div>
+}

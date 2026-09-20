@@ -1,4 +1,4 @@
-<div class="min-h-screen text-slate-100">
+<div class=" text-slate-100">
 	<h2 class="font-bold text-3xl">Dashboard</h2>
 	<p class="text-slate-400 text-sm mt-1">Acompanhe as manutenções pendentes.</p>
 
@@ -84,7 +84,7 @@
 									Ver Detalhes
 								</a>
 								@if (maintenance.statusCode == "OPEN") {
-									<a class="inline-flex items-center justify-center text-xs font-semibold text-blue-300 bg-slate-800 hover:bg-slate-700 hover:text-blue-400 hover:cursor-pointer px-3 py-1.5 rounded-lg border border-blue-400 hover:border-blue-500 transition-colors">
+									<a [routerLink]="['/budgets', maintenance.id]" class="inline-flex items-center justify-center text-xs font-semibold text-blue-300 bg-slate-800 hover:bg-slate-700 hover:text-blue-400 hover:cursor-pointer px-3 py-1.5 rounded-lg border border-blue-400 hover:border-blue-500 transition-colors">
 										Efetuar Orçamento
 									</a>
 								}

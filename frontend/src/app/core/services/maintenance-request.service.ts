@@ -88,4 +88,12 @@ export class MaintenanceRequestService {
     });
   }
 
+  setBudget(id: Number, budgetValue: Number  ) : Observable<unknown> {
+    const payload = {
+      id: id,
+      value: budgetValue
+    };
+    return this.http.post<void>(`${this.apiUrl}/budget`, payload ,{ withCredentials: true });
+  }
+
 }

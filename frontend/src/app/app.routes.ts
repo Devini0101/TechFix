@@ -9,6 +9,7 @@ import { MaintenanceDetails } from './pages/maintenance-details/maintenance-deta
 import { Users } from './pages/users/users';
 import { Categories } from './pages/categories/categories';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found';
+import { Budget } from './pages/budget/budget';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'maintenances', component: Maintenances },
       { path: 'maintenances/:id', component: MaintenanceDetails},
       { path: 'categories', component: Categories },
+      { path: 'budgets/:id', component: Budget },
       // { path: 'dashboard', component: Dashboard }, // outras páginas protegidas devem ter o msm padrão e estar aq
       { path: '**', component: PageNotFoundComponent} //404 quando logado e não encontrado
     ]

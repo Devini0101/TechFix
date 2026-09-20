@@ -3,7 +3,7 @@
         <h2 class="font-bold text-2xl">Gestão de Serviços e Manutenção</h2>
         <div class="ml-auto">
 
-                <button
+            <button
                 (click)="openCreateModal()"
                 class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl p-4 flex items-center justify-center gap-3 font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98] hover:cursor-pointer">
                 <i class="fa-solid fa-plus text-lg"></i>
@@ -96,14 +96,14 @@
             <input class="w-full" type="text" placeholder="Buscar pelo número do serviço ou nome do produto">
         </div>
         <div class="flex items-center p-2 justify-center gap-3 ml-auto">
-            <button (click)="changeFilter('WAITING_APPROVAL')"
+            <button (click)="changeFilter('QUOTED')"
                 class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'WAITING_APPROVAL'"
-                [class.bg-yellow-200]="activeFilter() !== 'WAITING_APPROVAL'"
+                [class.bg-white]="activeFilter() === 'QUOTED'"
+                [class.bg-yellow-200]="activeFilter() !== 'QUOTED'"
             >
                 <p class="font-bold text-sm"
-                [class.text-black]="activeFilter() === 'WAITING_APPROVAL'"
-                [class.text-yellow-800]="activeFilter() != 'WAITING_APPROVAL'">
+                [class.text-black]="activeFilter() === 'QUOTED'"
+                [class.text-yellow-800]="activeFilter() != 'QUOTED'">
                     Pendentes
                 </p>
                 @if (summary()?.waitingApproval){
@@ -177,7 +177,7 @@
 
     <!-- main table -->
     <div class="grid grid-cols-3 mt-3">
-        <div class="col-span-2 bg-gray-800 p-3 rounded-md">
+        <div class="col-span-3 bg-gray-800 p-3 rounded-md">
             <!-- header -->
             <div class="flex-col">
                 <div class="flex items-center">
@@ -214,10 +214,15 @@
                                 </td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.categoryCode }}</td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.estimatedPrice ? item.estimatedPrice : 'Aguardando orçamento' }}</td>
-                                <td class="px-6 py-4 text-center">
-                                    <a routerLink="/maintenances/{{item.id}}" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs rounded-md transition border border-gray-600">
+                                <td class="px-6 py-4 flex justify-center items-center gap-2">
+                                    <a [routerLink]="['/maintenances', item.id]" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs rounded-md transition border border-gray-600">
                                         Visualizar
                                     </a>
+                                    @if (item.statusCode == "OPEN" && Role == "employee"){
+                                        <a [routerLink]="['/budgets', item.id]" class="px-3 py-1.5 bg-white hover:bg-gray-200 text-slate-700 font-medium text-xs rounded-md transition border border-gray-600">
+                                            Realizar Orçamento
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         } @empty {

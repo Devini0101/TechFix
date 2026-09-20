@@ -15,15 +15,15 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             "m.estimatedPrice IS NULL " +
             "AND m.deletedAt IS NULL " +
             "AND m.responsibleEmployee IS NULL " +
-            "AND m.status.code IN ('OPEN', 'WAITING_APPROVAL')" +
+            "AND m.status.code IN ('OPEN', 'QUOTED')" +
             "AND m.client.id = :clientId")
     List<MaintenanceRequest> findOpenAndPendingMaintenances(@Param("clientId") Long clientId);
 
     @Query("""
         SELECT new com.techfix.dto.response.MaintenanceSummaryResponseDTO(
             COALESCE(SUM(CASE WHEN m.status.code = 'OPEN' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'WAITING_APPROVAL' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'IN_PROGRESS' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status.code = 'QUOTED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status.code = 'APPROVED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status.code = 'FINISHED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status.code = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )
@@ -35,8 +35,8 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     @Query("""
         SELECT new com.techfix.dto.response.MaintenanceSummaryResponseDTO(
             COALESCE(SUM(CASE WHEN m.status.code = 'OPEN' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'WAITING_APPROVAL' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'IN_PROGRESS' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status.code = 'QUOTED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status.code = 'APPROVED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status.code = 'FINISHED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status.code = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )

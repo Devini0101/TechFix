@@ -7,10 +7,7 @@ SET status = s.code
 FROM status s
 WHERE mr.status_id = s.id;
 
--- Remove a constraint de chave estrangeira
-ALTER TABLE maintenance_request DROP CONSTRAINT maintenance_request_status_id_fkey;
-
--- apaga a coluna antiga
+-- drops the column alongside with its constraint
 ALTER TABLE maintenance_request DROP COLUMN status_id;
 
 -- exclusão da tabela

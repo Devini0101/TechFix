@@ -79,7 +79,7 @@
                                                 Aprovar/Rejeitar Serviço
                                             </a>
                                         } @else if (maintenance.statusCode == "REJECTED") {
-                                            <a class="inline-flex items-center justify-center text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-blue-400 hover:cursor-pointer px-3 py-1.5 rounded-lg border border-blue-400 hover:border-blue-500 transition-colors">
+                                            <a [routerLink]="['/budgets', maintenance.id]"class="inline-flex items-center justify-center text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-blue-400 hover:cursor-pointer px-3 py-1.5 rounded-lg border border-blue-400 hover:border-blue-500 transition-colors">
                                                 Resgatar Serviço
                                             </a>
                                         } @else if(maintenance.statusCode == "REPAIRED") {

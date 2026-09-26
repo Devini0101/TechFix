@@ -171,7 +171,7 @@ public class MaintenanceRequestService {
         MaintenanceRequest req = optionalReq.get();
 
         // Valida se o status atual é de orçacada
-        if (req.getStatus() != Status.QUOTED) {
+        if (!req.getStatus().equals(Status.QUOTED) && !req.getStatus().equals(Status.REJECTED) ) {
             return false;
         }
 

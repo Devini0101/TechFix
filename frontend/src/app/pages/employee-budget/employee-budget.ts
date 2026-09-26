@@ -32,7 +32,15 @@ export class EmployeeBudget implements OnInit {
 		}
 
 		this.service.getById(Number(this.id) ).subscribe({
-			next: (data) => this.maintenanceDetails.set(data),
+			next: (data) => {
+				this.maintenanceDetails.set(data)
+
+				if (data.estimatedPrice) {
+					this.budgetValue.setValue(data.estimatedPrice);
+				} else {
+					this.budgetValue.setValue(null);
+				}
+			},
 			error: (err: HttpErrorResponse) => {
 				console.error("Erro ao puxar info por id", err);
 				const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';

@@ -1,13 +1,13 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
-import { MaintenanceDetailsResponse, MaintenanceRequest, MaintenanceRequestService, Summary } from '../../core/services/maintenance-request.service';
+import { MaintenanceDetailsResponse, MaintenanceRequestService, Summary } from '../../core/services/maintenance-request.service';
 import { RouterLink } from "@angular/router";
 import { AuthService } from '../../core/services/auth.service';
-
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-maintenances',
-  imports: [ServiceRequestModal, RouterLink],
+  imports: [ServiceRequestModal, RouterLink, CurrencyPipe],
   templateUrl: './maintenances.html',
   styleUrl: './maintenances.css',
 })

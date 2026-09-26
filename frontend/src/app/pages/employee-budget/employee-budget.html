@@ -67,8 +67,8 @@
         <div class="lg:col-span-1">
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg sticky top-6">
                 <div class="mb-6">
-                    <h3 class="text-xl font-bold text-white mb-1">Definir Valor</h3>
-                    <p class="text-sm text-slate-400">Preencha o valor estimado para a realização deste serviço.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">{{ details.estimatedPrice ? 'Editar Valor' : 'Definir Valor' }}</h3>
+                    <p class="text-sm text-slate-400">{{ details.estimatedPrice ? 'Altere o valor estimado e reenvie para o cliente.' : 'Preencha o valor estimado para a realização deste serviço.' }}</p>
                 </div>
 
                 <div class="space-y-4">
@@ -96,7 +96,7 @@
                         (click)="submitBudget()"
                         class="w-full bg-slate-600 hover:bg-blue-500 text-white rounded-xl py-3 px-4 font-bold transition-all shadow-lg shadow-blue-900/20 mt-4 active:scale-95 hover:cursor-pointer"
                         [disabled]="isSubmitting()">
-                        {{ isSubmitting() ? 'Enviando...' : 'Confirmar Orçamento' }}
+                        {{ isSubmitting() ? 'Enviando...' : (details.estimatedPrice ? 'Atualizar Orçamento' : 'Confirmar Orçamento') }}
                     </button>
                 </div>
             </div>

@@ -1,9 +1,10 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxCurrencyDirective } from 'ngx-currency';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-employee-budget',
@@ -12,6 +13,8 @@ import { NgxCurrencyDirective } from 'ngx-currency';
   styleUrl: './employee-budget.css',
 })
 export class EmployeeBudget implements OnInit {
+	constructor(private location: Location) {}
+
 	@Input() id: string | null = '';
 	private service = inject(MaintenanceRequestService);
 	maintenanceDetails = signal<MaintenanceDetailsResponse | null>(null);
@@ -29,7 +32,15 @@ export class EmployeeBudget implements OnInit {
 		}
 
 		this.service.getById(Number(this.id) ).subscribe({
-			next: (data) => this.maintenanceDetails.set(data),
+			next: (data) => {
+				this.maintenanceDetails.set(data)
+
+				if (data.estimatedPrice) {
+					this.budgetValue.setValue(data.estimatedPrice);
+				} else {
+					this.budgetValue.setValue(null);
+				}
+			},
 			error: (err: HttpErrorResponse) => {
 				console.error("Erro ao puxar info por id", err);
 				const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';
@@ -53,7 +64,7 @@ export class EmployeeBudget implements OnInit {
 		this.service.setBudget(Number(this.id), formattedValue).subscribe({
 			next: () => {
                 this.isSubmitting.set(false);
-                console.log('Orçamento salvo com sucesso!');
+                this.location.back();
             },
             error: (err: HttpErrorResponse) => {
                 this.isSubmitting.set(false);

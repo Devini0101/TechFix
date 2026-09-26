@@ -90,7 +90,7 @@ public class MaintenanceRequestController {
             throw new ForbiddenAccessException("Apenas clientes devem aprovar ou recusar um orçamento proposto.");
         }
 
-        Boolean answered = service.setBudgetAnswer(request, user);
+        boolean answered = service.setBudgetAnswer(request, user);
 
         if (!answered) {
             throw new UpdateInvalidMaintenanceBudgetException("Não foi possível retornar uma resposta ao orçamento apresentado.");

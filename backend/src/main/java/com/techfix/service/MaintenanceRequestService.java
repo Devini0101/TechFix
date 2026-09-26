@@ -16,7 +16,6 @@ import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.aspectj.bridge.IMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,28 +53,6 @@ public class MaintenanceRequestService {
 
         return requestRepository.save(maintenanceRequest);
     }
-
-    public List<MaintenanceResponseDTO> getPendingMaintenances(Long clientId) {
-        List<MaintenanceRequest> pendingMaintenances = requestRepository.findOpenAndPendingMaintenances(clientId);
-
-        return pendingMaintenances.stream().map(
-                m -> {
-                    String responsibleEmployee = m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null;
-                    String categoryCode = m.getCategory().getCode();
-                    return new MaintenanceResponseDTO(
-                            m.getId(),
-                            m.getItem(),
-                            m.getItemDescription(),
-                            m.getItemDefect(),
-                            m.getEstimatedPrice(),
-                            m.getPrice(),
-                            categoryCode,
-                            responsibleEmployee
-                    );
-                }
-        ).toList();
-    }
-
 
     public List<MaintenanceDetailsResponseDTO> getAll(String statusCode) {
         List<MaintenanceRequest> maintenances;

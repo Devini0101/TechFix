@@ -61,9 +61,6 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     //list by status
     List<MaintenanceRequest> findByStatusAndDeletedAtIsNull(Status status);
 
-    //list all by clientId
-    List<MaintenanceRequest> findByClientIdAndDeletedAtIsNull(Long clientId);
-
     //list by client id and status
     List<MaintenanceRequest> findByStatusAndClientIdAndDeletedAtIsNull(Status status, Long clientId);
 

@@ -96,4 +96,12 @@ export class MaintenanceRequestService {
     return this.http.post<void>(`${this.apiUrl}/budget`, payload ,{ withCredentials: true });
   }
 
+  setBudgetAnswer(id : Number, answer : String ) : Observable<unknown> {
+    const payload = {
+      id: id,
+      answer : answer
+    };
+    return this.http.post<void>(`${this.apiUrl}/budget-answer`, payload, { withCredentials: true});
+  }
+
 }

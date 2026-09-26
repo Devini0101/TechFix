@@ -7,7 +7,7 @@ import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-user-dashboard',
-	imports: [ServiceRequestModal, MaintenanceRequestModal, RouterLink, DatePipe],
+	imports: [ServiceRequestModal, RouterLink, DatePipe],
 	templateUrl: './user-dashboard.html',
 	styleUrl: './user-dashboard.css',
 })
@@ -46,25 +46,10 @@ export class UserDashboard implements OnInit {
 
 	closeCreateModal(): void {
 		this.isCreateModalOpen = false;
+	}
+
+	onMaintenanceCreated(): void {
+		this.isCreateModalOpen = false;
 		this.fetchRequests();
 	}
-
-	openDetailModal(id: number): void {
-		this.maintenanceService.getById(id).subscribe({
-			next: (details) => {
-			this.selectedRequestDetails.set(details);
-			this.isDetailModalOpen = true;
-			},
-			error: (err) => {
-			console.error('Erro ao buscar detalhes:', err);
-			},
-		});
-	}
-
-	closeDetailModal(): void {
-		this.isDetailModalOpen = false;
-		this.selectedRequestDetails.set(null);
-	}
-
-
 }

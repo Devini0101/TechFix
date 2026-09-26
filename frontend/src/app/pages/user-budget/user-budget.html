@@ -1,1 +1,145 @@
-<p>user-budget works!</p>
+@if (maintenanceDetails(); as details) {
+<div class="max-w-full mx-auto  text-slate-100">
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+            <h2 class="font-bold text-3xl">Orçamento</h2>
+            <p class="text-lg text-slate-400 mt-1">Solicitação #{{ details.id }}</p>
+        </div>
+
+        @if (details.statusName) {
+            <div [style.color]="details.statusColor" class="px-4 py-2 rounded-full font-semibold text-md shadow-sm flex items-center gap-2 border">
+                <span class="w-2 h-2 rounded-full" [style.backgroundColor]="details.statusColor"></span>
+                {{ details.statusName }}
+            </div>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
+            <h3 class="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-4">
+                Detalhes do Serviço
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Item:</span>
+                    <span class="block text-base text-slate-100 font-semibold">{{ details.item }}</span>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Categoria:</span>
+                    <span class="block text-base text-slate-100">{{ details.categoryCode || 'Não informada' }}</span>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Defeito:</span>
+                    <span class="block text-base text-slate-100">{{ details.itemDefect }}</span>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Descrição Detalhada</span>
+                    <p class="text-base text-slate-100 whitespace-pre-wrap">{{ details.itemDescription }}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-700 pt-6">
+                <div>
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Cliente</span>
+                    <span class="block text-base text-slate-100">{{ details.clientName }}</span>
+                </div>
+                <div>
+                    <span class="block text-sm font-medium text-slate-400 mb-1">Data da Solicitação</span>
+                    <span class="block text-base text-slate-100">{{ details.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                @if (details.responsibleEmployeeName) {
+                    <div class="md:col-span-2">
+                        <span class="block text-sm font-medium text-slate-400 mb-1">Técnico Responsável</span>
+                        <span class="block text-base text-slate-100">{{ details.responsibleEmployeeName }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg sticky top-6">
+                @if (details.price) {
+                    <div class="mb-6 border-b border-slate-700 pb-4">
+                        <h3 class="text-xl font-bold text-white mb-1">Valor do Serviço</h3>
+                        <p class="text-sm text-slate-400">Este é o valor final acordado e validado.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700 flex flex-col items-center justify-center py-8 shadow-inner">
+                            <span class="text-sm font-medium text-slate-400 mb-2">Valor Final</span>
+                            <span class="text-4xl font-black text-emerald-400">
+                                {{ details.price | currency: 'BRL' }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-center gap-2 text-emerald-500 font-medium bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>Orçamento aprovado</span>
+                        </div>
+                    </div>
+                }
+                @else {
+                    <div class="mb-6 border-b border-slate-700 pb-4">
+                        <h3 class="text-xl font-bold text-white mb-1">Aprovação de Orçamento</h3>
+                        <p class="text-sm text-slate-400">Revise o valor estimado pelo técnico para autorizar o reparo.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700 flex flex-col items-center justify-center py-8 shadow-inner">
+                            <span class="text-sm font-medium text-slate-400 mb-2">Valor Estimado</span>
+                            <span class="text-4xl font-black text-emerald-400">
+                                {{ (details.estimatedPrice || 0) | currency: 'BRL' }}
+                            </span>
+                        </div>
+
+                        @if (details.statusCode === 'QUOTED') {
+                            <div class="flex flex-col gap-3">
+                                <button
+                                    (click)="answerBudget('APROVADO')"
+                                    class="group w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl py-3.5 px-4 font-bold transition-all shadow-lg shadow-emerald-900/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    [disabled]="isSubmitting()">
+                                    <i class="fa-solid fa-check transition-transform group-hover:scale-110"></i>
+                                    {{ isSubmitting() ? 'Processando...' : 'Aprovar Orçamento' }}
+                                </button>
+
+                                <button
+                                    (click)="answerBudget('RECUSADO')"
+                                    class="group w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-red-600 text-slate-200 hover:text-white rounded-xl py-3.5 px-4 font-bold transition-all shadow-lg shadow-red-900/10 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    [disabled]="isSubmitting()">
+                                    <i class="fa-solid fa-xmark transition-transform group-hover:scale-110"></i>
+                                    {{ isSubmitting() ? 'Processando...' : 'Recusar Orçamento' }}
+                                </button>
+                            </div>
+                            <p class="text-xs text-center text-slate-500 mt-2">
+                                Ao aprovar, o serviço será iniciado imediatamente.
+                            </p>
+                        }
+                        @else if (details.statusCode === 'REJECTED') {
+                            <div class="flex items-center justify-center gap-2 text-red-500 font-medium bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+                                <i class="fa-solid fa-ban"></i>
+                                <span>Orçamento Recusado</span>
+                            </div>
+                        }
+                        @else if (details.statusCode === 'OPEN') {
+                            <div class="flex items-center justify-center gap-2 text-slate-400 font-medium bg-slate-700/50 p-3 rounded-lg border border-slate-600">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>Aguardando orçamento do técnico...</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+} @else {
+    <!-- Tela de Carregamento -->
+    <div class="flex justify-center items-center h-64 text-slate-400">
+        <p class="text-lg animate-pulse">Carregando detalhes do serviço...</p>
+    </div>
+}

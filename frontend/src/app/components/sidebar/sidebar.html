@@ -38,25 +38,27 @@
                 }
             </a>
 
-            <a routerLink="/clients"
-               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
-               [class.justify-center]="isCollapsed"
-               [class.gap-3]="!isCollapsed">
-                <i class="fas fa-users text-lg w-6 text-center"></i>
-                @if (!isCollapsed) {
-                  <span class="font-medium">Clientes</span>
-                }
-            </a>
+			@if (role == "employee") {
+				<a routerLink="/clients"
+				class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
+				[class.justify-center]="isCollapsed"
+				[class.gap-3]="!isCollapsed">
+					<i class="fas fa-users text-lg w-6 text-center"></i>
+					@if (!isCollapsed) {
+					<span class="font-medium">Clientes</span>
+					}
+				</a>
 
-            <a routerLink="/categories" 
-               class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
-               [class.justify-center]="isCollapsed"
-               [class.gap-3]="!isCollapsed">
-                <i class="fas fa-tags text-lg w-6 text-center"></i>
-                @if (!isCollapsed) {
-                  <span class="font-medium">Categorias</span>
-                }
-            </a>
+				<a routerLink="/categories"
+					class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors"
+					[class.justify-center]="isCollapsed"
+					[class.gap-3]="!isCollapsed">
+					<i class="fas fa-tags text-lg w-6 text-center"></i>
+					@if (!isCollapsed) {
+						<span class="font-medium">Categorias</span>
+					}
+				</a>
+            }
 
         </nav>
 

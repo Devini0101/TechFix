@@ -2,6 +2,7 @@ package com.techfix.repository;
 
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,17 +16,17 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             "m.estimatedPrice IS NULL " +
             "AND m.deletedAt IS NULL " +
             "AND m.responsibleEmployee IS NULL " +
-            "AND m.status.code IN ('OPEN', 'QUOTED')" +
+            "AND m.status IN ('OPEN', 'QUOTED')" +
             "AND m.client.id = :clientId")
     List<MaintenanceRequest> findOpenAndPendingMaintenances(@Param("clientId") Long clientId);
 
     @Query("""
         SELECT new com.techfix.dto.response.MaintenanceSummaryResponseDTO(
-            COALESCE(SUM(CASE WHEN m.status.code = 'OPEN' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'QUOTED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'APPROVED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'FINISHED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'REJECTED' THEN 1L ELSE 0L END), 0L)
+            COALESCE(SUM(CASE WHEN m.status = 'OPEN' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'QUOTED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'APPROVED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'FINISHED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )
         FROM MaintenanceRequest m
         WHERE m.deletedAt IS NULL
@@ -34,11 +35,11 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     @Query("""
         SELECT new com.techfix.dto.response.MaintenanceSummaryResponseDTO(
-            COALESCE(SUM(CASE WHEN m.status.code = 'OPEN' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'QUOTED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'APPROVED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'FINISHED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status.code = 'REJECTED' THEN 1L ELSE 0L END), 0L)
+            COALESCE(SUM(CASE WHEN m.status = 'OPEN' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'QUOTED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'APPROVED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'FINISHED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )
         FROM MaintenanceRequest m
         WHERE m.deletedAt IS NULL
@@ -54,17 +55,17 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             "m.estimatedPrice IS NULL " +
             "AND m.deletedAt IS NULL " +
             "AND m.responsibleEmployee IS NULL " +
-            "AND m.status.code IN ('OPEN', 'WAITING_APPROVAL')")
+            "AND m.status IN ('OPEN', 'WAITING_APPROVAL')")
     List<MaintenanceRequest> findAllPending();
 
     //list by status
-    List<MaintenanceRequest> findByStatusCodeAndDeletedAtIsNull(String statusCode);
+    List<MaintenanceRequest> findByStatusAndDeletedAtIsNull(Status status);
 
     //list all by clientId
     List<MaintenanceRequest> findByClientIdAndDeletedAtIsNull(Long clientId);
 
     //list by client id and status
-    List<MaintenanceRequest> findByStatusCodeAndClientIdAndDeletedAtIsNull(String statusCode, Long clientId);
+    List<MaintenanceRequest> findByStatusAndClientIdAndDeletedAtIsNull(Status status, Long clientId);
 
     List<MaintenanceRequest> findByDeletedAtIsNullOrderByCreatedAtAsc();
 

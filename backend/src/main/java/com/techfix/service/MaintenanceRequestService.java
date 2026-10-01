@@ -1,5 +1,8 @@
 package com.techfix.service;
 
+import com.techfix.dto.request.ApprovalRequestDTO;
+import com.techfix.exception.InvalidMaintenanceApprovalException;
+import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceResponseDTO;
@@ -148,5 +151,37 @@ public class MaintenanceRequestService {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitação de serviço não encontrada"));
     }
 
+    @Transactional
+    public void approveService(
+            ApprovalRequestDTO dto,
+            User client
+    ) {
+        MaintenanceRequest request = requestRepository
+                .findByIdAndClientId(dto.id(), client.getId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Solicitação não encontrada para este cliente"
+                        )
+                );
+
+        if (request.getStatus() == null
+                || !"QUOTED".equals(request.getStatus().getCode())) {
+            throw new InvalidMaintenanceApprovalException(
+                    "Somente serviços orçados podem ser aprovados"
+            );
+        }
+
+        Status approvedStatus = statusRepository
+                .findByCode("APPROVED")
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Status APPROVED não cadastrado"
+                        )
+                );
+
+        request.setStatus(approvedStatus);
+
+        requestRepository.save(request);
+    }
 
 }

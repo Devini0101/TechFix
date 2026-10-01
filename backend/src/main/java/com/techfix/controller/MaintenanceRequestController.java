@@ -1,5 +1,7 @@
 package com.techfix.controller;
 
+import com.techfix.exception.ForbiddenAccessException;
+import com.techfix.dto.request.ApprovalRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
@@ -65,5 +67,22 @@ public class MaintenanceRequestController {
         User client = (User) authentication.getPrincipal();
         MaintenanceDetailsResponseDTO response = service.findById(id, client.getId());
         return ResponseEntity.ok(response);
+    }
+        @PostMapping("/approve")
+    public ResponseEntity<Void> approveService(
+            @Valid @RequestBody ApprovalRequestDTO request,
+            Authentication authentication
+    ) {
+        User client = (User) authentication.getPrincipal();
+
+        if (!client.getRole().equals(UserRole.client)) {
+            throw new ForbiddenAccessException(
+                    "Somente clientes podem aprovar serviços."
+            );
+        }
+
+        service.approveService(request, client);
+
+        return ResponseEntity.ok().build();
     }
 }

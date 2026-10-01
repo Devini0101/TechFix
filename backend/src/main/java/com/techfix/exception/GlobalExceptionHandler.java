@@ -69,4 +69,20 @@ public class GlobalExceptionHandler extends RuntimeException {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+        @ExceptionHandler(InvalidMaintenanceApprovalException.class)
+    public ResponseEntity<StandardError> handleInvalidMaintenanceApprovalException(
+            InvalidMaintenanceApprovalException ex,
+            HttpServletRequest request
+    ) {
+        StandardError error = new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
 }

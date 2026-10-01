@@ -1,4 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import 'tailwindcss';
+@import "tailwindcss";
 @source "./src/**/*.{html,ts}";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-100 text-slate-900 transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply bg-slate-900 text-slate-100 transition-colors duration-300;
+  }
+}

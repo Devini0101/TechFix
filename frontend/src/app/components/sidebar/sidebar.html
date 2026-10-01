@@ -69,6 +69,18 @@
 
         <!-- Menu Inferior -->
         <div class="flex flex-col border-t border-gray-700 pt-4 space-y-2">
+            <button (click)="toggleTheme()" 
+              class="flex items-center p-3 text-light-muted dark:text-light hover:bg-slate-800 dark:hover:bg-slate-800/60 rounded-lg transition-colors w-full cursor-pointer" 
+              [class.justify-center]="isCollapsed"
+              [class.gap-3]="!isCollapsed">
+              <i [class]="themeService.isDarkMode() ? 'fas fa-sun text-lg w-6 text-center text-amber-400' : 'fas fa-moon text-lg w-6 text-center text-primary'"></i>
+              @if (!isCollapsed) {
+                <span class="font-medium">
+                  {{ themeService.isDarkMode() ? 'Modo Claro' : 'Modo Escuro' }}
+                </span>
+              }
+            </button>
+          
             <a routerLink="/settings" 
                class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors" 
                [class.justify-center]="isCollapsed"

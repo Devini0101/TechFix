@@ -40,6 +40,31 @@ import { Category, CategoryService } from '../../core/services/category.service'
   active).length);
       inactiveCategories = computed(() => this.categories().filter(c => !c.
   active).length);
+
+        // painel de insights (adicionado)
+  showInsights = signal(true);
+
+  percentActive = computed(() => {
+    const total = this.categories().length;
+    return total === 0 ? 0 : Math.round((this.activeCategories() / total) * 100);
+  });
+
+  percentInactive = computed(() => {
+    const total = this.categories().length;
+    return total === 0 ? 0 : 100 - this.percentActive();
+  });
+
+  // as 3 últimas categorias da lista, da mais recente pra mais antiga
+  latestCategories = computed(() => [...this.categories()].slice(-3).reverse());
+
+  // códigos técnicos das categorias ativas
+  activeCodesList = computed(() =>
+    this.categories().filter(c => c.active).map(c => c.code)
+  );
+
+  toggleInsights() {
+    this.showInsights.update(v => !v);
+  }
     
       ngOnInit() {
         this.loadCategories();

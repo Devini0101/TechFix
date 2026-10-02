@@ -18,7 +18,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
-    canActivate: [authGuard], // Protege todas as rotas filhas
+    //canActivate: [authGuard], // Protege todas as rotas filhas
     children: [
       { path: 'dashboard', component: Dashboard },
       { path: 'maintenances', component: Maintenances },

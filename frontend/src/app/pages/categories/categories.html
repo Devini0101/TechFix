@@ -65,6 +65,67 @@
           </div>
         </div>
     
+        <!-- painel de insights (adicionado) -->
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-5 flex flex-col gap-4 shadow-sm">
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-bold text-white">Painel de Insights</h2>
+    <button
+      (click)="toggleInsights()"
+      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs font-semibold text-white rounded-lg transition cursor-pointer">
+      {{ showInsights() ? 'Ocultar' : 'Mostrar' }}
+    </button>
+  </div>
+
+  @if (showInsights()) {
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+      <!-- distribuição por status -->
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
+        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Distribuição por status</p>
+        <div class="w-full h-3 bg-gray-700 rounded-full overflow-hidden flex">
+          <div class="h-full bg-emerald-500" [style.width.%]="percentActive()"></div>
+          <div class="h-full bg-amber-500" [style.width.%]="percentInactive()"></div>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span class="text-emerald-400">Ativas: {{ percentActive() }}%</span>
+          <span class="text-amber-400">Inativas: {{ percentInactive() }}%</span>
+        </div>
+      </div>
+
+      <!-- últimas categorias -->
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
+        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Últimas categorias</p>
+        <ul class="flex flex-col gap-2">
+          @for (item of latestCategories(); track item.id) {
+            <li class="flex items-center justify-between text-sm">
+              <span class="text-white">{{ item.name }}</span>
+              <span class="font-mono text-xs text-blue-400">{{ item.code }}</span>
+            </li>
+          } @empty {
+            <li class="text-sm text-gray-400">Nenhuma categoria cadastrada.</li>
+          }
+        </ul>
+      </div>
+
+      <!-- códigos ativos -->
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
+        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Códigos ativos</p>
+        <div class="flex flex-wrap gap-2">
+          @for (codeItem of activeCodesList(); track codeItem) {
+            <span class="font-mono text-xs px-2.5 py-1 rounded bg-emerald-950/60 border border-emerald-800/40 text-emerald-300">
+              {{ codeItem }}
+            </span>
+          } @empty {
+            <span class="text-sm text-gray-400">Nenhum código ativo.</span>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+</div>
+
+
         <!-- tabela principal de categorias -->
         <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-
   hidden shadow-sm">

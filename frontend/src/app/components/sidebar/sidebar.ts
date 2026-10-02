@@ -10,6 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class Sidebar {
   private authService = inject(AuthService);
+  readonly role = this.authService.getRole();
   isCollapsed = false;
 
   toggleSidebar(): void {

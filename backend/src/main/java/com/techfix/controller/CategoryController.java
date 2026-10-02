@@ -1,6 +1,7 @@
 package com.techfix.controller;
 
 import com.techfix.dto.request.CategoryRequestDTO;
+import com.techfix.dto.response.CategoryResponseDTO;
 import com.techfix.model.Category;
 import com.techfix.service.CategoryService;
 import jakarta.validation.Valid;
@@ -49,4 +50,11 @@ public class CategoryController {
         service.deactivate(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/active")
+    public ResponseEntity<List<CategoryResponseDTO>> getActive () {
+        return ResponseEntity.ok(service.getActive());
+    }
+
 }

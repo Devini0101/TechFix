@@ -1,6 +1,7 @@
 package com.techfix.dto.response;
 
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.enums.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,11 +14,13 @@ public record MaintenanceDetailsResponseDTO (
         BigDecimal estimatedPrice,
         BigDecimal price,
         String categoryCode,
-        String statusCode,
+        Status statusCode,
+        String statusName,
         String statusColor,
         LocalDateTime createdAt,
         String orientation,
-        String responsibleEmployeeName
+        String responsibleEmployeeName,
+        String clientName
 ) {
     public MaintenanceDetailsResponseDTO(MaintenanceRequest m) {
         this(
@@ -28,11 +31,13 @@ public record MaintenanceDetailsResponseDTO (
                 m.getEstimatedPrice(),
                 m.getPrice(),
                 m.getCategory() != null ? m.getCategory().getCode() : null,
-                m.getStatus() != null ? m.getStatus().getCode() : null,
+                m.getStatus() != null ? m.getStatus() : null,
+                m.getStatus() != null ? m.getStatus().getName() : null,
                 m.getStatus() != null ? m.getStatus().getColor() : null,
                 m.getCreatedAt(),
                 m.getOrientation(),
-                m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null
+                m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null,
+                m.getClient() != null ? m.getClient().getName() : null
         );
     }
 }

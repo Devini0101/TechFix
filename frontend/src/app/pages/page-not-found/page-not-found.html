@@ -1,0 +1,40 @@
+<main class="grid h-screen place-items-center px-2 sm:py-32 lg:px-8 relative overflow-hidden font-sans">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="text-center relative z-15">
+
+        <div class="mb-1 flex justify-center">
+            <div class="w-20 h-20 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-900/20 rotate-12 hover:rotate-0 transition-transform duration-500 cursor-pointer">
+                <i class="fa-solid fa-plug-circle-xmark text-4xl text-blue-500"></i>
+            </div>
+        </div>
+
+        <p class="text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-300 sm:text-9xl drop-shadow-sm">
+            404
+        </p>
+        <h1 class="mt-6 text-3xl font-bold tracking-tight text-white sm:text-5xl">
+            Página não encontrada
+        </h1>
+
+        <p class="mt-6 text-base leading-relaxed text-slate-400 max-w-md mx-auto">
+            Ops! A página que você está procurando não existe, foi removida ou você não tem permissão para acessá-la.
+        </p>
+
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+
+            <button
+                routerLink="/dashboard"
+                class="group flex items-center justify-center gap-2 w-full sm:w-auto rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 hover:cursor-pointer"
+            >
+                <i class="fa-solid fa-house transition-transform group-hover:-translate-y-1"></i>
+                Voltar para o Início
+            </button>
+
+            <button class="group text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200 flex items-center gap-2 hover:cursor-pointer">
+                Contatar Suporte
+                <i class="fa-solid fa-arrow-right text-blue-500 transition-transform group-hover:translate-x-1"></i>
+            </button>
+
+        </div>
+    </div>
+</main>

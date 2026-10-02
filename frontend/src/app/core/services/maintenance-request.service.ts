@@ -29,10 +29,12 @@ export interface MaintenanceDetailsResponse {
   price: number | null;
   categoryCode: string | null;
   statusCode: string | null;
+  statusName: string | null;
   statusColor: string | null;
   createdAt: string; // java local time vai vir como string
   orientation: string | null;
   responsibleEmployeeName: string | null;
+  clientName: string | null;
 }
 
 export interface Summary {
@@ -61,11 +63,6 @@ export class MaintenanceRequestService {
       .get<MaintenanceDetailsResponse>(`${this.apiUrl}/${id}`, {
         withCredentials: true,
       })
-      .pipe(
-        catchError((error) => {
-          return throwError(() => error);
-        })
-      );
   }
 
   getSummary () : Observable<Summary> {
@@ -89,6 +86,22 @@ export class MaintenanceRequestService {
       withCredentials: true,
       params: params
     });
+  }
+
+  setBudget(id: Number, budgetValue: Number  ) : Observable<unknown> {
+    const payload = {
+      id: id,
+      value: budgetValue
+    };
+    return this.http.post<void>(`${this.apiUrl}/budget`, payload ,{ withCredentials: true });
+  }
+
+  setBudgetAnswer(id : Number, answer : String ) : Observable<unknown> {
+    const payload = {
+      id: id,
+      answer : answer
+    };
+    return this.http.post<void>(`${this.apiUrl}/budget-answer`, payload, { withCredentials: true});
   }
 
 }

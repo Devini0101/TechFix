@@ -1,12 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { InputComponent } from '../../components/input/input';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [InputComponent, FormsModule],
+  imports: [InputComponent, FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -26,14 +26,14 @@ export class Login {
 	private authService = inject(AuthService);
 	private router = inject(Router);
 
-	hasError = false;
+	hasError = signal<Boolean>(false);
 
 	onSubmit() : void {
 
-		this.hasError = false;
+		this.hasError.set(false);
 
 		if (!this.email || !this.password) {
-			this.hasError = true;
+			this.hasError.set(true);
 			return;
 		}
 
@@ -48,7 +48,7 @@ export class Login {
 			},
 			error: (err) => {
 				console.error("Login failed:", err);
-				this.hasError = true;
+				this.hasError.set(true);
 			},
 		})
 	}
@@ -58,6 +58,6 @@ export class Login {
 	}
 
 	showRegister(): void {
-		this.isLoginMode = false;
+  		this.router.navigate(['/cadastro']);
 	}
 }

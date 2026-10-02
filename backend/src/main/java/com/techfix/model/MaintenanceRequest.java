@@ -1,5 +1,6 @@
 package com.techfix.model;
 
+import com.techfix.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,8 +47,8 @@ public class MaintenanceRequest {
     @Column(columnDefinition = "TEXT")
     private String orientation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)

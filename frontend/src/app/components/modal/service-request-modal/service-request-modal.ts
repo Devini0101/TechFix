@@ -12,6 +12,7 @@ import { MaintenanceRequestService } from '../../../core/services/maintenance-re
     templateUrl: './service-request-modal.html',
 })
 export class ServiceRequestModal implements OnInit {
+  @Output() requestCreated = new EventEmitter<void>();
   @Output() closeModal = new EventEmitter<void>();
   private categoryService = inject(CategoryService);
   categories = signal<Category[]>([]);
@@ -58,6 +59,7 @@ export class ServiceRequestModal implements OnInit {
           itemDefect: '',
           categoryCode: '',
         });
+        this.requestCreated.emit();
       },
       error: () => {
         this.isSubmitting = false;

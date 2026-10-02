@@ -1,8 +1,12 @@
 package com.techfix.controller;
 
+import com.techfix.dto.request.BudgetAnswerRequestDTO;
+import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
+import com.techfix.exception.ForbiddenAccessException;
+import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
@@ -39,12 +43,10 @@ public class MaintenanceRequestController {
         User client = (User) authentication.getPrincipal();
 
         if (client.getRole().equals(UserRole.employee)) {
-            MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummary();
-            return summary;
+            return service.getMaintenancesSummary();
         }
 
-        MaintenanceSummaryResponseDTO summary = service.getMaintenancesSummaryByClient(client.getId());
-        return summary;
+        return service.getMaintenancesSummaryByClient(client.getId());
     }
 
     @GetMapping
@@ -65,5 +67,35 @@ public class MaintenanceRequestController {
         User client = (User) authentication.getPrincipal();
         MaintenanceDetailsResponseDTO response = service.findById(id, client);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/budget")
+    public ResponseEntity<Void> setEstimatedBudget (@Valid @RequestBody BudgetRequestDTO request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!user.getRole().equals(UserRole.employee)) {
+            throw new ForbiddenAccessException("Clientes não possuem permissão para realizar orçamentos.");
+        }
+
+        service.setEstimatedBudget(request, user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/budget-answer")
+    public ResponseEntity<MaintenanceDetailsResponseDTO> setBudgetAnswer (@Valid @RequestBody BudgetAnswerRequestDTO request, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!user.getRole().equals(UserRole.client)) {
+            throw new ForbiddenAccessException("Apenas clientes devem aprovar ou recusar um orçamento proposto.");
+        }
+
+        boolean answered = service.setBudgetAnswer(request, user);
+
+        if (!answered) {
+            throw new UpdateInvalidMaintenanceBudgetException("Não foi possível retornar uma resposta ao orçamento apresentado.");
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

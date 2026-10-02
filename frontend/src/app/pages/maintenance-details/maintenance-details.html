@@ -1,5 +1,5 @@
 @if (details(); as order) {
-<div class="h-screen text-slate-200 font-sans">
+<div class="text-slate-200 font-sans">
     <!-- Header  -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
@@ -18,12 +18,13 @@
 
                 <h1 class="text-3xl font-bold text-white">Manutenção <span class="text-slate-500 font-mono text-2xl">#{{ order.id }}</span></h1>
 
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 border border-slate-700 text-slate-300"
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 border"
+                [style.color]="order.statusColor "
                 >
                     <span class="w-2 h-2 rounded-full mr-2"
                     [style.backgroundColor]="order.statusColor || '#94a3b8'" >
                     </span>
-                    {{ order.statusCode || 'N/A' }}
+                    {{ order.statusName || 'N/A' }}
                 </span>
             </div>
         </div>
@@ -33,10 +34,17 @@
                 <i class="fa-solid fa-file-export"></i>
                 Exportar Laudo
             </button>
-            <button class="px-4 py-2 bg-slate-100 hover:bg-white text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2">
-                <i class="fa-solid fa-check"></i>
-                Avançar Etapa
-            </button>
+            @if (isCurrent('OPEN') && role == "employee") {
+                <button [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    Realizar orçamento
+                </button>
+            } @else if (isCurrent('QUOTED') || isCompleted('QUOTED')) {
+                <button [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    Visualizar orçamento
+                </button>
+            }
         </div>
     </div>
 
@@ -63,7 +71,7 @@
                     <p class="text-sm text-slate-300 leading-relaxed">{{ order.itemDefect }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="grid grid-cols-2 gap-2 mt-4">
                     <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
                         <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Data de Criação</p>
                         <!-- Supondo uso do DatePipe do Angular -->
@@ -124,7 +132,6 @@
             </div>
         </div>
 
-        <!-- Coluna da Direita (Histórico / Orientações Técnicas) -->
         <div class="xl:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="font-bold text-xl flex items-center gap-2 text-white">
@@ -145,10 +152,8 @@
                 </div>
             }
 
-            <!-- Timeline dos status -->
-            <div class="relative border-l border-slate-700 ml-3 space-y-8 pb-4">
+            <div class="relative border-l border-slate-700 ml-3 space-y-12 pb-4">
 
-                <!-- 1. OPEN (Abertura de Chamado) -->
                 <div class="relative pl-6">
                     @if (isCurrent('OPEN')) {
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
@@ -171,11 +176,10 @@
                     <p class="text-xs text-slate-400">Manutenção registrada no sistema, aguardando orçamento.</p>
                 </div>
 
-                <!-- 2. QUOTING (Em Orçamento) -->
                 <div class="relative pl-6">
-                    @if (isCurrent('QUOTING')) {
+                    @if (isCurrent('QUOTED')) {
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-                    } @else if (isCompleted('QUOTING')) {
+                    } @else if (isCompleted('QUOTED')) {
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
                             <i class="fa-solid fa-check text-[8px] text-white"></i>
                         </span>
@@ -183,61 +187,27 @@
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
                     }
 
-                    <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('QUOTING')">
+                    <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('QUOTED')">
                         <h4 class="font-bold text-sm"
-                            [class.text-blue-100]="isCurrent('QUOTING')"
-                            [class.text-slate-200]="isCompleted('QUOTING')"
-                            [class.text-slate-400]="isPending('QUOTING')">
+                            [class.text-blue-100]="isCurrent('QUOTED')"
+                            [class.text-slate-200]="isCompleted('QUOTED')"
+                            [class.text-slate-400]="isPending('QUOTED')">
                             Em Orçamento
                         </h4>
-                        @if (isCurrent('QUOTING')) {
+                        @if (isCurrent('QUOTED')) {
                             <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
-                        } @else if (isCompleted('QUOTING')) {
+                        } @else if (isCompleted('QUOTED')) {
                             <span class="text-xs text-slate-500">Concluído</span>
                         } @else {
                             <span class="text-xs text-slate-600">Pendente</span>
                         }
                     </div>
-                    <p class="text-xs" [class.text-slate-400]="!isPending('QUOTING')" [class.text-slate-500]="isPending('QUOTING')" [class.opacity-50]="isPending('QUOTING')">
-                        Aguardando resposta para orçamento proposto.
+                    <p class="text-xs" [class.text-slate-400]="!isPending('QUOTED')" [class.text-slate-500]="isPending('QUOTED')" [class.opacity-50]="isPending('QUOTED')">
+                        Aguardando resposta ao orçamento.
                     </p>
                 </div>
 
-                <!-- 3. WAITING_APPROVAL (Aguardando Aprovação) -->
-                <div class="relative pl-6">
-                    @if (isCurrent('WAITING_APPROVAL')) {
-                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-                    } @else if (isCompleted('WAITING_APPROVAL')) {
-                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
-                            <i class="fa-solid fa-check text-[8px] text-white"></i>
-                        </span>
-                    } @else {
-                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
-                    }
-
-                    <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('WAITING_APPROVAL')">
-                        <h4 class="font-bold text-sm"
-                            [class.text-blue-100]="isCurrent('WAITING_APPROVAL')"
-                            [class.text-slate-200]="isCompleted('WAITING_APPROVAL')"
-                            [class.text-slate-400]="isPending('WAITING_APPROVAL')">
-                            Aguardando Aprovação
-                        </h4>
-                        @if (isCurrent('WAITING_APPROVAL')) {
-                            <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
-                        } @else if (isCompleted('WAITING_APPROVAL')) {
-                            <span class="text-xs text-slate-500">Concluído</span>
-                        } @else {
-                            <span class="text-xs text-slate-600">Pendente</span>
-                        }
-                    </div>
-                    <p class="text-xs" [class.text-slate-400]="!isPending('WAITING_APPROVAL')" [class.text-slate-500]="isPending('WAITING_APPROVAL')" [class.opacity-50]="isPending('WAITING_APPROVAL')">
-                        Aguardando aprovação de manutenção.
-                    </p>
-                </div>
-
-                <!-- 4. FLUXO CONDICIONAL (REJECTED OU PROSSEGUIMENTO) -->
                 @if (order.statusCode === 'REJECTED') {
-                    <!-- REJECTED (Finaliza a linha do tempo) -->
                     <div class="relative pl-6">
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-red-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(239,68,68,0.5)] flex items-center justify-center">
                             <i class="fa-solid fa-xmark text-[8px] text-white"></i>
@@ -249,7 +219,6 @@
                         <p class="text-xs text-slate-400">Solicitação de manutenção rejeitada.</p>
                     </div>
                 } @else {
-                    <!-- 4A. APPROVED (Aprovado) -->
                     <div class="relative pl-6">
                         @if (isCurrent('APPROVED')) {
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
@@ -278,38 +247,6 @@
                         </div>
                         <p class="text-xs" [class.text-slate-400]="!isPending('APPROVED')" [class.text-slate-500]="isPending('APPROVED')" [class.opacity-50]="isPending('APPROVED')">
                             Solicitação de manutenção aprovada, pós orçamento.
-                        </p>
-                    </div>
-
-                    <!-- 5. IN_PROGRESS (Em Progresso) -->
-                    <div class="relative pl-6">
-                        @if (isCurrent('IN_PROGRESS')) {
-                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-                        } @else if (isCompleted('IN_PROGRESS')) {
-                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
-                                <i class="fa-solid fa-check text-[8px] text-white"></i>
-                            </span>
-                        } @else {
-                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
-                        }
-
-                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('IN_PROGRESS')">
-                            <h4 class="font-bold text-sm"
-                                [class.text-blue-100]="isCurrent('IN_PROGRESS')"
-                                [class.text-slate-200]="isCompleted('IN_PROGRESS')"
-                                [class.text-slate-400]="isPending('IN_PROGRESS')">
-                                Em Progresso
-                            </h4>
-                            @if (isCurrent('IN_PROGRESS')) {
-                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
-                            } @else if (isCompleted('IN_PROGRESS')) {
-                                <span class="text-xs text-slate-500">Concluído</span>
-                            } @else {
-                                <span class="text-xs text-slate-600">Pendente</span>
-                            }
-                        </div>
-                        <p class="text-xs" [class.text-slate-400]="!isPending('IN_PROGRESS')" [class.text-slate-500]="isPending('IN_PROGRESS')" [class.opacity-50]="isPending('IN_PROGRESS')">
-                            Manutenção do equipamento em andamento.
                         </p>
                     </div>
 

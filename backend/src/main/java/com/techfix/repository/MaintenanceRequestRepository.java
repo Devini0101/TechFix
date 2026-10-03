@@ -12,14 +12,6 @@ import java.util.Optional;
 
 public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceRequest, Long> {
 
-    @Query("SELECT m FROM MaintenanceRequest m WHERE " +
-            "m.estimatedPrice IS NULL " +
-            "AND m.deletedAt IS NULL " +
-            "AND m.responsibleEmployee IS NULL " +
-            "AND m.status IN ('OPEN', 'QUOTED')" +
-            "AND m.client.id = :clientId")
-    List<MaintenanceRequest> findOpenAndPendingMaintenances(@Param("clientId") Long clientId);
-
     @Query("""
         SELECT new com.techfix.dto.response.MaintenanceSummaryResponseDTO(
             COALESCE(SUM(CASE WHEN m.status = 'OPEN' THEN 1L ELSE 0L END), 0L),
@@ -51,13 +43,6 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     Optional<MaintenanceRequest> findByIdAndClientId(Long id, Long clientId);
 
-    @Query("SELECT m FROM MaintenanceRequest m WHERE " +
-            "m.estimatedPrice IS NULL " +
-            "AND m.deletedAt IS NULL " +
-            "AND m.responsibleEmployee IS NULL " +
-            "AND m.status IN ('OPEN', 'WAITING_APPROVAL')")
-    List<MaintenanceRequest> findAllPending();
-
     //list by status
     List<MaintenanceRequest> findByStatusAndDeletedAtIsNull(Status status);
 
@@ -69,12 +54,12 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     List<MaintenanceRequest> findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(Long clientId);
 
     @Query("""
-        SELECT m FROM MaintenanceRequest m 
-        WHERE m.deletedAt IS NULL 
+        SELECT m FROM MaintenanceRequest m
+        WHERE m.deletedAt IS NULL
         AND (:status IS NULL OR m.status = :status)
         AND (
-            :searchPattern IS NULL 
-            OR LOWER(m.item) LIKE :searchPattern 
+            :searchPattern IS NULL
+            OR LOWER(m.item) LIKE :searchPattern
             OR m.id = :searchId
         )
         ORDER BY m.createdAt DESC
@@ -82,13 +67,13 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     List<MaintenanceRequest> searchByStatusAndTerm(Status status, String searchPattern, Long searchId);
 
     @Query("""
-        SELECT m FROM MaintenanceRequest m 
-        WHERE m.deletedAt IS NULL 
-        AND m.client.id = :clientId 
+        SELECT m FROM MaintenanceRequest m
+        WHERE m.deletedAt IS NULL
+        AND m.client.id = :clientId
         AND (:status IS NULL OR m.status = :status)
         AND (
-            :searchPattern IS NULL 
-            OR LOWER(m.item) LIKE :searchPattern 
+            :searchPattern IS NULL
+            OR LOWER(m.item) LIKE :searchPattern
             OR m.id = :searchId
         )
         ORDER BY m.createdAt DESC

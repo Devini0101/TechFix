@@ -58,19 +58,6 @@
         </div>
 
         <div class="form-group flex flex-col gap-1.5">
-          <label for="itemDescription" class="text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Descrição / Observações (Opcional)
-          </label>
-          <textarea
-            id="itemDescription"
-            rows="2"
-            formControlName="itemDescription"
-            placeholder="Cor, número de série, arranhões pré-existentes..."
-            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none"
-          ></textarea>
-        </div>
-
-        <div class="form-group flex flex-col gap-1.5">
           <label for="itemDefect" class="text-xs font-semibold uppercase tracking-wider text-slate-300">
             Defeito Apresentado <span class="text-rose-500">*</span>
           </label>
@@ -86,6 +73,19 @@
               <i class="fa-solid fa-circle-exclamation text-[10px]"></i> Informe o defeito.
             </small>
           }
+        </div>
+
+        <div class="form-group flex flex-col gap-1.5">
+          <label for="itemDescription" class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            Descrição / Observações (Opcional)
+          </label>
+          <textarea
+            id="itemDescription"
+            rows="2"
+            formControlName="itemDescription"
+            placeholder="Cor, número de série, arranhões pré-existentes..."
+            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none"
+          ></textarea>
         </div>
 
         @if (successMessage) {

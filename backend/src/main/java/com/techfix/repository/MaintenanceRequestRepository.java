@@ -67,4 +67,31 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
     List<MaintenanceRequest> findByDeletedAtIsNullOrderByCreatedAtAsc();
 
     List<MaintenanceRequest> findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(Long clientId);
+
+    @Query("""
+        SELECT m FROM MaintenanceRequest m 
+        WHERE m.deletedAt IS NULL 
+        AND (:status IS NULL OR m.status = :status)
+        AND (
+            :searchPattern IS NULL 
+            OR LOWER(m.item) LIKE :searchPattern 
+            OR m.id = :searchId
+        )
+        ORDER BY m.createdAt DESC
+    """)
+    List<MaintenanceRequest> searchByStatusAndTerm(Status status, String searchPattern, Long searchId);
+
+    @Query("""
+        SELECT m FROM MaintenanceRequest m 
+        WHERE m.deletedAt IS NULL 
+        AND m.client.id = :clientId 
+        AND (:status IS NULL OR m.status = :status)
+        AND (
+            :searchPattern IS NULL 
+            OR LOWER(m.item) LIKE :searchPattern 
+            OR m.id = :searchId
+        )
+        ORDER BY m.createdAt DESC
+    """)
+    List<MaintenanceRequest> searchByStatusAndTermAndClient(Status status, String searchPattern, Long searchId, Long clientId);
 }

@@ -48,64 +48,68 @@ export interface Summary {
 @Injectable({
   providedIn: 'root',
 } )
+
 export class MaintenanceRequestService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/maintenance-request';
+	private readonly http = inject(HttpClient);
+	private readonly apiUrl = 'http://localhost:8080/api/maintenance-request';
 
-  create(payload: MaintenanceRequestPayload ): Observable<unknown> {
-    return this.http.post<MaintenanceRequestPayload>(this.apiUrl, payload, {
-      withCredentials: true,
-    } );
-  }
+	create(payload: MaintenanceRequestPayload ): Observable<unknown> {
+		return this.http.post<MaintenanceRequestPayload>(this.apiUrl, payload, {
+			withCredentials: true,
+		} );
+	}
 
-  getById(id : Number ) : Observable<MaintenanceDetailsResponse> {
-    return this.http
-      .get<MaintenanceDetailsResponse>(`${this.apiUrl}/${id}`, {
-        withCredentials: true,
-      })
-  }
+	getById(id : Number ) : Observable<MaintenanceDetailsResponse> {
+		return this.http
+			.get<MaintenanceDetailsResponse>(`${this.apiUrl}/${id}`, {
+			withCredentials: true,
+			})
+	}
 
-  getSummary () : Observable<Summary> {
-    return this.http.get<Summary>(`${this.apiUrl}/summary`, { withCredentials : true })
-      .pipe(
-        catchError( (error) => {
-          return throwError( () => error);
-        })
-      );
-  }
+	getSummary () : Observable<Summary> {
+		return this.http.get<Summary>(`${this.apiUrl}/summary`, { withCredentials : true })
+			.pipe(
+			catchError( (error) => {
+				return throwError( () => error);
+			})
+			);
+	}
 
-  getMaintenances(status?: string): Observable<MaintenanceDetailsResponse[]> {
-    let params = new HttpParams();
+	getMaintenances(status?: string): Observable<MaintenanceDetailsResponse[]> {
+		let params = new HttpParams();
 
-    // only adds "status=" param into url when status different than ALL
-    if (status && status !== 'ALL') {
-      params = params.set('status', status);
-    }
+		// only adds "status=" param into url when status different than ALL
+		if (status && status !== 'ALL') {
+			params = params.set('status', status);
+		}
 
-    return this.http.get<MaintenanceDetailsResponse[]>(this.apiUrl, {
-      withCredentials: true,
-      params: params
-    });
-  }
+		return this.http.get<MaintenanceDetailsResponse[]>(this.apiUrl, {
+			withCredentials: true,
+			params: params
+		});
+	}
 
-  setBudget(id: Number, budgetValue: Number  ) : Observable<unknown> {
-    const payload = {
-      id: id,
-      value: budgetValue
-    };
-    return this.http.post<void>(`${this.apiUrl}/budget`, payload ,{ withCredentials: true });
-  }
+	setBudget(id: Number, budgetValue: Number  ) : Observable<unknown> {
+		const payload = {
+			id: id,
+			value: budgetValue
+		};
+		return this.http.post<void>(`${this.apiUrl}/budget`, payload ,{ withCredentials: true });
+	}
 
-  setBudgetAnswer(id : Number, answer : String ) : Observable<unknown> {
-    const payload = {
-      id: id,
-      answer : answer
-    };
-    return this.http.post<void>(`${this.apiUrl}/budget-answer`, payload, { withCredentials: true});
-  }
+	setBudgetAnswer(id : Number, answer : String ) : Observable<unknown> {
+		const payload = {
+			id: id,
+			answer : answer
+		};
+		return this.http.post<void>(`${this.apiUrl}/budget-answer`, payload, { withCredentials: true});
+	}
 
-  rescueService(id: Number) : Observable<unknown> {
-    return this.http.post<void>(`${this.apiUrl}/rescue`,  id, { withCredentials : true});
-  }
+	rescueService(id: Number) : Observable<unknown> {
+		return this.http.post<void>(`${this.apiUrl}/rescue`,  id, { withCredentials : true});
+	}
 
+	searchMaintenancesByTermAndStatus(searchTerm: string, status: string): Observable<MaintenanceDetailsResponse[]> {
+		return this.http.get<MaintenanceDetailsResponse[]>(`${this.apiUrl}/search?status=${status}&term=${searchTerm}`, { withCredentials: true });
+  	}
 }

@@ -1,5 +1,6 @@
 package com.techfix.model;
 
+import com.techfix.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,22 +19,28 @@ public class RequestHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "maintenance_request_id", nullable = false)
-    private Long maintenanceRequest;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "maintenance_request_id", nullable = false)
+    private MaintenanceRequest maintenanceRequest;
 
-    @Column(name = "employee_id", nullable = false)
-    private Long employee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private User employee;
 
-    @Column(name = "destination_employee_id")
-    private Long destinationEmployee;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_status")
+    private Status previousStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "new_status")
+    private Status newStatus;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)
-    private String action;
+    private String action; // "STATUS_CHANGE", "CLAIM", "TRANSFER"
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
 }

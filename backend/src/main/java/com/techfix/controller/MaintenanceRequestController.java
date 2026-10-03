@@ -83,7 +83,7 @@ public class MaintenanceRequestController {
     }
 
     @PostMapping("/budget-answer")
-    public ResponseEntity<MaintenanceDetailsResponseDTO> setBudgetAnswer (@Valid @RequestBody BudgetAnswerRequestDTO request, Authentication authentication) {
+    public ResponseEntity<Void> setBudgetAnswer (@Valid @RequestBody BudgetAnswerRequestDTO request, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
         if (!user.getRole().equals(UserRole.client)) {
@@ -97,5 +97,23 @@ public class MaintenanceRequestController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/rescue")
+    public ResponseEntity<Void> rescueMaintenance ( @RequestBody Long id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!user.getRole().equals(UserRole.client)){
+            throw new ForbiddenAccessException("Apenas clientes podem realizar o resgate de sua manutenção");
+        }
+
+        boolean rescued = service.rescueMaintenance(id, user);
+
+        if (!rescued) {
+            throw new UpdateInvalidMaintenanceBudgetException("Não foi possível realizar o resgate da manutenção.");
+        }
+
+        return ResponseEntity.ok().build();
+
     }
 }

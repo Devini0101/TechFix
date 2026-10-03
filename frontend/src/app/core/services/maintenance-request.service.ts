@@ -104,4 +104,8 @@ export class MaintenanceRequestService {
     return this.http.post<void>(`${this.apiUrl}/budget-answer`, payload, { withCredentials: true});
   }
 
+  rescueService(id: Number) : Observable<unknown> {
+    return this.http.post<void>(`${this.apiUrl}/rescue`,  id, { withCredentials : true});
+  }
+
 }

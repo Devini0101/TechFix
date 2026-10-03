@@ -35,4 +35,16 @@ public enum Status {
         return Arrays.stream(Status.values())
                 .anyMatch(status -> status.name().equalsIgnoreCase(code));
     }
+
+    public boolean canTransitionTo(Status nextStatus) {
+        return switch (this) {
+            case OPEN -> nextStatus == QUOTED || nextStatus == REDIRECTED;
+            case QUOTED -> nextStatus == APPROVED || nextStatus == REJECTED;
+            case REJECTED -> nextStatus == APPROVED;
+            case APPROVED -> nextStatus == REPAIRED || nextStatus == REDIRECTED;
+            case REPAIRED -> nextStatus == PAID;
+            case PAID -> nextStatus == FINISHED;
+            default -> false;
+        };
+    }
 }

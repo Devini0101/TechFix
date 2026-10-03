@@ -1,7 +1,7 @@
-<div class="min-h-screen text-slate-100">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 min-w-0">
+<div class="text-slate-100 overflow-hidden">
+    <div class="max-w-full grid grid-cols-1 lg:grid-cols-4 min-w-0">
 
-        <div class="lg:col-span-4 flex flex-col space-y-6">
+        <div class="col-span-1 lg:col-span-4 flex flex-col space-y-6">
             <div class="flex justify-between">
 
                 <div>
@@ -54,7 +54,7 @@
                                 <tr class="hover:bg-slate-800/30 transition-colors">
 
                                     <td class="px-6 py-4 font-medium text-white">{{ maintenance.item }}</td>
-                                    <td class="px-6 py-4 text-slate-400 max-w-xs truncate">{{ maintenance.itemDescription }}</td>
+                                    <td class="px-6 py-4 text-slate-400 max-w-xs truncate">{{ maintenance.itemDescription ? maintenance.itemDescription : 'Não Informada' }}</td>
 
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 border"

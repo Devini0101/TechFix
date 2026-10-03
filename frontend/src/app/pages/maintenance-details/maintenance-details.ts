@@ -29,6 +29,7 @@ export class MaintenanceDetails implements OnInit {
   private location = inject(Location);
   private authService = inject(AuthService);
   readonly role = this.authService.getRole();
+  isHistoryOpened = signal<Boolean>(false);
 
   ngOnInit(): void {
     if (!this.id) {
@@ -73,7 +74,14 @@ export class MaintenanceDetails implements OnInit {
     }
     return this.getCurrentLevel() < (this.STATUS_ORDER[status] ?? 0);
   }
-  
+
+  toggleHistory(){
+    this.isHistoryOpened.set(!this.isHistoryOpened());
+
+    if (this.isHistoryOpened()){
+    } else {
+    }
+  }
 
   goBack(): void {
     this.location.back(); // Retorna para a exata URL anterior no histórico

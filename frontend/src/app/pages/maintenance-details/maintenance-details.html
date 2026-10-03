@@ -135,7 +135,7 @@
         <div class="xl:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="font-bold text-xl flex items-center gap-2 text-white">
-                    <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Orientações & Histórico
+                    <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Linha do tempo & Histórico
                 </h3>
             </div>
 
@@ -152,7 +152,7 @@
                 </div>
             }
 
-            <div class="relative border-l border-slate-700 ml-3 space-y-12 pb-4">
+            <div class="relative border-l border-slate-700 ml-3 space-y-8 pb-4">
 
                 <div class="relative pl-6">
                     @if (isCurrent('OPEN')) {
@@ -306,6 +306,18 @@
                     </div>
                 }
 
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-600">
+                <button class="w-full border border-gray-400 rounded-md p-2 flex justify-between items-center hover:cursor-pointer hover:bg-gray-700"
+                    (click)="toggleHistory()"
+                >
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <p>Histórico</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right  transition-all duration-300 ease-in-out"  [class.rotate-90]="isHistoryOpened()" ></i>
+                </button>
             </div>
         </div>
     </div>

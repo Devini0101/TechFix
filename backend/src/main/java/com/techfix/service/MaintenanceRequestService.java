@@ -6,6 +6,7 @@ import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
+import com.techfix.events.StatusChangedEvent;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
@@ -16,6 +17,7 @@ import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +31,14 @@ public class MaintenanceRequestService {
 
     private final MaintenanceRequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public MaintenanceRequestService(
             MaintenanceRequestRepository requestRepository,
-            CategoryRepository categoryRepository) {
+            CategoryRepository categoryRepository, ApplicationEventPublisher eventPublisher) {
         this.requestRepository = requestRepository;
         this.categoryRepository = categoryRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -147,22 +151,69 @@ public class MaintenanceRequestService {
 
         MaintenanceRequest req = optionalReq.get();
 
-        // Valida se o status atual é de orçacada
-        if (!req.getStatus().equals(Status.QUOTED) && !req.getStatus().equals(Status.REJECTED) ) {
+        // Valida se o status atual é de orçacada ou rejeitada (status quem podem ir para aprovado)
+        if (!req.getStatus().equals(Status.QUOTED)) {
             return false;
         }
 
+        Status previousStatus = req.getStatus();
         String answer = request.answer().toUpperCase();
 
         if (answer.equals("APPROVED")) {
             req.setStatus(Status.APPROVED);
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    req,
+                    previousStatus,
+                    Status.APPROVED,
+                    user,
+                    "BUDGET_APPROVED",
+                    "Orçamento de manutenção APROVADO e inserido no fluxo."
+            ));
         } else if (answer.equals("REJECTED")) {
             req.setStatus(Status.REJECTED);
-        } else {
-            return false;
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    req,
+                    previousStatus,
+                    Status.REJECTED,
+                    user,
+                    "BUDGET_REJECTED",
+                    "Orçamento de manutenção REJEITADA e removida no fluxo."
+            ));
+
         }
 
         requestRepository.save(req);
+
+        return true;
+    }
+
+    @Transactional
+    public boolean rescueMaintenance(Long id, User user) {
+        Optional<MaintenanceRequest> optionalReq = requestRepository.findByIdAndClientId(id, user.getId());
+
+        if (optionalReq.isEmpty()) {
+            return false;
+        }
+
+        MaintenanceRequest req = optionalReq.get();
+
+        //only rejected requests can be rescued
+        if (!req.getStatus().equals(Status.REJECTED) ) {
+            return false;
+        }
+
+        Status previousStatus = req.getStatus();
+
+        req.setStatus(Status.APPROVED);
+        requestRepository.save(req);
+        eventPublisher.publishEvent(new StatusChangedEvent(
+                req,
+                previousStatus,
+                Status.APPROVED,
+                user,
+                "SERVICE_RESCUE",
+                "Manutenção resgatada de REJEITADO para APROVADO e reinserido no fluxo."
+        ));
         return true;
     }
 }

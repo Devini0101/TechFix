@@ -1,17 +1,17 @@
 package com.techfix.service;
 
+import com.techfix.dto.request.ApprovalRequestDTO;
 import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
-import com.techfix.dto.response.MaintenanceResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.events.StatusChangedEvent;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
-import com.techfix.model.enums.Status;
 import com.techfix.model.User;
+import com.techfix.model.enums.Status;
 import com.techfix.model.enums.UserRole;
 import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
@@ -42,15 +42,29 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public MaintenanceRequest create(MaintenanceRequestDTO request, User client) {
-        Category category = categoryRepository.findByCodeAndActiveTrue(request.categoryCode())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+    public MaintenanceRequest create(
+            MaintenanceRequestDTO request,
+            User client
+    ) {
+        Category category = categoryRepository
+                .findByCodeAndActiveTrue(request.categoryCode())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Categoria nao encontrada"
+                        )
+                );
 
-        MaintenanceRequest maintenanceRequest = new MaintenanceRequest();
+        MaintenanceRequest maintenanceRequest =
+                new MaintenanceRequest();
+
         maintenanceRequest.setItem(request.item().trim());
-        maintenanceRequest.setItemDescription(request.itemDescription().trim());
-        maintenanceRequest.setItemDefect(request.itemDefect().trim());
+        maintenanceRequest.setItemDescription(
+                request.itemDescription().trim()
+        );
+        maintenanceRequest.setItemDefect(
+                request.itemDefect().trim()
+        );
         maintenanceRequest.setCategory(category);
         maintenanceRequest.setClient(client);
         maintenanceRequest.setStatus(Status.OPEN);
@@ -58,98 +72,183 @@ public class MaintenanceRequestService {
         return requestRepository.save(maintenanceRequest);
     }
 
-    public List<MaintenanceDetailsResponseDTO> getAll(String statusCode) {
+    public List<MaintenanceDetailsResponseDTO> getAll(
+            String statusCode
+    ) {
         List<MaintenanceRequest> maintenances;
 
-        //traz todos independente do status
-        if ( statusCode == null) {
-            maintenances = requestRepository.findByDeletedAtIsNullOrderByCreatedAtAsc();
+        if (statusCode == null) {
+            maintenances = requestRepository
+                    .findByDeletedAtIsNullOrderByCreatedAtAsc();
         } else {
-
             if (!Status.isValid(statusCode)) {
-                throw new EntityNotFoundException("Não foi possível encontrar o código " + statusCode);
+                throw new EntityNotFoundException(
+                        "Nao foi possivel encontrar o codigo "
+                                + statusCode
+                );
             }
 
-            Status statusEnum = Status.valueOf(statusCode.toUpperCase());
+            Status statusEnum = Status.valueOf(
+                    statusCode.toUpperCase()
+            );
 
-            maintenances = requestRepository.findByStatusAndDeletedAtIsNull(statusEnum);
+            maintenances = requestRepository
+                    .findByStatusAndDeletedAtIsNull(statusEnum);
         }
 
-        return maintenances.stream().map(
-                MaintenanceDetailsResponseDTO::new
-        ).toList();
+        return maintenances.stream()
+                .map(MaintenanceDetailsResponseDTO::new)
+                .toList();
     }
 
-    public List<MaintenanceDetailsResponseDTO> getAllByClient(Long clientId, String statusCode) {
+    public List<MaintenanceDetailsResponseDTO> getAllByClient(
+            Long clientId,
+            String statusCode
+    ) {
         List<MaintenanceRequest> maintenances;
 
-        if ( statusCode == null) {
-            maintenances = requestRepository.findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(clientId);
+        if (statusCode == null) {
+            maintenances = requestRepository
+                    .findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(
+                            clientId
+                    );
         } else {
-
             if (!Status.isValid(statusCode)) {
-                throw new EntityNotFoundException("Não foi possível encontrar o código " + statusCode);
+                throw new EntityNotFoundException(
+                        "Nao foi possivel encontrar o codigo "
+                                + statusCode
+                );
             }
 
-            Status statusEnum = Status.valueOf(statusCode.toUpperCase());
+            Status statusEnum = Status.valueOf(
+                    statusCode.toUpperCase()
+            );
 
-            maintenances = requestRepository.findByStatusAndClientIdAndDeletedAtIsNull(statusEnum, clientId);
+            maintenances = requestRepository
+                    .findByStatusAndClientIdAndDeletedAtIsNull(
+                            statusEnum,
+                            clientId
+                    );
         }
 
-        return maintenances.stream().map(
-                MaintenanceDetailsResponseDTO::new
-        ).toList();
+        return maintenances.stream()
+                .map(MaintenanceDetailsResponseDTO::new)
+                .toList();
     }
 
-    public MaintenanceSummaryResponseDTO getMaintenancesSummary () {
+    public MaintenanceSummaryResponseDTO getMaintenancesSummary() {
         return requestRepository.getMaintenancesSummary();
     }
 
-    public MaintenanceSummaryResponseDTO getMaintenancesSummaryByClient (Long clientId) {
-        return requestRepository.getMaintenancesSummaryByClient(clientId);
+    public MaintenanceSummaryResponseDTO
+    getMaintenancesSummaryByClient(Long clientId) {
+        return requestRepository
+                .getMaintenancesSummaryByClient(clientId);
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceDetailsResponseDTO findById(String id, User client) {
+    public MaintenanceDetailsResponseDTO findById(
+            String id,
+            User client
+    ) {
         Long maintenanceId = Long.parseLong(id);
 
-        //caso do funcionário (pode ver todos)
-        if (client.getRole().equals(UserRole.employee)){
-            return requestRepository.findById(maintenanceId)
+        if (client.getRole().equals(UserRole.employee)) {
+            return requestRepository
+                    .findById(maintenanceId)
                     .map(MaintenanceDetailsResponseDTO::new)
-                    .orElseThrow( () -> new EntityNotFoundException("Solicitação não existente"));
+                    .orElseThrow(() ->
+                            new EntityNotFoundException(
+                                    "Solicitacao nao existente"
+                            )
+                    );
         }
 
-        return requestRepository.findByIdAndClientId(maintenanceId, client.getId())
+        return requestRepository
+                .findByIdAndClientId(
+                        maintenanceId,
+                        client.getId()
+                )
                 .map(MaintenanceDetailsResponseDTO::new)
-                .orElseThrow(() -> new EntityNotFoundException("Solicitação de serviço não encontrada"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Solicitacao de servico nao encontrada"
+                        )
+                );
     }
 
+    @Transactional
+    public void approveService(
+            ApprovalRequestDTO dto,
+            User client
+    ) {
+        MaintenanceRequest request = requestRepository
+                .findByIdAndClientId(
+                        dto.id(),
+                        client.getId()
+                )
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Solicitacao nao encontrada para este cliente"
+                        )
+                );
+
+        if (request.getStatus() != Status.QUOTED) {
+            throw new InvalidMaintenanceApprovalException(
+                    "Somente servicos orcados podem ser aprovados"
+            );
+        }
+
+        request.setStatus(Status.APPROVED);
+
+        requestRepository.save(request);
+    }
 
     @Transactional
-    public void setEstimatedBudget( BudgetRequestDTO dto, User user) {
-        MaintenanceRequest request = requestRepository.findById(dto.id())
-                .orElseThrow( () -> new EntityNotFoundException("Serviço não encontrado"));
+    public void setEstimatedBudget(
+            BudgetRequestDTO dto,
+            User user
+    ) {
+        MaintenanceRequest request = requestRepository
+                .findById(dto.id())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Servico nao encontrado"
+                        )
+                );
 
-        if (!request.getStatus().equals(Status.OPEN) && !request.getStatus().equals(Status.QUOTED) ) {
-            throw new UpdateInvalidMaintenanceBudgetException("Não é possível alterar o orçamento de uma manuteção que não seja nova ou esteja em orçamento.");
+        if (!request.getStatus().equals(Status.OPEN)
+                && !request.getStatus().equals(Status.QUOTED)) {
+            throw new UpdateInvalidMaintenanceBudgetException(
+                    "Nao e possivel alterar o orcamento"
+                            + " de uma manutencao invalida."
+            );
         }
 
         request.setEstimatedPrice(dto.value());
         request.setStatus(Status.QUOTED);
         request.setResponsibleEmployee(user);
+
         requestRepository.save(request);
     }
 
     @Transactional
-    public boolean setBudgetAnswer(@Valid BudgetAnswerRequestDTO request, User user) {
-        Optional<MaintenanceRequest> optionalReq = requestRepository.findByIdAndClientId(request.id(), user.getId());
+    public boolean setBudgetAnswer(
+            @Valid BudgetAnswerRequestDTO request,
+            User user
+    ) {
+        Optional<MaintenanceRequest> optionalRequest =
+                requestRepository.findByIdAndClientId(
+                        request.id(),
+                        user.getId()
+                );
 
-        if (optionalReq.isEmpty()) {
+        if (optionalRequest.isEmpty()) {
             return false;
         }
 
-        MaintenanceRequest req = optionalReq.get();
+        MaintenanceRequest maintenanceRequest =
+                optionalRequest.get();
 
         // Valida se o status atual é de orçacada ou rejeitada (status quem podem ir para aprovado)
         if (!req.getStatus().equals(Status.QUOTED)) {

@@ -69,26 +69,55 @@ public class GlobalExceptionHandler{
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-
-    @ExceptionHandler(UpdateInvalidMaintenanceBudgetException.class)
-    public ResponseEntity<StandardError> handleUpdateInvalidMaintenanceBudgetException ( UpdateInvalidMaintenanceBudgetException ex, HttpServletRequest req) {
+    
+      @ExceptionHandler(InvalidMaintenanceApprovalException.class)
+    public ResponseEntity<StandardError> handleInvalidMaintenanceApprovalException(
+            InvalidMaintenanceApprovalException ex,
+            HttpServletRequest request
+    ) {
         StandardError error = new StandardError(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request",
                 ex.getMessage()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
+    @ExceptionHandler(UpdateInvalidMaintenanceBudgetException.class)
+    public ResponseEntity<StandardError> handleUpdateInvalidMaintenanceBudgetException(
+            UpdateInvalidMaintenanceBudgetException ex,
+            HttpServletRequest request
+    ) {
+        StandardError error = new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
     }
 
     @ExceptionHandler(ForbiddenAccessException.class)
-    public ResponseEntity<StandardError> handleForbiddenAccessException (ForbiddenAccessException ex, HttpServletRequest req) {
+    public ResponseEntity<StandardError> handleForbiddenAccessException(
+            ForbiddenAccessException ex,
+            HttpServletRequest request
+    ) {
         StandardError error = new StandardError(
                 LocalDateTime.now(),
-                HttpStatus.FORBIDDEN.value(), // 403
+                HttpStatus.FORBIDDEN.value(),
                 "Forbidden",
                 ex.getMessage()
         );
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(error);
     }
 }

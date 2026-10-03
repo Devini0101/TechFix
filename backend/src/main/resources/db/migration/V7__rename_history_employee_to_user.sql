@@ -1,0 +1,1 @@
+ALTER TABLE request_history RENAME COLUMN employee_id TO user_id;

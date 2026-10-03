@@ -8,7 +8,7 @@ public record StatusChangedEvent(
         MaintenanceRequest maintenanceRequest,
         Status previousStatus,
         Status newStatus,
-        User responsibleEmployee,
+        User responsible,
         String action,
         String description
 ) {

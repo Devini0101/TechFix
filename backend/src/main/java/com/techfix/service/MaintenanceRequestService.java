@@ -228,9 +228,19 @@ public class MaintenanceRequestService {
             );
         }
 
+        Status previousStatus = request.getStatus();
         request.setEstimatedPrice(dto.value());
         request.setStatus(Status.QUOTED);
         request.setResponsibleEmployee(user);
+
+        eventPublisher.publishEvent(new StatusChangedEvent(
+                request,
+                previousStatus,
+                Status.APPROVED,
+                user,
+                "ORÇADA",
+                "Orçamento de manutenção realizado."
+        ));
 
         requestRepository.save(request);
     }
@@ -263,12 +273,13 @@ public class MaintenanceRequestService {
 
         if (answer.equals("APPROVED")) {
             req.setStatus(Status.APPROVED);
+            req.setPrice(req.getEstimatedPrice());
             eventPublisher.publishEvent(new StatusChangedEvent(
                     req,
                     previousStatus,
                     Status.APPROVED,
                     user,
-                    "BUDGET_APPROVED",
+                    "ORÇAMENTO APROVADO",
                     "Orçamento de manutenção APROVADO e inserido no fluxo."
             ));
         } else if (answer.equals("REJECTED")) {
@@ -278,7 +289,7 @@ public class MaintenanceRequestService {
                     previousStatus,
                     Status.REJECTED,
                     user,
-                    "BUDGET_REJECTED",
+                    "ORÇAMENTO REJEITADO",
                     "Orçamento de manutenção REJEITADA e removida no fluxo."
             ));
 
@@ -307,13 +318,14 @@ public class MaintenanceRequestService {
         Status previousStatus = req.getStatus();
 
         req.setStatus(Status.APPROVED);
+        req.setPrice(req.getEstimatedPrice());
         requestRepository.save(req);
         eventPublisher.publishEvent(new StatusChangedEvent(
                 req,
                 previousStatus,
                 Status.APPROVED,
                 user,
-                "SERVICE_RESCUE",
+                "SERVIÇO RESGATADO",
                 "Manutenção resgatada de REJEITADO para APROVADO e reinserido no fluxo."
         ));
         return true;

@@ -48,7 +48,7 @@ export interface Summary {
 export interface MaintenanceHistory {
 	action: string | null;
     description: string | null;
-    employeeName: string | null;
+    responsible: string | null;
     newStatus: string | null;
     previousStatus: string | null;
     createdAt: string;

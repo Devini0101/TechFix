@@ -15,7 +15,7 @@ public record MaintenanceHistoryResponseDTO(
         this(
                 h.getAction(),
                 h.getDescription(),
-                h.getEmployee() != null ? h.getEmployee().getName() : null,
+                h.getResponsible() != null ? h.getResponsible().getName() : null,
                 h.getNewStatus() != null ? h.getNewStatus().getName() : null,
                 h.getPreviousStatus() != null ? h.getPreviousStatus().getName() : null,
                 h.getCreatedAt()

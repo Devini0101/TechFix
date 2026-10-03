@@ -3,6 +3,7 @@ package com.techfix.listener;
 import com.techfix.events.StatusChangedEvent;
 import com.techfix.model.RequestHistory;
 import com.techfix.repository.RequestHistoryRepository;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -15,13 +16,13 @@ public class StatusHistoryListener {
         this.historyRepository = historyRepository;
     }
 
-    @TransactionalEventListener
+    @EventListener
     public void handleStatusChange(StatusChangedEvent event) {
         RequestHistory history = new RequestHistory();
         history.setMaintenanceRequest(event.maintenanceRequest());
         history.setPreviousStatus(event.previousStatus());
         history.setNewStatus(event.newStatus());
-        history.setEmployee(event.responsibleEmployee());
+        history.setResponsible(event.responsible());
         history.setAction(event.action());
         history.setDescription(event.description());
 

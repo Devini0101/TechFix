@@ -48,9 +48,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
 
-        <!-- col da esquerda (Infos e Valores) -->
+        <!-- col da esquerda (infos e valores) -->
         <div class="xl:col-span-5 flex flex-col gap-6">
 
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
@@ -74,7 +74,6 @@
                 <div class="grid grid-cols-2 gap-2 mt-4">
                     <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
                         <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Data de Criação</p>
-                        <!-- Supondo uso do DatePipe do Angular -->
                         <p class="text-sm font-semibold text-slate-300">{{ order.createdAt | date:'dd/M/yyyy HH:mm' }}</p>
                     </div>
                     <div class="bg-slate-950/50 rounded-lg p-3 border border-slate-800/50">
@@ -132,7 +131,7 @@
             </div>
         </div>
 
-        <div class="xl:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+        <div class="xl:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg ">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="font-bold text-xl flex items-center gap-2 text-white">
                     <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Linha do tempo & Histórico
@@ -249,7 +248,6 @@
                         </p>
                     </div>
 
-                    <!-- 6. FINISHED (Finalizada) -->
                     <div class="relative pl-6">
                         @if (isCurrent('FINISHED')) {
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
@@ -281,7 +279,6 @@
                         </p>
                     </div>
 
-                    <!-- 7. DELIVERED (Entregue) -->
                     <div class="relative pl-6">
                         @if (isCurrent('DELIVERED')) {
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
@@ -318,28 +315,25 @@
                     <i class="fa-solid fa-chevron-right  transition-all duration-300 ease-in-out"  [class.rotate-90]="isHistoryOpened()" ></i>
                 </button>
                 @if (isHistoryOpened() && histories() !== null) {
-                    <div class="mt-4 space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar animate-fade-in-down">
+                    <div class="mt-4 space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar animate-fade-in-down border border-slate-700 rounded-lg p-3 bg-slate-800/50">
 
                         @for (hist of histories(); track hist.createdAt) {
                             <div class="bg-slate-800/80 p-3.5 rounded-lg border border-slate-700 shadow-sm flex flex-col gap-2">
-                                <!-- Cabeçalho do Card: Ação e Data -->
                                 <div class="flex justify-between items-start">
                                     <span class="text-xs font-bold text-blue-400 bg-blue-900/30 px-2 py-0.5 rounded border border-blue-800/50">
-                                        {{ hist.action }} <!-- Ex: RESGATE, MUDANCA_STATUS -->
+                                        {{ hist.action }}
                                     </span>
                                     <span class="text-[11px] font-mono text-slate-500">
                                         {{ hist.createdAt | date:'dd/MM/yyyy HH:mm' }}
                                     </span>
                                 </div>
-                                <!-- Descrição da transição -->
                                 <p class="text-sm text-slate-300 leading-relaxed">
                                     {{ hist.description }}
                                 </p>
-                                <!-- Quem executou a ação -->
-                                @if (hist.employeeName) {
+                                @if (hist.responsible) {
                                     <div class="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
                                         <i class="fa-solid fa-user-gear text-[10px]"></i>
-                                        <span>Ação realizada por: <strong class="text-slate-300">{{ hist.employeeName }}</strong></span>
+                                        <span>Ação realizada por: <strong class="text-slate-300">{{ hist.responsible }}</strong></span>
                                     </div>
                                 }
                             </div>
@@ -356,7 +350,6 @@
     </div>
 </div>
 } @else if (errorMessage()) {
-    <!-- Estado de Erro (403, 404, etc) -->
     <div class="h-screen flex flex-col justify-center items-center font-sans">
         <div class="bg-slate-900 border border-red-900/40 rounded-xl p-8 max-w-md w-full text-center shadow-2xl">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
@@ -373,11 +366,10 @@
         </div>
     </div>
 } @else {
-    <!-- Skeleton / Loading State -->
     <div class="h-screen flex justify-center items-center">
         <div class="flex flex-col items-center gap-3">
             <i class="fa-solid fa-circle-notch fa-spin text-4xl text-slate-600"></i>
-            <p class="text-slate-400 font-semibold animate-pulse">Carregando detalhes da OS...</p>
+            <p class="text-slate-400 font-semibold animate-pulse">Carregando detalhes da manutenção...</p>
         </div>
     </div>
 }

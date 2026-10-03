@@ -24,8 +24,8 @@ public class RequestHistory {
     private MaintenanceRequest maintenanceRequest;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User responsible;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "previous_status")

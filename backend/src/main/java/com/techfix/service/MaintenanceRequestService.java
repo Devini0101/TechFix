@@ -5,12 +5,14 @@ import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
+import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.events.StatusChangedEvent;
 import com.techfix.exception.InvalidMaintenanceApprovalException;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.RequestHistory;
 import com.techfix.model.User;
 import com.techfix.model.enums.Status;
 import com.techfix.model.enums.UserRole;
@@ -348,5 +350,23 @@ public class MaintenanceRequestService {
         }
 
         return requests.stream().map(MaintenanceDetailsResponseDTO::new).toList();
+    }
+
+    public List<MaintenanceHistoryResponseDTO> getMaintenanceHistory(Long id, User user) {
+        Optional<MaintenanceRequest> maintenance;
+
+        if (user.getRole() == UserRole.client) {
+            maintenance = requestRepository.findByIdAndClientId(id, user.getId());
+        } else {
+            maintenance = requestRepository.findById(id);
+        }
+
+        if (!maintenance.isPresent()) {
+            throw new EntityNotFoundException("Manutenção não encontrada!");
+        }
+
+        List<RequestHistory> history = maintenance.get().getHistory();
+
+        return history.stream().map(MaintenanceHistoryResponseDTO::new).toList();
     }
 }

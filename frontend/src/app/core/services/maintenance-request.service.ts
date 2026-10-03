@@ -45,6 +45,15 @@ export interface Summary {
   canceled: number | null
 }
 
+export interface MaintenanceHistory {
+	action: string | null;
+    description: string | null;
+    employeeName: string | null;
+    newStatus: string | null;
+    previousStatus: string | null;
+    createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root',
 } )
@@ -112,4 +121,8 @@ export class MaintenanceRequestService {
 	searchMaintenancesByTermAndStatus(searchTerm: string, status: string): Observable<MaintenanceDetailsResponse[]> {
 		return this.http.get<MaintenanceDetailsResponse[]>(`${this.apiUrl}/search?status=${status}&term=${searchTerm}`, { withCredentials: true });
   	}
+
+	getHistory(id: Number): Observable<MaintenanceHistory[]> {
+		return this.http.get<MaintenanceHistory[]>(`${this.apiUrl}/${id}/history`, { withCredentials: true });
+	}
 }

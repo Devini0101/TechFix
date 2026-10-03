@@ -5,6 +5,7 @@ import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
+import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
@@ -89,6 +90,15 @@ public class MaintenanceRequestController {
                 client.getId(),
                 formattedStatus
         );
+    }
+
+    @GetMapping("/{id}/history")
+    public ResponseEntity<List<MaintenanceHistoryResponseDTO>> getHistory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        List<MaintenanceHistoryResponseDTO> maintenanceHistory = service.getMaintenanceHistory(id, user);
+        return ResponseEntity.ok(maintenanceHistory);
     }
 
     @GetMapping("/{id}")

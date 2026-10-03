@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+import { MaintenanceDetailsResponse, MaintenanceHistory, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -30,6 +30,7 @@ export class MaintenanceDetails implements OnInit {
   private authService = inject(AuthService);
   readonly role = this.authService.getRole();
   isHistoryOpened = signal<Boolean>(false);
+  histories = signal<MaintenanceHistory[] | null>(null);
 
   ngOnInit(): void {
     if (!this.id) {
@@ -79,6 +80,12 @@ export class MaintenanceDetails implements OnInit {
     this.isHistoryOpened.set(!this.isHistoryOpened());
 
     if (this.isHistoryOpened()){
+      this.service.getHistory(Number(this.id)).subscribe({
+        next: (data) => this.histories.set(data),
+        error: (err: HttpErrorResponse) => {
+          console.error("Erro ao puxar histórico", err);
+        }
+      });
     } else {
     }
   }

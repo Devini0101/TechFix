@@ -5,11 +5,14 @@ import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
+import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.events.StatusChangedEvent;
+import com.techfix.exception.InvalidMaintenanceApprovalException;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.RequestHistory;
 import com.techfix.model.User;
 import com.techfix.model.enums.Status;
 import com.techfix.model.enums.UserRole;
@@ -247,7 +250,7 @@ public class MaintenanceRequestService {
             return false;
         }
 
-        MaintenanceRequest maintenanceRequest =
+        MaintenanceRequest req =
                 optionalRequest.get();
 
         // Valida se o status atual é de orçacada ou rejeitada (status quem podem ir para aprovado)
@@ -314,5 +317,56 @@ public class MaintenanceRequestService {
                 "Manutenção resgatada de REJEITADO para APROVADO e reinserido no fluxo."
         ));
         return true;
+    }
+
+    public List<MaintenanceDetailsResponseDTO> searchByStatusAndTerm(String status, String term, User user) {
+
+        Status statusEnum = null;
+        if (status != null && !status.isBlank() && !status.equalsIgnoreCase("ALL")) {
+            if (!Status.isValid(status)) {
+                throw new IllegalArgumentException("Status inválido ");
+            }
+            statusEnum = Status.valueOf(status.toUpperCase());
+        }
+
+        Long searchId = null;
+        String searchPattern = null;
+
+        if (term != null && !term.isBlank()) {
+            term = term.trim();
+            // Se so tiver números, converte para buscar pelo id
+            if (term.matches("\\d+")) {
+                searchId = Long.parseLong(term);
+            }
+            searchPattern = "%" + term.toLowerCase() + "%";
+        }
+
+        List<MaintenanceRequest> requests;
+
+        if (user.getRole().equals(UserRole.employee)) {
+            requests = requestRepository.searchByStatusAndTerm(statusEnum, searchPattern, searchId);
+        } else {
+            requests = requestRepository.searchByStatusAndTermAndClient(statusEnum, searchPattern, searchId, user.getId());
+        }
+
+        return requests.stream().map(MaintenanceDetailsResponseDTO::new).toList();
+    }
+
+    public List<MaintenanceHistoryResponseDTO> getMaintenanceHistory(Long id, User user) {
+        Optional<MaintenanceRequest> maintenance;
+
+        if (user.getRole() == UserRole.client) {
+            maintenance = requestRepository.findByIdAndClientId(id, user.getId());
+        } else {
+            maintenance = requestRepository.findById(id);
+        }
+
+        if (!maintenance.isPresent()) {
+            throw new EntityNotFoundException("Manutenção não encontrada!");
+        }
+
+        List<RequestHistory> history = maintenance.get().getHistory();
+
+        return history.stream().map(MaintenanceHistoryResponseDTO::new).toList();
     }
 }

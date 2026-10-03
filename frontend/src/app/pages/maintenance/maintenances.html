@@ -29,8 +29,8 @@
             </p>
         </div>
 
-        <div class="bg-yellow-800 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
-            <div class="flex items-center border-b border-gray-300 gap-2 text-yellow-200">
+        <div class="bg-white text-gray-600 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
+            <div class="flex items-center border-b border-gray-300 gap-2 ">
                 @if (summary()?.waitingApproval) {
                     <i class="fa-solid fa-bell fa-sm animate-pulse"></i>
                 } @else {
@@ -47,7 +47,7 @@
             </p>
         </div>
 
-        <div class="bg-gray-600 p-2 flex flex-col items-center rounded-md gap-1">
+        <div class="bg-white text-gray-600 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
             <div class="flex items-center gap-2 border-b border-gray-300">
                 <i class="fa-solid fa-gears fa-sm"></i>
                 <p>Manutenção:</p>
@@ -61,7 +61,7 @@
             </p>
         </div>
 
-        <div class="bg-green-700 p-2 flex flex-col items-center rounded-md gap-1">
+        <div class="bg-white text-gray-600 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
             <div class="flex items-center gap-2 border-b border-gray-300">
                 <i class="fa-solid fa-circle-check fa-sm"></i>
                 <p>Concluídos:</p>
@@ -75,7 +75,7 @@
             </p>
         </div>
 
-        <div class="bg-red-700 p-2 flex flex-col items-center rounded-md gap-1">
+        <div class="bg-white text-gray-600 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
             <div class="flex items-center gap-2 border-b border-gray-300">
                 <i class="fa-solid fa-circle-xmark fa-sm"></i>
                 <p>Cancelados:</p>
@@ -91,9 +91,14 @@
     </div>
 
     <div class="mt-3 bg-gray-800 rounded-lg p-2 flex items-center">
-        <div class="bg-gray-900 rounded-md flex items-center gap-2 p-2">
-            <i class="fa-solid fa-magnifying-glass fa-sm"></i>
-            <input class="w-full" type="text" placeholder="Buscar pelo número do serviço ou nome do produto">
+        <div class="group relative flex items-center gap-3 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-300 focus-within:bg-slate-800 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 shadow-sm w-full max-w-2xl">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 group-focus-within:text-blue-400 transition-colors"></i>
+            <input
+                type="text"
+                [formControl]="searchControl"
+                class="w-full bg-transparent border-none outline-none text-slate-100 placeholder:text-slate-500 text-sm font-medium"
+                placeholder="Buscar pelo nº do serviço ou item..."
+            >
         </div>
         <div class="flex items-center p-2 justify-center gap-3 ml-auto">
             <button (click)="changeFilter('QUOTED')"

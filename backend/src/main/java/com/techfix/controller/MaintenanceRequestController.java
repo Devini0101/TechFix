@@ -5,6 +5,7 @@ import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
+import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
@@ -15,7 +16,7 @@ import com.techfix.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,10 +42,8 @@ public class MaintenanceRequestController {
     @PostMapping
     public ResponseEntity<MaintenanceRequest> create(
             @Valid @RequestBody MaintenanceRequestDTO request,
-            Authentication authentication
+            @AuthenticationPrincipal User client
     ) {
-        User client = (User) authentication.getPrincipal();
-
         service.create(request, client);
 
         return ResponseEntity
@@ -54,29 +53,36 @@ public class MaintenanceRequestController {
 
     @GetMapping("/summary")
     public MaintenanceSummaryResponseDTO getMaintenanceSummary(
-            Authentication authentication
+            @AuthenticationPrincipal User user
     ) {
-        User client = (User) authentication.getPrincipal();
 
-        if (client.getRole().equals(UserRole.employee)) {
+        if (user.getRole() == UserRole.employee) {
             return service.getMaintenancesSummary();
         }
 
-        return service.getMaintenancesSummaryByClient(client.getId());
+        return service.getMaintenancesSummaryByClient(user.getId());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MaintenanceDetailsResponseDTO>> searchMaintenancesByStatusAndTerm(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String term,
+            @AuthenticationPrincipal User user
+    ){
+        List<MaintenanceDetailsResponseDTO> result = service.searchByStatusAndTerm(status, term, user);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping
     public List<MaintenanceDetailsResponseDTO> getAll(
-            Authentication authentication,
+            @AuthenticationPrincipal User client,
             @RequestParam(required = false) String status
     ) {
-        User client = (User) authentication.getPrincipal();
-
         String formattedStatus = status != null
                 ? status.toUpperCase()
                 : null;
 
-        if (client.getRole().equals(UserRole.employee)) {
+        if (client.getRole() == UserRole.employee) {
             return service.getAll(formattedStatus);
         }
 
@@ -86,12 +92,20 @@ public class MaintenanceRequestController {
         );
     }
 
+    @GetMapping("/{id}/history")
+    public ResponseEntity<List<MaintenanceHistoryResponseDTO>> getHistory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        List<MaintenanceHistoryResponseDTO> maintenanceHistory = service.getMaintenanceHistory(id, user);
+        return ResponseEntity.ok(maintenanceHistory);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<MaintenanceDetailsResponseDTO> findById(
             @PathVariable String id,
-            Authentication authentication
+            @AuthenticationPrincipal User client
     ) {
-        User client = (User) authentication.getPrincipal();
 
         MaintenanceDetailsResponseDTO response =
                 service.findById(id, client);
@@ -102,17 +116,15 @@ public class MaintenanceRequestController {
     @PostMapping("/approve")
     public ResponseEntity<Void> approveService(
             @Valid @RequestBody ApprovalRequestDTO request,
-            Authentication authentication
+            @AuthenticationPrincipal User user
     ) {
-        User client = (User) authentication.getPrincipal();
-
-        if (!client.getRole().equals(UserRole.client)) {
+        if (user.getRole() != UserRole.client) {
             throw new ForbiddenAccessException(
                     "Somente clientes podem aprovar servicos."
             );
         }
 
-        service.approveService(request, client);
+        service.approveService(request, user);
 
         return ResponseEntity.ok().build();
     }
@@ -120,11 +132,10 @@ public class MaintenanceRequestController {
     @PostMapping("/budget")
     public ResponseEntity<Void> setEstimatedBudget(
             @Valid @RequestBody BudgetRequestDTO request,
-            Authentication authentication
+            @AuthenticationPrincipal User user
     ) {
-        User user = (User) authentication.getPrincipal();
 
-        if (!user.getRole().equals(UserRole.employee)) {
+        if (user.getRole() != UserRole.employee) {
             throw new ForbiddenAccessException(
                     "Clientes nao possuem permissao para realizar orcamentos."
             );
@@ -136,17 +147,15 @@ public class MaintenanceRequestController {
     }
 
     @PostMapping("/budget-answer")
-    public ResponseEntity<Void> setBudgetAnswer (@Valid @RequestBody BudgetAnswerRequestDTO request, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+    public ResponseEntity<Void> setBudgetAnswer (@Valid @RequestBody BudgetAnswerRequestDTO request, @AuthenticationPrincipal User user) {
 
-        if (!user.getRole().equals(UserRole.client)) {
+        if (user.getRole() != UserRole.client) {
             throw new ForbiddenAccessException(
                     "Apenas clientes devem aprovar ou recusar um orcamento proposto."
             );
         }
 
         boolean answered = service.setBudgetAnswer(request, user);
-
         if (!answered) {
             throw new UpdateInvalidMaintenanceBudgetException(
                     "Nao foi possivel retornar uma resposta ao orcamento apresentado."
@@ -157,10 +166,8 @@ public class MaintenanceRequestController {
     }
 
     @PostMapping("/rescue")
-    public ResponseEntity<Void> rescueMaintenance ( @RequestBody Long id, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!user.getRole().equals(UserRole.client)){
+    public ResponseEntity<Void> rescueMaintenance ( @RequestBody Long id, @AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.client){
             throw new ForbiddenAccessException("Apenas clientes podem realizar o resgate de sua manutenção");
         }
 
@@ -171,6 +178,5 @@ public class MaintenanceRequestController {
         }
 
         return ResponseEntity.ok().build();
-
     }
 }

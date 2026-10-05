@@ -1,18 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
-import { InputComponent } from '../../components/input/input';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [InputComponent, FormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-	email : string = '';
-	password : string = '';
+	private readonly formBuilder = inject(FormBuilder);
+	protected readonly loginForm = this.formBuilder.nonNullable.group({
+		email : ['', [Validators.required, Validators.maxLength(255)]],
+		password : ['', [Validators.required, Validators.maxLength(255)]],
+	});
+
 	isLoginMode : boolean = true;
 
 	registerName : string = '';
@@ -32,17 +35,12 @@ export class Login {
 
 		this.hasError.set(false);
 
-		if (!this.email || !this.password) {
-			this.hasError.set(true);
+		if (this.loginForm.invalid) {
+			this.loginForm.markAllAsTouched();
 			return;
 		}
 
-		const credentials = {
-			email : this.email,
-			password : this.password,
-		}
-
-		this.authService.login(credentials).subscribe({
+		this.authService.login(this.loginForm.getRawValue()).subscribe({
 			next: () => {
 				this.router.navigate(['/dashboard']);
 			},

@@ -17,18 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // Injete se estiver criptografando senhas
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenConfig tokenConfig;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenConfig tokenConfig) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenConfig tokenConfig, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenConfig = tokenConfig;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -51,13 +55,21 @@ public class UserService {
         newUser.setEmail(request.email());
         newUser.setCpf(request.cpf());
         newUser.setPhone(request.phone());
-        newUser.setPassword(passwordEncoder.encode(request.password()));
+
+        //generates a random 4 digits password
+        SecureRandom random = new SecureRandom();
+        int num = random.nextInt(10000);
+        String rawPassword = String.format("%04d", num);
+
+        //encrypt and stores
+        newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAddress(newAddress);
 
         UserRole role = (request.role() != null) ? request.role() : UserRole.client;
         newUser.setRole(role);
 
         User savedUser = userRepository.save(newUser);
+        emailService.sendWelcomeMail(newUser.getEmail(), rawPassword);
         return new RegisterUserResponseDTO(savedUser.getName(), savedUser.getEmail());
     }
 

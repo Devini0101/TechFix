@@ -79,7 +79,7 @@ export class MaintenanceDetails implements OnInit {
   toggleHistory(){
     this.isHistoryOpened.set(!this.isHistoryOpened());
 
-    if (this.isHistoryOpened()){
+    if (this.isHistoryOpened() && this.histories() === null){
       this.service.getHistory(Number(this.id)).subscribe({
         next: (data) => this.histories.set(data),
         error: (err: HttpErrorResponse) => {

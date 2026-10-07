@@ -74,22 +74,10 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping
-    public List<MaintenanceDetailsResponseDTO> getAll(
-            @AuthenticationPrincipal User client,
-            @RequestParam(required = false) String status
-    ) {
-        String formattedStatus = status != null
-                ? status.toUpperCase()
-                : null;
+    public List<MaintenanceDetailsResponseDTO> getAll(@AuthenticationPrincipal User client, @RequestParam(required = false) String status) {
+        String formattedStatus = status != null ? status.toUpperCase() : null;
 
-        if (client.getRole() == UserRole.employee) {
-            return service.getAll(formattedStatus);
-        }
-
-        return service.getAllByClient(
-                client.getId(),
-                formattedStatus
-        );
+        return service.getAll(formattedStatus, client);
     }
 
     @GetMapping("/{id}/history")
@@ -102,14 +90,8 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MaintenanceDetailsResponseDTO> findById(
-            @PathVariable String id,
-            @AuthenticationPrincipal User client
-    ) {
-
-        MaintenanceDetailsResponseDTO response =
-                service.findById(id, client);
-
+    public ResponseEntity<MaintenanceDetailsResponseDTO> findById(@PathVariable String id, @AuthenticationPrincipal User user) {
+        MaintenanceDetailsResponseDTO response = service.findById(id, user);
         return ResponseEntity.ok(response);
     }
 

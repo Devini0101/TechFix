@@ -1,6 +1,7 @@
 package com.techfix.exception;
 
 import com.techfix.dto.StandardError;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -118,6 +119,20 @@ public class GlobalExceptionHandler{
 
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
+                .body(error);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<StandardError> handleMessagingException (MessagingException ex, HttpServletRequest request) {
+        StandardError error = new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                "Forbidden",
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_CONTENT)
                 .body(error);
     }
 }

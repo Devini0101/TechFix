@@ -4,10 +4,11 @@ import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { Tooltip } from '../../directives/tooltip';
 
 @Component({
   selector: 'app-maintenance-details',
-  imports: [DatePipe, CurrencyPipe, RouterLink],
+  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip],
   templateUrl: './maintenance-details.html',
   styleUrl: './maintenance-details.css',
 })

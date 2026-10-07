@@ -8,6 +8,7 @@ import com.techfix.dto.response.RegisterUserResponseDTO;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterUserResponseDTO> register (@Valid @RequestBody RegisterUserRequestDTO request){
+    public ResponseEntity<RegisterUserResponseDTO> register (@Valid @RequestBody RegisterUserRequestDTO request) throws MessagingException {
 
         RegisterUserResponseDTO response = userService.registerUser(request);
         return ResponseEntity.ok().body(response);

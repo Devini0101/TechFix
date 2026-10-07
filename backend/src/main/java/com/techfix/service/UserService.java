@@ -10,6 +10,7 @@ import com.techfix.model.Address;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,7 @@ public class UserService {
     }
 
     @Transactional
-    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) throws UserAlreadyExistsException{
+    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) throws UserAlreadyExistsException, MessagingException {
 
         if ( userRepository.findByEmail(request.email()).isPresent() || userRepository.findByCpf(request.cpf()).isPresent() ) {
             throw new UserAlreadyExistsException("Usuário já cadastrado.");

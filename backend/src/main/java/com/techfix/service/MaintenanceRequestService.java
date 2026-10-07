@@ -75,68 +75,21 @@ public class MaintenanceRequestService {
         return requestRepository.save(maintenanceRequest);
     }
 
-    public List<MaintenanceDetailsResponseDTO> getAll(
-            String statusCode
-    ) {
-        List<MaintenanceRequest> maintenances;
+    public List<MaintenanceDetailsResponseDTO> getAll(String statusCode, User user) {
 
-        if (statusCode == null) {
-            maintenances = requestRepository
-                    .findByDeletedAtIsNullOrderByCreatedAtAsc();
-        } else {
+        Status statusEnum = null;
+        if (statusCode != null && !statusCode.isBlank() && !statusCode.equalsIgnoreCase("ALL")) {
             if (!Status.isValid(statusCode)) {
-                throw new EntityNotFoundException(
-                        "Nao foi possivel encontrar o codigo "
-                                + statusCode
-                );
+                throw new EntityNotFoundException("Nao foi possivel encontrar o codigo " + statusCode);
             }
-
-            Status statusEnum = Status.valueOf(
-                    statusCode.toUpperCase()
-            );
-
-            maintenances = requestRepository
-                    .findByStatusAndDeletedAtIsNull(statusEnum);
+            statusEnum = Status.valueOf(statusCode.toUpperCase());
         }
 
-        return maintenances.stream()
-                .map(MaintenanceDetailsResponseDTO::new)
-                .toList();
-    }
+        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee)
+                ? requestRepository.findAllActive(statusEnum)
+                : requestRepository.findAllActiveByClient(user.getId(), statusEnum);
 
-    public List<MaintenanceDetailsResponseDTO> getAllByClient(
-            Long clientId,
-            String statusCode
-    ) {
-        List<MaintenanceRequest> maintenances;
-
-        if (statusCode == null) {
-            maintenances = requestRepository
-                    .findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(
-                            clientId
-                    );
-        } else {
-            if (!Status.isValid(statusCode)) {
-                throw new EntityNotFoundException(
-                        "Nao foi possivel encontrar o codigo "
-                                + statusCode
-                );
-            }
-
-            Status statusEnum = Status.valueOf(
-                    statusCode.toUpperCase()
-            );
-
-            maintenances = requestRepository
-                    .findByStatusAndClientIdAndDeletedAtIsNull(
-                            statusEnum,
-                            clientId
-                    );
-        }
-
-        return maintenances.stream()
-                .map(MaintenanceDetailsResponseDTO::new)
-                .toList();
+        return requests.stream().map(m -> new MaintenanceDetailsResponseDTO(m, user)).toList();
     }
 
     public MaintenanceSummaryResponseDTO getMaintenancesSummary() {
@@ -150,16 +103,12 @@ public class MaintenanceRequestService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceDetailsResponseDTO findById(
-            String id,
-            User client
-    ) {
+    public MaintenanceDetailsResponseDTO findById(String id, User user) {
         Long maintenanceId = Long.parseLong(id);
 
-        if (client.getRole().equals(UserRole.employee)) {
-            return requestRepository
-                    .findById(maintenanceId)
-                    .map(MaintenanceDetailsResponseDTO::new)
+        if (user.getRole() == UserRole.employee) {
+            return requestRepository.findById(maintenanceId)
+                    .map(m -> new MaintenanceDetailsResponseDTO(m, user))
                     .orElseThrow(() ->
                             new EntityNotFoundException(
                                     "Solicitacao nao existente"
@@ -168,11 +117,8 @@ public class MaintenanceRequestService {
         }
 
         return requestRepository
-                .findByIdAndClientId(
-                        maintenanceId,
-                        client.getId()
-                )
-                .map(MaintenanceDetailsResponseDTO::new)
+                .findByIdAndClientId(maintenanceId, user.getId())
+                .map(m -> new MaintenanceDetailsResponseDTO(m, user))
                 .orElseThrow(() ->
                         new EntityNotFoundException(
                                 "Solicitacao de servico nao encontrada"
@@ -331,37 +277,28 @@ public class MaintenanceRequestService {
         return true;
     }
 
-    public List<MaintenanceDetailsResponseDTO> searchByStatusAndTerm(String status, String term, User user) {
+    public List<MaintenanceDetailsResponseDTO> searchByStatusAndTerm(String statusCode, String term, User user) {
 
-        Status statusEnum = null;
-        if (status != null && !status.isBlank() && !status.equalsIgnoreCase("ALL")) {
-            if (!Status.isValid(status)) {
-                throw new IllegalArgumentException("Status inválido ");
-            }
-            statusEnum = Status.valueOf(status.toUpperCase());
-        }
+        Status statusEnum = parseStatus(statusCode);
 
         Long searchId = null;
         String searchPattern = null;
 
         if (term != null && !term.isBlank()) {
             term = term.trim();
-            // Se so tiver números, converte para buscar pelo id
             if (term.matches("\\d+")) {
                 searchId = Long.parseLong(term);
             }
             searchPattern = "%" + term.toLowerCase() + "%";
         }
 
-        List<MaintenanceRequest> requests;
+        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee)
+                ? requestRepository.searchByStatusAndTerm(statusEnum, searchPattern, searchId)
+                : requestRepository.searchByStatusAndTermAndClient(statusEnum, searchPattern, searchId, user.getId());
 
-        if (user.getRole().equals(UserRole.employee)) {
-            requests = requestRepository.searchByStatusAndTerm(statusEnum, searchPattern, searchId);
-        } else {
-            requests = requestRepository.searchByStatusAndTermAndClient(statusEnum, searchPattern, searchId, user.getId());
-        }
-
-        return requests.stream().map(MaintenanceDetailsResponseDTO::new).toList();
+        return requests.stream()
+                .map(m -> new MaintenanceDetailsResponseDTO(m, user))
+                .toList();
     }
 
     public List<MaintenanceHistoryResponseDTO> getMaintenanceHistory(Long id, User user) {
@@ -381,4 +318,17 @@ public class MaintenanceRequestService {
 
         return history.stream().map(MaintenanceHistoryResponseDTO::new).toList();
     }
+
+    private Status parseStatus(String statusCode) {
+        if (statusCode == null || statusCode.isBlank() || statusCode.equalsIgnoreCase("ALL")) {
+            return null;
+        }
+
+        if (!Status.isValid(statusCode)) {
+            throw new IllegalArgumentException("Status inválido: " + statusCode);
+        }
+
+        return Status.valueOf(statusCode.toUpperCase());
+    }
+
 }

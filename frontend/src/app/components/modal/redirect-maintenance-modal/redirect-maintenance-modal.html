@@ -1,0 +1,32 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-lg p-6 bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-700">
+
+        <!-- Cabeçalho -->
+        <div class="flex justify-between items-start border-b border-gray-700 pb-3">
+            <div>
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                Solicitação #id
+                </span>
+                <h2 class="text-xl font-semibold mt-1">item</h2>
+            </div>
+            <button
+                /* (click)="closeModal.emit()" */
+                class="text-gray-400 hover:text-white text-2xl font-bold hover:cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <!-- Corpo dos detalhes -->
+        <div class="flex flex-col gap-4 mt-4 text-sm">
+        <!-- Rodapé -->
+            <div class="flex justify-end mt-6">
+                <button
+                    /* (click)="closeModal.emit()" */
+                    class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer">
+                    Fechar
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

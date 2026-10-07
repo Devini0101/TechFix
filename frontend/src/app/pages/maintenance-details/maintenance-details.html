@@ -30,17 +30,23 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+            <!-- <button [appTooltip]="'Exportar Laudo'" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
                 <i class="fa-solid fa-file-export"></i>
                 Exportar Laudo
-            </button>
+            </button> -->
+            @if (role === "employee") {
+                <div class="flex justify-center items-center">
+                    <button [appTooltip]="'Redirecionar a demanda para outro funcionário'" class="bg-blue-800 text-blue-200 rounded-md px-4 py-2 hover:cursor-pointer text-sm">Redirecionar</button>
+                </div>
+            }
+
             @if (isCurrent('OPEN') && role == "employee") {
-                <button [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
+                <button [appTooltip]="'Realizar orçamento da manutenção'" [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
                     <i class="fa-solid fa-dollar-sign"></i>
                     Realizar orçamento
                 </button>
             } @else if (isCurrent('QUOTED') || isCompleted('QUOTED')) {
-                <button [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
+                <button [appTooltip]="'Visualizar informações do orçamento'" [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
                     <i class="fa-solid fa-dollar-sign"></i>
                     Visualizar orçamento
                 </button>

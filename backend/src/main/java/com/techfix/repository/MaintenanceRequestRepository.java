@@ -43,15 +43,6 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     Optional<MaintenanceRequest> findByIdAndClientId(Long id, Long clientId);
 
-    //list by status
-    List<MaintenanceRequest> findByStatusAndDeletedAtIsNull(Status status);
-
-    //list by client id and status
-    List<MaintenanceRequest> findByStatusAndClientIdAndDeletedAtIsNull(Status status, Long clientId);
-
-    List<MaintenanceRequest> findByDeletedAtIsNullOrderByCreatedAtAsc();
-
-    List<MaintenanceRequest> findByClientIdAndDeletedAtIsNullOrderByCreatedAtAsc(Long clientId);
 
     @Query("""
         SELECT m FROM MaintenanceRequest m
@@ -79,4 +70,10 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
         ORDER BY m.createdAt DESC
     """)
     List<MaintenanceRequest> searchByStatusAndTermAndClient(Status status, String searchPattern, Long searchId, Long clientId);
+
+    @Query("SELECT m FROM MaintenanceRequest m WHERE m.deletedAt IS NULL AND (:status IS NULL OR m.status = :status) ORDER BY m.createdAt ASC")
+    List<MaintenanceRequest> findAllActive(@Param("status") Status status);
+
+    @Query("SELECT m FROM MaintenanceRequest m WHERE m.deletedAt IS NULL AND m.client.id = :clientId AND (:status IS NULL OR m.status = :status) ORDER BY m.createdAt ASC")
+    List<MaintenanceRequest> findAllActiveByClient(@Param("clientId") Long clientId, @Param("status") Status status);
 }

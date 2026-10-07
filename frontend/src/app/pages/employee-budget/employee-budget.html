@@ -2,6 +2,13 @@
 <div class="max-w-7xl mx-auto p-4 sm:p-6 text-slate-100">
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <button
+            (click)="goBack()"
+            class="group relative flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-300 cursor-pointer"
+        >
+            <i class="fa-solid fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1"></i>
+            <span class="absolute -bottom-1 left-0 w-full h-[2px] bg-white scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+        </button>
         <div>
             <h2 class="font-bold text-3xl">Orçamento</h2>
             <p class="text-lg text-slate-400 mt-1">Solicitação #{{ details.id }}</p>

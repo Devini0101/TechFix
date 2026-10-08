@@ -1,0 +1,94 @@
+.approval-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.82);
+    backdrop-filter: blur(4px);
+}
+
+.approval-modal {
+    width: min(100%, 28rem);
+    padding: 2rem;
+    text-align: center;
+    color: #f8fafc;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 1rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.approval-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    color: #052e16;
+    background: #34d399;
+    border-radius: 9999px;
+    font-size: 1.5rem;
+}
+
+.approval-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.approval-message {
+    margin-bottom: 1.25rem;
+    color: #cbd5e1;
+}
+
+.approval-value-box {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.75rem;
+}
+
+.approval-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.approval-value {
+    color: #34d399;
+    font-size: 1.75rem;
+}
+
+.approval-button {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    color: #052e16;
+    background: #34d399;
+    border: 0;
+    border-radius: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.approval-button:hover {
+    background: #6ee7b7;
+}
+
+.success-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    color: #a7f3d0;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    border-radius: 0.75rem;
+}

@@ -1,4 +1,46 @@
 @if (maintenanceDetails(); as details) {
+        @if (approvalCompleted()) {
+        <div class="approval-overlay">
+            <div class="approval-modal" role="dialog" aria-modal="true">
+                <div class="approval-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <h2 class="approval-title">
+                    Serviço Aprovado
+                </h2>
+
+                <p class="approval-message">
+                    O serviço foi aprovado com sucesso.
+                </p>
+
+                <div class="approval-value-box">
+                    <span class="approval-label">
+                        Valor aprovado
+                    </span>
+
+                    <strong class="approval-value">
+                        {{ details.estimatedPrice | currency: 'BRL' }}
+                    </strong>
+                </div>
+
+                <button
+                    type="button"
+                    class="approval-button"
+                    (click)="goBack()">
+                    OK
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (successMessage() && !approvalCompleted()) {
+        <div class="success-message" role="status">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>{{ successMessage() }}</span>
+        </div>
+    }
+
 <div class="max-w-full mx-auto  text-slate-100">
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

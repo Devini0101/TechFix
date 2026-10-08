@@ -76,4 +76,6 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     @Query("SELECT m FROM MaintenanceRequest m WHERE m.deletedAt IS NULL AND m.client.id = :clientId AND (:status IS NULL OR m.status = :status) ORDER BY m.createdAt ASC")
     List<MaintenanceRequest> findAllActiveByClient(@Param("clientId") Long clientId, @Param("status") Status status);
+
+    Optional<MaintenanceRequest> findByIdAndResponsibleEmployeeId(Long parsedId, Long id);
 }

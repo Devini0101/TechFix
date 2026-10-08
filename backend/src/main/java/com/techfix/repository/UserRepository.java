@@ -1,6 +1,7 @@
 package com.techfix.repository;
 
 import com.techfix.model.User;
+import com.techfix.model.enums.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,4 +35,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<UserDetails> findByEmail(String email);
 
     Optional<UserDetails> findByCpf (String cpf);
+
+    List<User> findByRoleAndIdNot(UserRole userRole, Long id);
+
+    User findByEmailAndRole(String employeeEmail, UserRole userRole);
 }

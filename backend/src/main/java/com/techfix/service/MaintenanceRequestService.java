@@ -18,10 +18,12 @@ import com.techfix.model.enums.Status;
 import com.techfix.model.enums.UserRole;
 import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
+import com.techfix.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,12 +37,14 @@ public class MaintenanceRequestService {
     private final MaintenanceRequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserRepository userRepository;
 
     public MaintenanceRequestService(
             MaintenanceRequestRepository requestRepository,
-            CategoryRepository categoryRepository, ApplicationEventPublisher eventPublisher) {
+            CategoryRepository categoryRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.requestRepository = requestRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
     }
 
@@ -331,4 +335,31 @@ public class MaintenanceRequestService {
         return Status.valueOf(statusCode.toUpperCase());
     }
 
+    public ResponseEntity<Long> updateMaintenanceResponsibleEmployee(Long parsedId, String employeeEmail, User user) {
+
+        Optional<MaintenanceRequest> maintenance = requestRepository.findByIdAndResponsibleEmployeeId(parsedId, user.getId());
+
+        if (!maintenance.isPresent()) {
+            throw new EntityNotFoundException("Manutenção não encontrada");
+        }
+
+        MaintenanceRequest req = maintenance.get();
+        User nextEmployee = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
+
+        User lastEmployee = req.getResponsibleEmployee();
+        Status lastStatus = req.getStatus();
+
+        req.setResponsibleEmployee(nextEmployee);
+        req.setStatus(Status.REDIRECTED);
+        eventPublisher.publishEvent(new StatusChangedEvent(
+                req,
+                lastStatus,
+                Status.REDIRECTED,
+                user,
+                "SERVIÇO REDIRECIONADO",
+                "Manutenção redirecionada do funcionário" + lastEmployee.getName() + " para " + req.getResponsibleEmployee() + "."
+        ));
+
+        return ResponseEntity.ok().body(req.getId());
+    }
 }

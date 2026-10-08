@@ -35,6 +35,7 @@ export interface MaintenanceDetailsResponse {
   orientation: string | null;
   responsibleEmployeeName: string | null;
   clientName: string | null;
+  isCurrentResponsible: boolean | null;
 }
 
 export interface Summary {
@@ -124,5 +125,9 @@ export class MaintenanceRequestService {
 
 	getHistory(id: Number): Observable<MaintenanceHistory[]> {
 		return this.http.get<MaintenanceHistory[]>(`${this.apiUrl}/${id}/history`, { withCredentials: true });
+	}
+
+	redirectMaintenance(id: number, payload: { employeeEmail: string }): Observable<number> {
+		return this.http.put<number>(`${this.apiUrl}/${id}/redirect`, payload, { withCredentials: true });
 	}
 }

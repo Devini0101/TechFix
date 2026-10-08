@@ -3,8 +3,10 @@ package com.techfix.service;
 import com.techfix.config.TokenConfig;
 import com.techfix.dto.request.LoginRequestDTO;
 import com.techfix.dto.request.RegisterUserRequestDTO;
+import com.techfix.dto.response.EmployeesResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
+import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.exception.UserAlreadyExistsException;
 import com.techfix.model.Address;
 import com.techfix.model.User;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -81,5 +84,10 @@ public class UserService {
         User user = (User) authentication.getPrincipal();
         String token = tokenConfig.generateToken(user);
         return new LoginResponseDTO(token, user.getRole(), user.getName());
+    }
+
+    public List<EmployeesResponseDTO> getAvailableEmployees(User user) {
+
+        return userRepository.findByRoleAndIdNot(UserRole.employee, user.getId()).stream().map(emp -> new EmployeesResponseDTO(emp.getName(), emp.getEmail())).toList();
     }
 }

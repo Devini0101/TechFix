@@ -34,9 +34,9 @@
                 <i class="fa-solid fa-file-export"></i>
                 Exportar Laudo
             </button> -->
-            @if (role === "employee") {
+            @if (role === "employee" && details()?.isCurrentResponsible === true && !isCompleted("FINISHED")) {
                 <div class="flex justify-center items-center">
-                    <button [appTooltip]="'Redirecionar a demanda para outro funcionário'" class="bg-blue-800 text-blue-200 rounded-md px-4 py-2 hover:cursor-pointer text-sm">Redirecionar</button>
+                    <button (click)="openRedirectModal()" [appTooltip]="'Redirecionar a demanda para outro funcionário'" class="bg-blue-800 text-blue-200 rounded-md px-4 py-2 hover:cursor-pointer text-sm">Redirecionar</button>
                 </div>
             }
 
@@ -355,6 +355,15 @@
         </div>
     </div>
 </div>
+
+    @if(isRedirectModalOpened()) {
+        <app-redirect-maintenance-modal
+            [maintenanceId]="order.id"
+            (closeModal)="isRedirectModalOpened.set(false)"
+            (successRedirect)="onMaintenanceRedirected()"
+        ></app-redirect-maintenance-modal>
+    }
+
 } @else if (errorMessage()) {
     <div class="h-screen flex flex-col justify-center items-center font-sans">
         <div class="bg-slate-900 border border-red-900/40 rounded-xl p-8 max-w-md w-full text-center shadow-2xl">

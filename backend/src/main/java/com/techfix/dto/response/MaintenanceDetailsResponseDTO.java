@@ -1,7 +1,9 @@
 package com.techfix.dto.response;
 
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.User;
 import com.techfix.model.enums.Status;
+import com.techfix.model.enums.UserRole;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,9 +22,10 @@ public record MaintenanceDetailsResponseDTO (
         LocalDateTime createdAt,
         String orientation,
         String responsibleEmployeeName,
-        String clientName
+        String clientName,
+        boolean isCurrentResponsible
 ) {
-    public MaintenanceDetailsResponseDTO(MaintenanceRequest m) {
+    public MaintenanceDetailsResponseDTO(MaintenanceRequest m, User loggedUser) {
         this(
                 m.getId(),
                 m.getItem(),
@@ -37,7 +40,10 @@ public record MaintenanceDetailsResponseDTO (
                 m.getCreatedAt(),
                 m.getOrientation(),
                 m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null,
-                m.getClient() != null ? m.getClient().getName() : null
+                m.getClient() != null ? m.getClient().getName() : null,
+                loggedUser.getRole() == UserRole.employee &&
+                        m.getResponsibleEmployee() != null &&
+                        m.getResponsibleEmployee().getId().equals(loggedUser.getId())
         );
     }
 }

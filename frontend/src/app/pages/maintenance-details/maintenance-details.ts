@@ -4,10 +4,12 @@ import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { Tooltip } from '../../directives/tooltip';
+import { RedirectMaintenanceModal } from '../../components/modal/redirect-maintenance-modal/redirect-maintenance-modal';
 
 @Component({
   selector: 'app-maintenance-details',
-  imports: [DatePipe, CurrencyPipe, RouterLink],
+  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip, RedirectMaintenanceModal],
   templateUrl: './maintenance-details.html',
   styleUrl: './maintenance-details.css',
 })
@@ -30,6 +32,7 @@ export class MaintenanceDetails implements OnInit {
   private authService = inject(AuthService);
   readonly role = this.authService.getRole();
   isHistoryOpened = signal<Boolean>(false);
+  isRedirectModalOpened = signal<Boolean>(false);
   histories = signal<MaintenanceHistory[] | null>(null);
 
   ngOnInit(): void {
@@ -38,14 +41,7 @@ export class MaintenanceDetails implements OnInit {
       return;
     }
 
-    this.service.getById(Number(this.id) ).subscribe({
-      next: (data) => this.details.set(data),
-      error: (err: HttpErrorResponse) => {
-        console.error("Erro ao puxar info por id", err);
-        const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';
-        this.errorMessage.set(msg);
-      },
-    });
+    this.loadOrderDetails(Number(this.id));
   }
 
   private get currentStatusCode(): string | null {
@@ -76,22 +72,39 @@ export class MaintenanceDetails implements OnInit {
     return this.getCurrentLevel() < (this.STATUS_ORDER[status] ?? 0);
   }
 
-  toggleHistory(){
-    this.isHistoryOpened.set(!this.isHistoryOpened());
+	toggleHistory(){
+		this.isHistoryOpened.set(!this.isHistoryOpened());
 
-    if (this.isHistoryOpened() && this.histories() === null){
-      this.service.getHistory(Number(this.id)).subscribe({
-        next: (data) => this.histories.set(data),
-        error: (err: HttpErrorResponse) => {
-          console.error("Erro ao puxar histórico", err);
-        }
-      });
-    } else {
-    }
-  }
+		if (this.isHistoryOpened() && this.histories() === null){
+			this.service.getHistory(Number(this.id)).subscribe({
+			next: (data) => this.histories.set(data),
+			error: (err: HttpErrorResponse) => {
+				console.error("Erro ao puxar histórico", err);
+			}
+			});
+		}
+	}
 
-  goBack(): void {
-    this.location.back(); // Retorna para a exata URL anterior no histórico
-  }
+	openRedirectModal() : void {
+		this.isRedirectModalOpened.set(!this.isRedirectModalOpened());
+  	}
 
+	goBack(): void {
+    	this.location.back(); // Retorna para a exata URL anterior no histórico
+	}
+
+	onMaintenanceRedirected() {
+		this.loadOrderDetails(Number(this.id));
+	}
+
+	loadOrderDetails(id: number) {
+		this.service.getById(Number(this.id) ).subscribe({
+			next: (data) => this.details.set(data),
+			error: (err: HttpErrorResponse) => {
+				console.error("Erro ao puxar info por id", err);
+				const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';
+				this.errorMessage.set(msg);
+			},
+		});
+	}
 }

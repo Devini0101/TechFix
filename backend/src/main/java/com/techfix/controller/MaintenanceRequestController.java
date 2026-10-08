@@ -17,13 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -74,22 +68,10 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping
-    public List<MaintenanceDetailsResponseDTO> getAll(
-            @AuthenticationPrincipal User client,
-            @RequestParam(required = false) String status
-    ) {
-        String formattedStatus = status != null
-                ? status.toUpperCase()
-                : null;
+    public List<MaintenanceDetailsResponseDTO> getAll(@AuthenticationPrincipal User client, @RequestParam(required = false) String status) {
+        String formattedStatus = status != null ? status.toUpperCase() : null;
 
-        if (client.getRole() == UserRole.employee) {
-            return service.getAll(formattedStatus);
-        }
-
-        return service.getAllByClient(
-                client.getId(),
-                formattedStatus
-        );
+        return service.getAll(formattedStatus, client);
     }
 
     @GetMapping("/{id}/history")
@@ -102,14 +84,8 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MaintenanceDetailsResponseDTO> findById(
-            @PathVariable String id,
-            @AuthenticationPrincipal User client
-    ) {
-
-        MaintenanceDetailsResponseDTO response =
-                service.findById(id, client);
-
+    public ResponseEntity<MaintenanceDetailsResponseDTO> findById(@PathVariable String id, @AuthenticationPrincipal User user) {
+        MaintenanceDetailsResponseDTO response = service.findById(id, user);
         return ResponseEntity.ok(response);
     }
 
@@ -178,5 +154,16 @@ public class MaintenanceRequestController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/redirect")
+    public ResponseEntity<Long> redirectMaintenance(@PathVariable String id, @RequestBody String employeeEmail, @AuthenticationPrincipal User user){
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado!");
+        }
+
+        Long parsedId = Long.parseLong(id);
+
+        return this.service.updateMaintenanceResponsibleEmployee(parsedId, employeeEmail, user);
     }
 }

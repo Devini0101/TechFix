@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Sidebar } from '../../components/sidebar/sidebar';
-import { Employee, EmployeeService, EmployeeStatus } from '../../core/services/employee.service';
+import { Employee, EmployeeExtended, EmployeeService, EmployeeStatus } from '../../core/services/employee.service';
 
 const STATUS_CLASSES: Record<EmployeeStatus, string> = {
   Ativo: 'bg-green-500/15 text-green-400',
@@ -17,7 +17,7 @@ const STATUS_CLASSES: Record<EmployeeStatus, string> = {
 export class Users implements OnInit {
   private readonly employeeService = inject(EmployeeService);
 
-  employees = signal<Employee[] | null>(null);
+  employees = signal<EmployeeExtended[] | null>(null);
 
   totalEmployees = computed(() => this.employees()?.length ?? 0);
 
@@ -43,12 +43,12 @@ export class Users implements OnInit {
     return STATUS_CLASSES[status];
   }
 
-  onEdit(employee: Employee): void {
+  onEdit(employee: EmployeeExtended): void {
     // TODO(backend): ligar ao fluxo real de edição quando o endpoint existir
     console.log('edit', employee);
   }
 
-  onDelete(employee: Employee): void {
+  onDelete(employee: EmployeeExtended): void {
     // TODO(backend): ligar ao fluxo real de exclusão quando o endpoint existir
     console.log('delete', employee);
   }

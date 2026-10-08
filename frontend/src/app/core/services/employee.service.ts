@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 export type EmployeeStatus = 'Ativo' | 'Inativo' | 'Suspenso';
 
-export interface Employee {
+export interface EmployeeExtended {
   id: number;
   name: string;
   email: string;
@@ -13,7 +14,13 @@ export interface Employee {
   activeOrders: number;
 }
 
-const MOCK_EMPLOYEES: Employee[] = [
+export interface Employee {
+  name: string;
+  email: string;
+}
+
+
+const MOCK_EMPLOYEES: EmployeeExtended[] = [
   { id: 1, name: 'Vinicius Eduardo', email: 'vinicius.eduardo@techfix.com', sector: 'Admin', position: 'Gerente', status: 'Ativo', activeOrders: 5 },
   { id: 2, name: 'Letícia Burlinski', email: 'leticia.burlinski@techfix.com', sector: 'TI', position: 'Programador', status: 'Ativo', activeOrders: 5 },
   { id: 3, name: 'Carlos Mendes', email: 'carlos.mendes@techfix.com', sector: 'Operação', position: 'Técnico', status: 'Suspenso', activeOrders: 0 },
@@ -25,12 +32,17 @@ const MOCK_EMPLOYEES: Employee[] = [
   providedIn: 'root',
 })
 export class EmployeeService {
-  // private readonly http = inject(HttpClient);
-  // private readonly apiUrl = 'http://localhost:8080/api/employees';
+	private http = inject<HttpClient>(HttpClient);
+	private readonly apiUrl = 'http://localhost:8080/api/employees';
 
-  getEmployees(): Observable<Employee[]> {
-    // TODO(backend): quando o endpoint existir, trocar por:
-    // return this.http.get<Employee[]>(this.apiUrl, { withCredentials: true });
-    return of(MOCK_EMPLOYEES);
-  }
+
+	getEmployees(): Observable<EmployeeExtended[]> {
+	// TODO(backend): quando o endpoint existir, trocar por:
+	// return this.http.get<Employee[]>(this.apiUrl, { withCredentials: true });
+	return of(MOCK_EMPLOYEES);
+	}
+
+	getAvailableEmployees(): Observable<Employee[]> {
+    	return this.http.get<Employee[]>(`${this.apiUrl}`, { withCredentials: true });
+  	}
 }

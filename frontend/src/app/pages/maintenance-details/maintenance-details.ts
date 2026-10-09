@@ -21,10 +21,11 @@ export class MaintenanceDetails implements OnInit {
   readonly STATUS_ORDER: Record<string, number> = {
     'OPEN': 1,
     'QUOTED': 2,
+    'REJECTED': 3,
     'APPROVED': 4,
+    'REDIRECTED': 4.1,
     'FINISHED': 5,
-    'DELIVERED': 6,
-    'REJECTED': 3
+    'DELIVERED': 6
   };
 
   private service = inject(MaintenanceRequestService);

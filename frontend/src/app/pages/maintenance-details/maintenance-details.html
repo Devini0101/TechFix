@@ -34,7 +34,7 @@
                 <i class="fa-solid fa-file-export"></i>
                 Exportar Laudo
             </button> -->
-            @if (role === "employee" && details()?.isCurrentResponsible === true && !isCompleted("FINISHED")) {
+            @if (role === "employee" && order.isCurrentResponsible === true && !isCompleted("FINISHED") && (isCurrent("APPROVED")  || isCurrent("REDIRECTED"))) {
                 <div class="flex justify-center items-center">
                     <button (click)="openRedirectModal()" [appTooltip]="'Redirecionar a demanda para outro funcionário'" class="bg-blue-800 text-blue-200 rounded-md px-4 py-2 hover:cursor-pointer text-sm">Redirecionar</button>
                 </div>
@@ -356,7 +356,7 @@
     </div>
 </div>
 
-    @if(isRedirectModalOpened()) {
+    @if(isRedirectModalOpened() && role === "employee" && order.isCurrentResponsible === true && !isCompleted("FINISHED")) {
         <app-redirect-maintenance-modal
             [maintenanceId]="order.id"
             (closeModal)="isRedirectModalOpened.set(false)"

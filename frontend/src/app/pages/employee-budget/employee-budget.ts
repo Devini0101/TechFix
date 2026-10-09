@@ -1,14 +1,13 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DatePipe, Location } from '@angular/common';
+import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxCurrencyDirective } from 'ngx-currency';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-employee-budget',
-  imports: [DatePipe, NgxCurrencyDirective, ReactiveFormsModule],
+  imports: [DatePipe, NgxCurrencyDirective, ReactiveFormsModule, CurrencyPipe],
   templateUrl: './employee-budget.html',
   styleUrl: './employee-budget.css',
 })

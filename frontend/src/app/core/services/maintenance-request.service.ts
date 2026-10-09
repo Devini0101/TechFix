@@ -127,7 +127,7 @@ export class MaintenanceRequestService {
 		return this.http.get<MaintenanceHistory[]>(`${this.apiUrl}/${id}/history`, { withCredentials: true });
 	}
 
-	redirectMaintenance(id: number, payload: { employeeEmail: string }): Observable<number> {
+	redirectMaintenance(id: number, payload: { email: string }): Observable<number> {
 		return this.http.put<number>(`${this.apiUrl}/${id}/redirect`, payload, { withCredentials: true });
 	}
 }

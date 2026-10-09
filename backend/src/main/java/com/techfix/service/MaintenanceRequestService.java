@@ -28,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -158,10 +160,8 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public void setEstimatedBudget(
-            BudgetRequestDTO dto,
-            User user
-    ) {
+    public void setEstimatedBudget(BudgetRequestDTO dto, User user) {
+
         MaintenanceRequest request = requestRepository
                 .findById(dto.id())
                 .orElseThrow(() ->
@@ -170,8 +170,7 @@ public class MaintenanceRequestService {
                         )
                 );
 
-        if (!request.getStatus().equals(Status.OPEN)
-                && !request.getStatus().equals(Status.QUOTED)) {
+        if (!request.getStatus().equals(Status.OPEN) && !request.getStatus().equals(Status.QUOTED)) {
             throw new UpdateInvalidMaintenanceBudgetException(
                     "Nao e possivel alterar o orcamento"
                             + " de uma manutencao invalida."
@@ -179,18 +178,35 @@ public class MaintenanceRequestService {
         }
 
         Status previousStatus = request.getStatus();
+
+        NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+
+        if (request.getEstimatedPrice() != null && request.getStatus() == Status.QUOTED) {
+            String lastValue = currencyFormater.format(request.getEstimatedPrice());
+            String newValue = currencyFormater.format(dto.value());
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    request,
+                    previousStatus,
+                    Status.QUOTED,
+                    user,
+                    "ATUALIZAÇÃO DE ORÇAMENTO",
+                    "Orçamento de manutenção atualizado de " + lastValue + " para " + newValue + " ."
+            ));
+        } else {
+            String newValue = currencyFormater.format(dto.value());
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    request,
+                    previousStatus,
+                    Status.QUOTED,
+                    user,
+                    "ORÇADA",
+                    "Orçamento de manutenção realizado no valor de " + newValue + " ."
+            ));
+        }
+
         request.setEstimatedPrice(dto.value());
         request.setStatus(Status.QUOTED);
         request.setResponsibleEmployee(user);
-
-        eventPublisher.publishEvent(new StatusChangedEvent(
-                request,
-                previousStatus,
-                Status.APPROVED,
-                user,
-                "ORÇADA",
-                "Orçamento de manutenção realizado."
-        ));
 
         requestRepository.save(request);
     }
@@ -276,7 +292,7 @@ public class MaintenanceRequestService {
                 Status.APPROVED,
                 user,
                 "SERVIÇO RESGATADO",
-                "Manutenção resgatada de REJEITADO para APROVADO e reinserido no fluxo."
+                "Manutenção resgatada de REJEITADA para APROVADA e reinserido no fluxo."
         ));
         return true;
     }
@@ -344,7 +360,17 @@ public class MaintenanceRequestService {
         }
 
         MaintenanceRequest req = maintenance.get();
-        User nextEmployee = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
+
+        if (req.getStatus() != Status.APPROVED && req.getStatus() != Status.REDIRECTED) {
+            throw new IllegalStateException("Uma manutenção só pode ser redirecionada após ser APROVADA pelo cliente.");
+        }
+
+        Optional<User> nxtEmp = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
+
+        if (!nxtEmp.isPresent()) {
+            throw new EntityNotFoundException("Funcionário não encontrado");
+        }
+        User nextEmployee = nxtEmp.get();
 
         User lastEmployee = req.getResponsibleEmployee();
         Status lastStatus = req.getStatus();
@@ -357,7 +383,7 @@ public class MaintenanceRequestService {
                 Status.REDIRECTED,
                 user,
                 "SERVIÇO REDIRECIONADO",
-                "Manutenção redirecionada do funcionário" + lastEmployee.getName() + " para " + req.getResponsibleEmployee() + "."
+                "Manutenção redirecionada do funcionário: " + lastEmployee.getName() + " para " + req.getResponsibleEmployee().getName() + "."
         ));
 
         return ResponseEntity.ok().body(req.getId());

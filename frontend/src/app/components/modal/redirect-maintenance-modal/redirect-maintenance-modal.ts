@@ -44,14 +44,14 @@ export class RedirectMaintenanceModal implements OnInit {
 
         // Exemplo de payload enviado ao backend
         const payload = {
-            employeeEmail: this.selectedEmail()
+            email: this.selectedEmail()
         };
 
         this.maintenanceService.redirectMaintenance(Number(this.maintenanceId), payload).subscribe({
         next: (updatedId) => {
             console.log('Manutenção atualizada, ID:', updatedId);
-            this.successRedirect.emit(); // Avisa o componente pai!
-            this.closeModal.emit();     // Fecha o modal
+            this.successRedirect.emit();
+            this.closeModal.emit();
         },
         error: (err: HttpErrorResponse) => console.error(err)
     });

@@ -1,14 +1,13 @@
 <main class="min-h-screen grid place-items-center px-4 py-8 text-[#e2e8f0] bg-[#0f172a] bg-[radial-gradient(circle_at_15%_20%,rgba(37,99,235,0.22),transparent_32%),radial-gradient(circle_at_85%_80%,rgba(14,165,233,0.16),transparent_30%)]">
-  <section class="bg-[#1e293b] p-10 min-h-screen rounded-3xl w-max-full">
+  <section class="bg-[#1e293b]/60 backdrop-blur-md border border-[#334155] shadow-[0_0_80px_10px_rgba(0,0,0,0.5)] p-10 rounded-3xl max-w-full max-h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin [scrollbar-color:#475569_transparent] scrollbar-gutter-stable">
     <header class="gap-2 flex flex-col pb-8">
       <h1 class="font-bold text-3xl">Crie sua conta</h1>
       <p class="text-sm text-gray-400">Preencha seus dados para solicitar serviços de manutenção.</p>
     </header>
 
     <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
-      <div class="grid-cols-2 grid gap-10 p-3">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10" [class.lg:grid-cols-3]="addressLoaded()">
         <div class="col-span-1 flex flex-col gap-4 w-75">
-
             <div class="flex flex-col gap-1">
               <label for="name" class=" font-bold text-sm">Nome completo</label>
               <input
@@ -27,7 +26,7 @@
                 }
               </div>
             </div>
-    
+
             <div class="flex flex-col gap-1">
               <label for="email" class=" font-bold text-sm">E-mail</label>
               <input
@@ -46,7 +45,46 @@
                 }
               </div>
             </div>
-    
+
+            <div class="flex flex-col gap-1">
+              <label for="password" class=" font-bold text-sm">Senha</label>
+              <input
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"  
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Mínimo de 6 caracteres"
+                autocomplete="new-password"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('password', 'required')) {
+                  <small class="text-red-400">Informe uma senha.</small>
+                } @else if (hasError('password', 'minlength')) {
+                  <small class="text-red-400">A senha deve ter pelo menos 6 caracteres.</small>
+                }
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="passwordConfirmation" class=" font-bold text-sm">Confirmar senha</label>
+              <input
+                id="passwordConfirmation"
+                type="password"
+                formControlName="passwordConfirmation"
+                placeholder="Repita sua senha"
+                autocomplete="new-password"
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('passwordConfirmation', 'required')) {
+                  <small class="text-red-400">Confirme sua senha.</small>
+                } @else if (hasPasswordMismatch()) {
+                  <small class="text-red-400">As senhas precisam ser iguais.</small>
+                }
+              </div>
+            </div>
+        </div>
+        <div class="col-span-1 flex flex-col gap-4 w-75">
             <div class="flex flex-col gap-1">
               <label for="cpf" class=" font-bold text-sm">CPF</label>
               <input
@@ -67,7 +105,7 @@
                 }
               </div>
             </div>
-    
+
             <div class="flex flex-col gap-1">
               <label for="phone" class=" font-bold text-sm">Telefone</label>
               <input
@@ -88,90 +126,149 @@
                 }
               </div>
             </div>
-       
+
+            <div class="flex flex-col gap-1">
+              <label for="cep" class=" font-bold text-sm">CEP</label>
+              <input
+                id="cep"
+                type="text"
+                formControlName="cep"
+                placeholder="00000000"
+                maxlength="9"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (isSearchingCep()) {
+                  <small class="text-gray-400">Buscando endereço...</small>
+                } @else if (cepError()) {
+                  <small class="text-red-400">{{ cepError() }}</small>
+                } @else if (hasError('cep', 'required')) {
+                  <small class="text-red-400">Informe seu CEP.</small>
+                } @else if (hasError('cep', 'pattern')) {
+                  <small class="text-red-400">O CEP deve conter 8 dígitos.</small>
+                }
+              </div>
+            </div>
         </div>
-        <div class="col-span-1 flex flex-col gap-4 w-75">
-          <div class="flex flex-col gap-1">
-            <label for="password" class=" font-bold text-sm">Senha</label>
-            <input
-              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"  
-              id="password"
-              type="password"
-              formControlName="password"
-              placeholder="Mínimo de 6 caracteres"
-              autocomplete="new-password"
-            />
-            <div class="min-h-[1.1rem]">
-              @if (hasError('password', 'required')) {
-                <small class="text-red-400">Informe uma senha.</small>
-              } @else if (hasError('password', 'minlength')) {
-                <small class="text-red-400">A senha deve ter pelo menos 6 caracteres.</small>
-              }
+        @if (addressLoaded()) {
+          <div class="col-span-1 flex flex-col gap-4 w-75">
+            <div class="grid grid-cols-[1fr_6rem] gap-4">
+              <div class="flex flex-col gap-1">
+                <label for="street" class=" font-bold text-sm">Rua</label>
+                <input
+                  id="street"
+                  type="text"
+                  formControlName="street"
+                  placeholder="Rua"
+                  autocomplete="address-line1"
+                  class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                />
+                <div class="min-h-[1.1rem]">
+                  @if (hasError('street', 'required')) {
+                    <small class="text-red-400">Informe a rua.</small>
+                  }
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <label for="number" class=" font-bold text-sm">Número</label>
+                <input
+                  id="number"
+                  type="text"
+                  formControlName="number"
+                  placeholder="Nº"
+                  class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                />
+                <div class="min-h-[1.1rem]">
+                  @if (hasError('number', 'required')) {
+                    <small class="text-red-400">Informe o nº.</small>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="complement" class=" font-bold text-sm">Complemento</label>
+              <input
+                id="complement"
+                type="text"
+                formControlName="complement"
+                placeholder="Apto, bloco (opcional)"
+                autocomplete="address-line2"
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+              />
+              <div class="min-h-[1.1rem]"></div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="neighborhood" class=" font-bold text-sm">Bairro</label>
+              <input
+                id="neighborhood"
+                type="text"
+                formControlName="neighborhood"
+                placeholder="Bairro"
+                class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+              />
+              <div class="min-h-[1.1rem]">
+                @if (hasError('neighborhood', 'required')) {
+                  <small class="text-red-400">Informe o bairro.</small>
+                }
+              </div>
+            </div>
+
+            <div class="grid grid-cols-[1fr_5rem] gap-4">
+              <div class="flex flex-col gap-1">
+                <label for="city" class=" font-bold text-sm">Cidade</label>
+                <input
+                  id="city"
+                  type="text"
+                  formControlName="city"
+                  placeholder="Cidade"
+                  autocomplete="address-level2"
+                  class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+                />
+                <div class="min-h-[1.1rem]">
+                  @if (hasError('city', 'required')) {
+                    <small class="text-red-400">Informe a cidade.</small>
+                  }
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <label for="uf" class=" font-bold text-sm">UF</label>
+                <input
+                  id="uf"
+                  type="text"
+                  formControlName="uf"
+                  placeholder="UF"
+                  maxlength="2"
+                  autocomplete="address-level1"
+                  class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 uppercase focus:outline-none focus:border-blue-600"
+                />
+                <div class="min-h-[1.1rem]">
+                  @if (hasError('uf', 'required')) {
+                    <small class="text-red-400">Informe a UF.</small>
+                  }
+                </div>
+              </div>
             </div>
           </div>
-  
-          <div class="flex flex-col gap-1">
-            <label for="passwordConfirmation" class=" font-bold text-sm">Confirmar senha</label>
-            <input
-              id="passwordConfirmation"
-              type="password"
-              formControlName="passwordConfirmation"
-              placeholder="Repita sua senha"
-              autocomplete="new-password"
-              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
-            />
-            <div class="min-h-[1.1rem]">
-              @if (hasError('passwordConfirmation', 'required')) {
-                <small class="text-red-400">Confirme sua senha.</small>
-              } @else if (hasPasswordMismatch()) {
-                <small class="text-red-400">As senhas precisam ser iguais.</small>
-              }
-            </div>
-          </div>
-          <div class="flex flex-col gap-1">
-            <label for="cep" class=" font-bold text-sm">CEP</label>
-            <input
-              id="cep"
-              type="text"
-              formControlName="cep"
-              placeholder="Informe seu CEP"
-              autocomplete="postal-code"
-              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
-            />
-            <div class="min-h-[1.1rem]">
-              @if (hasError('cep', 'required')) {
-                <small class="text-red-400">Informe seu CEP.</small>
-              }
-            </div>
-          </div>
-        </div>
-        <div class="col-span-1 flex flex-col gap-4 w-75">
-          <div class="flex flex-col gap-1">
-            <label for="cep" class=" font-bold text-sm">CEP</label>
-            <input
-              id="cep"
-              type="text"
-              formControlName="cep"
-              placeholder="Informe seu CEP"
-              autocomplete="postal-code"
-              class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
-            />
-            <div class="min-h-[1.1rem]">
-              @if (hasError('cep', 'required')) {
-                <small class="text-red-400">Informe seu CEP.</small>
-              }
-            </div>
-          </div>
-        </div>
+        }
       </div>
 
-      @if (successMessage) {
-        <p class="m-0 border border-[#166534] rounded-[0.55rem] p-3 text-[#bbf7d0] text-[0.8rem] bg-[rgba(20,83,45,0.36)]" role="status">{{ successMessage }}</p>
+      @if (successMessage()) {
+        <p class="m-0 border border-[#166534] rounded-[0.55rem] p-3 text-[#bbf7d0] text-[0.8rem] bg-[rgba(20,83,45,0.36)]" role="status">{{ successMessage() }}</p>
       }
 
-      <button class="min-h-[2.85rem] border-0 rounded-[0.55rem] cursor-pointer text-white font-extrabold bg-[#2563eb] transition-[background,transform] duration-150 ease-out hover:bg-[#1d4ed8] hover:-translate-y-px" type="submit">Criar minha conta</button>
+      @if (errorMessage()) {
+        <p class="text-red-400 text-sm mt-1" role="alert">{{ errorMessage() }}</p>
+      }
 
-      <p class="m-0 text-[#94a3b8] text-[0.82rem] text-center">
+      <button class="min-h-[2.85rem] rounded-[0.55rem] w-full mt-3 cursor-pointer text-gray-300 font-extrabold bg-transparent border border-gray-300 transition-[background,transform] duration-150 ease-out hover:bg-gray-200 hover:text-[#0f172a] hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0" type="submit" [disabled]="isSubmitting()">{{ isSubmitting() ? 'Criando conta...' : 'Criar minha conta' }}</button>
+
+      <p class="m-0 text-[#94a3b8] text-[0.82rem] text-center mt-5">
         Já possui uma conta?
         <button class="border-0 p-0 cursor-pointer text-[#60a5fa] font-bold bg-transparent hover:text-[#bfdbfe] hover:underline" type="button" (click)="goToLogin()">Voltar para o login</button>
       </p>

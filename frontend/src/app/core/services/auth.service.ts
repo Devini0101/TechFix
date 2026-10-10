@@ -11,6 +11,24 @@ export interface AuthResponse {
     role: string;
     name: string;
 }
+export interface RegisterRequest {
+    name: string;
+    email: string;
+    cpf: string;
+    phone: string;
+    password: string;
+    cep: string;
+    street: string;
+    neighborhood: string;
+    city: string;
+    uf: string;
+    complement?: string;
+    role?: 'client' | 'employee';
+}
+export interface RegisterResponse {
+    name: string;
+    email: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +55,12 @@ export class AuthService {
             this.name.next(res.name);
             })
         );
+    }
+
+    register(payload : RegisterRequest): Observable<RegisterResponse> {
+        return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, payload, {
+            withCredentials : true
+        });
     }
 
     isAuthenticated() :boolean {

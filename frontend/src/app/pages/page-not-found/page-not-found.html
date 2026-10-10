@@ -1,25 +1,7 @@
 <main
-    class="min-h-screen grid place-items-center px-4 py-12 font-sans relative overflow-hidden"
+    class="grid place-items-center py-12 px-4 font-sans relative overflow-hidden"
     aria-labelledby="not-found-title"
 >
-    <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-               w-[520px] h-[520px] bg-blue-600/20 rounded-full
-               blur-[130px] pointer-events-none"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="absolute top-10 left-10 w-24 h-24 rounded-full
-               border border-blue-500/20"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="absolute bottom-10 right-10 w-32 h-32 rounded-full
-               border border-cyan-400/10"
-        aria-hidden="true"
-    ></div>
 
     <section class="relative z-10 w-full max-w-3xl text-center">
         <div class="flex justify-center mb-6">
@@ -61,81 +43,8 @@
             incorreto.
         </p>
 
-        <div
-            class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left"
-        >
-            <a
-                routerLink="/dashboard"
-                class="group rounded-2xl border border-slate-700
-                       bg-slate-900/80 p-5 transition-all
-                       hover:-translate-y-1 hover:border-blue-500
-                       hover:bg-slate-800"
-            >
-                <i
-                    class="fa-solid fa-house text-2xl text-blue-400
-                           transition-transform group-hover:scale-110"
-                    aria-hidden="true"
-                ></i>
-
-                <h2 class="mt-4 font-bold text-white">
-                    Ir para o início
-                </h2>
-
-                <p class="mt-2 text-sm leading-relaxed text-slate-400">
-                    Volte ao painel principal do TechFix.
-                </p>
-            </a>
-
-            <a
-                routerLink="/maintenances"
-                class="group rounded-2xl border border-slate-700
-                       bg-slate-900/80 p-5 transition-all
-                       hover:-translate-y-1 hover:border-cyan-500
-                       hover:bg-slate-800"
-            >
-                <i
-                    class="fa-solid fa-list-check text-2xl text-cyan-400
-                           transition-transform group-hover:scale-110"
-                    aria-hidden="true"
-                ></i>
-
-                <h2 class="mt-4 font-bold text-white">
-                    Ver solicitações
-                </h2>
-
-                <p class="mt-2 text-sm leading-relaxed text-slate-400">
-                    Consulte suas solicitações de manutenção.
-                </p>
-            </a>
-
-            <a
-                routerLink="/categories"
-                class="group rounded-2xl border border-slate-700
-                       bg-slate-900/80 p-5 transition-all
-                       hover:-translate-y-1 hover:border-purple-500
-                       hover:bg-slate-800"
-            >
-                <i
-                    class="fa-solid fa-layer-group text-2xl text-purple-400
-                           transition-transform group-hover:scale-110"
-                    aria-hidden="true"
-                ></i>
-
-                <h2 class="mt-4 font-bold text-white">
-                    Ver categorias
-                </h2>
-
-                <p class="mt-2 text-sm leading-relaxed text-slate-400">
-                    Acesse as categorias cadastradas no sistema.
-                </p>
-            </a>
-        </div>
 
         <div class="mt-8 flex flex-col items-center gap-3">
-            <p class="text-sm text-slate-500">
-                Confira o endereço digitado ou escolha uma das opções acima.
-            </p>
-
             <button
                 type="button"
                 routerLink="/dashboard"
@@ -143,10 +52,10 @@
                        rounded-xl bg-blue-600 px-6 py-3
                        text-sm font-semibold text-white
                        transition-all hover:bg-blue-500
-                       hover:shadow-[0_0_25px_rgba(37,99,235,0.4)]
                        focus-visible:outline focus-visible:outline-2
                        focus-visible:outline-offset-2
-                       focus-visible:outline-blue-500"
+                       focus-visible:outline-blue-500
+                       hover:cursor-pointer"
             >
                 <i
                     class="fa-solid fa-arrow-left transition-transform

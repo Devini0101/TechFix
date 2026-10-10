@@ -67,8 +67,8 @@
                 <p>Concluídos:</p>
             </div>
             <p class="mr-auto text-2xl font-bold">
-                @if (summary()?.finished){
-                    {{summary()?.finished}}
+                @if (summary()?.repaired){
+                    {{summary()?.repaired}}
                 } @else {
                     0
                 }
@@ -131,19 +131,16 @@
                 }
             </button>
             <button
-                (click)="changeFilter('FINISHED')"
+                (click)="changeFilter('REPAIRED')"
                 class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'FINISHED'"
-                [class.bg-gray-900]="activeFilter() !== 'FINISHED'"
+                [class.bg-white]="activeFilter() === 'REPAIRED'"
+                [class.bg-gray-900]="activeFilter() !== 'REPAIRED'"
                 >
                 <p class="font-bold text-sm"
-                    [class.text-white]="activeFilter() != 'FINISHED'"
-                    [class.text-black]="activeFilter() === 'FINISHED'">
+                    [class.text-white]="activeFilter() != 'REPAIRED'"
+                    [class.text-black]="activeFilter() === 'REPAIRED'">
                     Concluídos
                 </p>
-                @if (summary()?.finished){
-                    <p class="bg-gray-700 text-sm font-bold rounded-lg text-gray-300 px-0.5">{{summary()?.finished}}</p>
-                }
             </button>
             <button
                 class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
@@ -157,9 +154,6 @@
                 >
                     Cancelados
                 </p>
-                @if (summary()?.canceled){
-                    <p class="bg-gray-700 text-sm font-bold rounded-lg text-gray-300 px-0.5">{{summary()?.canceled}}</p>
-                }
             </button>
             <button
                 class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
@@ -173,9 +167,6 @@
                 >
                     Todos
                 </p>
-                @if (totalSum() > 0){
-                    <p class="bg-gray-700 text-sm font-bold rounded-lg text-gray-300 px-0.5">{{totalSum()}}</p>
-                }
             </button>
         </div>
     </div>

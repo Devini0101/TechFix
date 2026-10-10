@@ -4,7 +4,7 @@ public record MaintenanceSummaryResponseDTO(
         long pendingBudgets,
         long waitingApproval,
         long inMaintenance,
-        long finished,
+        long repaired,
         long canceled
 ) {
 }

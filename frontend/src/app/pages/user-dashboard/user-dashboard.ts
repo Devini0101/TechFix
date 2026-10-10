@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { MaintenanceDetailsResponse, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+import { MaintenanceDetailsResponse, MaintenanceRequestService, Summary } from '../../core/services/maintenance-request.service';
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
 import { MaintenanceRequestModal } from '../../components/modal/maintenance-request-modal/maintenance-request-modal';
 import { RouterLink } from "@angular/router";
@@ -23,10 +23,16 @@ export class UserDashboard implements OnInit {
 
 	runningMaintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 
+	summary = signal<Summary | null>(null);
   	private maintenanceService = inject(MaintenanceRequestService);
 
 	ngOnInit(): void {
 		this.fetchRequests();
+		this.maintenanceService.getSummary().subscribe(
+			{
+				next: (data) => this.summary.set(data)
+			}
+		);
 	}
 
 	fetchRequests(): void {

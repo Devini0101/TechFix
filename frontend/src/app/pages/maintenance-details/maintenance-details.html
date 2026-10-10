@@ -34,10 +34,23 @@
                 <i class="fa-solid fa-file-export"></i>
                 Exportar Laudo
             </button> -->
-            @if (role === "employee" && order.isCurrentResponsible === true && !isCompleted("FINISHED") && (isCurrent("APPROVED")  || isCurrent("REDIRECTED"))) {
+            @if (role === "employee" && order.isCurrentResponsible === true && !isCompleted("REPAIRED") && (isCurrent("APPROVED")  || isCurrent("REDIRECTED"))) {
                 <div class="flex justify-center items-center">
-                    <button (click)="openRedirectModal()" [appTooltip]="'Redirecionar a demanda para outro funcionário'" class="bg-blue-800 text-blue-200 rounded-md px-4 py-2 hover:cursor-pointer text-sm">Redirecionar</button>
+                    <button (click)="openRedirectModal()" [appTooltip]="'Redirecionar a demanda para outro funcionário'"
+                    class="group flex items-center gap-2 bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white border border-slate-700 hover:border-amber-500 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-300 shadow-sm active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-share transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"></i>
+                    Redirecionar
+                    </button>
                 </div>
+
+                <button
+                    (click)="this.isRepairModalOpened.set(true)"
+                    [appTooltip]="'Iniciar reparo do equipamento'"
+                    class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 hover:border-emerald-400 rounded-lg px-4 py-2 text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 cursor-pointer"
+                >
+                    <i class="fa-solid fa-screwdriver-wrench transition-transform duration-300 group-hover:rotate-12"></i>
+                    Efetuar Serviço
+                </button>
             }
 
             @if (isCurrent('OPEN') && role == "employee") {
@@ -239,7 +252,7 @@
                                 [class.text-blue-100]="isCurrent('APPROVED')"
                                 [class.text-slate-200]="isCompleted('APPROVED')"
                                 [class.text-slate-400]="isPending('APPROVED')">
-                                Aprovado
+                                Aprovada
                             </h4>
                             @if (isCurrent('APPROVED')) {
                                 <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
@@ -255,9 +268,9 @@
                     </div>
 
                     <div class="relative pl-6">
-                        @if (isCurrent('FINISHED')) {
+                        @if (isCurrent('REPAIRED')) {
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-                        } @else if (isCompleted('FINISHED')) {
+                        } @else if (isCompleted('REPAIRED')) {
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center">
                                 <i class="fa-solid fa-check text-[8px] text-white"></i>
                             </span>
@@ -265,22 +278,22 @@
                             <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
                         }
 
-                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('FINISHED')">
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="isPending('REPAIRED')">
                             <h4 class="font-bold text-sm"
-                                [class.text-blue-100]="isCurrent('FINISHED')"
-                                [class.text-slate-200]="isCompleted('FINISHED')"
-                                [class.text-slate-400]="isPending('FINISHED')">
+                                [class.text-blue-100]="isCurrent('REPAIRED')"
+                                [class.text-slate-200]="isCompleted('REPAIRED')"
+                                [class.text-slate-400]="isPending('REPAIRED')">
                                 Finalizada
                             </h4>
-                            @if (isCurrent('FINISHED')) {
+                            @if (isCurrent('REPAIRED')) {
                                 <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Agora</span>
-                            } @else if (isCompleted('FINISHED')) {
+                            } @else if (isCompleted('REPAIRED')) {
                                 <span class="text-xs text-slate-500">Concluído</span>
                             } @else {
                                 <span class="text-xs text-slate-600">Pendente</span>
                             }
                         </div>
-                        <p class="text-xs" [class.text-slate-400]="!isPending('FINISHED')" [class.text-slate-500]="isPending('FINISHED')" [class.opacity-50]="isPending('FINISHED')">
+                        <p class="text-xs" [class.text-slate-400]="!isPending('REPAIRED')" [class.text-slate-500]="isPending('REPAIRED')" [class.opacity-50]="isPending('REPAIRED')">
                             Manutenção encerrada, aguardando pagamento para entrega do equipamento.
                         </p>
                     </div>
@@ -356,15 +369,29 @@
     </div>
 </div>
 
-    @if(isRedirectModalOpened() && role === "employee" && order.isCurrentResponsible === true && !isCompleted("FINISHED")) {
+@if (role === "employee" && order.isCurrentResponsible === true && !isCompleted("REPAIRED")) {
+
+    @if (isRedirectModalOpened()) {
         <app-redirect-maintenance-modal
             [maintenanceId]="order.id"
             (closeModal)="isRedirectModalOpened.set(false)"
-            (successRedirect)="onMaintenanceRedirected()"
+            (successRedirect)="reloadMaintenance()"
         ></app-redirect-maintenance-modal>
     }
 
-} @else if (errorMessage()) {
+    @if (isRepairModalOpened()) {
+
+        <app-maintenance-repair-modal
+            [maintenanceId]="order.id"
+            (closeModal)="isRepairModalOpened.set(false)"
+            (repairEmmiter)="reloadMaintenance()"
+        >
+        </app-maintenance-repair-modal>
+    }
+}
+
+}
+@else if (errorMessage()) {
     <div class="h-screen flex flex-col justify-center items-center font-sans">
         <div class="bg-slate-900 border border-red-900/40 rounded-xl p-8 max-w-md w-full text-center shadow-2xl">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">

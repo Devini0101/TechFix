@@ -182,7 +182,7 @@ public class MaintenanceRequestService {
         NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
         if (request.getEstimatedPrice() != null && request.getStatus() == Status.QUOTED) {
-            String lastValue = currencyFormater.format(request.getEstimatedPrice());
+            String previousValue = currencyFormater.format(request.getEstimatedPrice());
             String newValue = currencyFormater.format(dto.value());
             eventPublisher.publishEvent(new StatusChangedEvent(
                     request,
@@ -190,7 +190,7 @@ public class MaintenanceRequestService {
                     Status.QUOTED,
                     user,
                     "ATUALIZAÇÃO DE ORÇAMENTO",
-                    "Orçamento de manutenção atualizado de " + lastValue + " para " + newValue + " ."
+                    "Orçamento de manutenção atualizado de " + previousValue + " para " + newValue + " ."
             ));
         } else {
             String newValue = currencyFormater.format(dto.value());
@@ -372,20 +372,44 @@ public class MaintenanceRequestService {
         }
         User nextEmployee = nxtEmp.get();
 
-        User lastEmployee = req.getResponsibleEmployee();
-        Status lastStatus = req.getStatus();
+        User previousEmployee = req.getResponsibleEmployee();
+        Status previousStatus = req.getStatus();
 
         req.setResponsibleEmployee(nextEmployee);
         req.setStatus(Status.REDIRECTED);
         eventPublisher.publishEvent(new StatusChangedEvent(
                 req,
-                lastStatus,
+                previousStatus,
                 Status.REDIRECTED,
                 user,
                 "SERVIÇO REDIRECIONADO",
-                "Manutenção redirecionada do funcionário: " + lastEmployee.getName() + " para " + req.getResponsibleEmployee().getName() + "."
+                "Manutenção redirecionada do funcionário: " + previousEmployee.getName() + " para " + req.getResponsibleEmployee().getName() + "."
         ));
 
         return ResponseEntity.ok().body(req.getId());
+    }
+
+    public ResponseEntity<Long> repairMaintenance(Long id, User user) {
+        Optional<MaintenanceRequest> request = this.requestRepository.findByIdAndResponsibleEmployeeId(id, user.getId());
+
+        if (!request.isPresent()) {
+            throw new EntityNotFoundException("Manutenção inexistente.");
+        }
+
+        MaintenanceRequest maintenanceRequest = request.get();
+        Status previousStatus = maintenanceRequest.getStatus();
+        maintenanceRequest.setStatus(Status.REPAIRED);
+        eventPublisher.publishEvent(new StatusChangedEvent(
+                maintenanceRequest,
+                previousStatus,
+                Status.REPAIRED,
+                user,
+                "ITEM REPARADO",
+                "Manutenção realizada por: " + user.getName() + ", Aguardando pagamento para retirada do item."
+        ));
+
+        this.requestRepository.save(maintenanceRequest);
+
+        return ResponseEntity.ok(maintenanceRequest.getId());
     }
 }

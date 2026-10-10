@@ -80,6 +80,15 @@ public class MaintenanceRequestController {
         return ResponseEntity.ok(maintenanceHistory);
     }
 
+    @PostMapping("/{id}/repair")
+    public ResponseEntity<Long> repairMaintenance (@RequestBody Long id, @AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado!");
+        }
+
+        return this.service.repairMaintenance(id,user);
+    }
+
     @PutMapping("/{id}/redirect")
     public ResponseEntity<Long> redirectMaintenance(@PathVariable String id, @RequestBody RedirectRequestDTO request, @AuthenticationPrincipal User user){
         if (user.getRole() != UserRole.employee) {

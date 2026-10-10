@@ -1,0 +1,39 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-lg p-6 bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-700">
+
+        <div class="flex justify-between items-start border-b border-gray-700 pb-3">
+            <div>
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                Manutenção #{{ maintenanceId }}
+                </span>
+            </div>
+            <button
+                (click)="closeModal.emit()"
+                class="text-gray-400 hover:text-white text-2xl font-bold hover:cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-4 mt-4 text-sm">
+            <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+                <span class="text-xs text-gray-400 block">Redirecionar Manutenção</span>
+                <p class="mt-1 text-gray-300">
+                    Esta ação irá tornar a manutenção como consertada.
+                </p>
+            </div>
+            <div class="flex justify-end mt-6 gap-2">
+                <button (click)="repairMaintenance()"
+                class="px-4 py-2 bg-green-500 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer"
+                >
+                    Efetuar Manutenção
+                </button>
+                <button
+                    (click)="closeModal.emit()"
+                    class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer">
+                    Fechar
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

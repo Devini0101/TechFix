@@ -1,9 +1,6 @@
 package com.techfix.controller;
 
-import com.techfix.dto.request.ApprovalRequestDTO;
-import com.techfix.dto.request.BudgetAnswerRequestDTO;
-import com.techfix.dto.request.BudgetRequestDTO;
-import com.techfix.dto.request.MaintenanceRequestDTO;
+import com.techfix.dto.request.*;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
@@ -83,6 +80,26 @@ public class MaintenanceRequestController {
         return ResponseEntity.ok(maintenanceHistory);
     }
 
+    @PostMapping("/{id}/repair")
+    public ResponseEntity<Long> repairMaintenance (@RequestBody Long id, @AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado!");
+        }
+
+        return this.service.repairMaintenance(id,user);
+    }
+
+    @PutMapping("/{id}/redirect")
+    public ResponseEntity<Long> redirectMaintenance(@PathVariable String id, @RequestBody RedirectRequestDTO request, @AuthenticationPrincipal User user){
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado!");
+        }
+
+        Long parsedId = Long.parseLong(id);
+
+        return this.service.updateMaintenanceResponsibleEmployee(parsedId, request.email(), user);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<MaintenanceDetailsResponseDTO> findById(@PathVariable String id, @AuthenticationPrincipal User user) {
         MaintenanceDetailsResponseDTO response = service.findById(id, user);
@@ -154,16 +171,5 @@ public class MaintenanceRequestController {
         }
 
         return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}/redirect")
-    public ResponseEntity<Long> redirectMaintenance(@PathVariable String id, @RequestBody String employeeEmail, @AuthenticationPrincipal User user){
-        if (user.getRole() != UserRole.employee) {
-            throw new ForbiddenAccessException("Acesso negado!");
-        }
-
-        Long parsedId = Long.parseLong(id);
-
-        return this.service.updateMaintenanceResponsibleEmployee(parsedId, employeeEmail, user);
     }
 }

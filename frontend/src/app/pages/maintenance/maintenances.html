@@ -2,14 +2,14 @@
     <div class="flex items-center">
         <h2 class="font-bold text-2xl">Gestão de Serviços e Manutenção</h2>
         <div class="ml-auto">
-
-            <button
-                (click)="openCreateModal()"
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl p-4 flex items-center justify-center gap-3 font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98] hover:cursor-pointer">
-                <i class="fa-solid fa-plus text-lg"></i>
-                Criar Nova Solicitação
-            </button>
-
+            @if (Role === "client") {
+                <button
+                    (click)="openCreateModal()"
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl p-4 flex items-center justify-center gap-3 font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98] hover:cursor-pointer">
+                    <i class="fa-solid fa-plus text-lg"></i>
+                    Criar Nova Solicitação
+                </button>
+            }
         </div>
     </div>
 
@@ -244,8 +244,9 @@
     </div>
 </div>
 
-@if (isCreateModalOpen) {
+@if (Role === "client" && isCreateModalOpen) {
 	<app-service-request-modal
+        (requestCreated)="onMaintenanceCreated()"
 		(closeModal)="isCreateModalOpen = false">
 	</app-service-request-modal>
 }

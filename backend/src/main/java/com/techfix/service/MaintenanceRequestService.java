@@ -28,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -158,10 +160,8 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public void setEstimatedBudget(
-            BudgetRequestDTO dto,
-            User user
-    ) {
+    public void setEstimatedBudget(BudgetRequestDTO dto, User user) {
+
         MaintenanceRequest request = requestRepository
                 .findById(dto.id())
                 .orElseThrow(() ->
@@ -170,8 +170,7 @@ public class MaintenanceRequestService {
                         )
                 );
 
-        if (!request.getStatus().equals(Status.OPEN)
-                && !request.getStatus().equals(Status.QUOTED)) {
+        if (!request.getStatus().equals(Status.OPEN) && !request.getStatus().equals(Status.QUOTED)) {
             throw new UpdateInvalidMaintenanceBudgetException(
                     "Nao e possivel alterar o orcamento"
                             + " de uma manutencao invalida."
@@ -179,18 +178,35 @@ public class MaintenanceRequestService {
         }
 
         Status previousStatus = request.getStatus();
+
+        NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+
+        if (request.getEstimatedPrice() != null && request.getStatus() == Status.QUOTED) {
+            String previousValue = currencyFormater.format(request.getEstimatedPrice());
+            String newValue = currencyFormater.format(dto.value());
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    request,
+                    previousStatus,
+                    Status.QUOTED,
+                    user,
+                    "ATUALIZAÇÃO DE ORÇAMENTO",
+                    "Orçamento de manutenção atualizado de " + previousValue + " para " + newValue + " ."
+            ));
+        } else {
+            String newValue = currencyFormater.format(dto.value());
+            eventPublisher.publishEvent(new StatusChangedEvent(
+                    request,
+                    previousStatus,
+                    Status.QUOTED,
+                    user,
+                    "ORÇADA",
+                    "Orçamento de manutenção realizado no valor de " + newValue + " ."
+            ));
+        }
+
         request.setEstimatedPrice(dto.value());
         request.setStatus(Status.QUOTED);
         request.setResponsibleEmployee(user);
-
-        eventPublisher.publishEvent(new StatusChangedEvent(
-                request,
-                previousStatus,
-                Status.APPROVED,
-                user,
-                "ORÇADA",
-                "Orçamento de manutenção realizado."
-        ));
 
         requestRepository.save(request);
     }
@@ -276,7 +292,7 @@ public class MaintenanceRequestService {
                 Status.APPROVED,
                 user,
                 "SERVIÇO RESGATADO",
-                "Manutenção resgatada de REJEITADO para APROVADO e reinserido no fluxo."
+                "Manutenção resgatada de REJEITADA para APROVADA e reinserido no fluxo."
         ));
         return true;
     }
@@ -344,22 +360,56 @@ public class MaintenanceRequestService {
         }
 
         MaintenanceRequest req = maintenance.get();
-        User nextEmployee = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
 
-        User lastEmployee = req.getResponsibleEmployee();
-        Status lastStatus = req.getStatus();
+        if (req.getStatus() != Status.APPROVED && req.getStatus() != Status.REDIRECTED) {
+            throw new IllegalStateException("Uma manutenção só pode ser redirecionada após ser APROVADA pelo cliente.");
+        }
+
+        Optional<User> nxtEmp = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
+
+        if (!nxtEmp.isPresent()) {
+            throw new EntityNotFoundException("Funcionário não encontrado");
+        }
+        User nextEmployee = nxtEmp.get();
+
+        User previousEmployee = req.getResponsibleEmployee();
+        Status previousStatus = req.getStatus();
 
         req.setResponsibleEmployee(nextEmployee);
         req.setStatus(Status.REDIRECTED);
         eventPublisher.publishEvent(new StatusChangedEvent(
                 req,
-                lastStatus,
+                previousStatus,
                 Status.REDIRECTED,
                 user,
                 "SERVIÇO REDIRECIONADO",
-                "Manutenção redirecionada do funcionário" + lastEmployee.getName() + " para " + req.getResponsibleEmployee() + "."
+                "Manutenção redirecionada do funcionário: " + previousEmployee.getName() + " para " + req.getResponsibleEmployee().getName() + "."
         ));
 
         return ResponseEntity.ok().body(req.getId());
+    }
+
+    public ResponseEntity<Long> repairMaintenance(Long id, User user) {
+        Optional<MaintenanceRequest> request = this.requestRepository.findByIdAndResponsibleEmployeeId(id, user.getId());
+
+        if (!request.isPresent()) {
+            throw new EntityNotFoundException("Manutenção inexistente.");
+        }
+
+        MaintenanceRequest maintenanceRequest = request.get();
+        Status previousStatus = maintenanceRequest.getStatus();
+        maintenanceRequest.setStatus(Status.REPAIRED);
+        eventPublisher.publishEvent(new StatusChangedEvent(
+                maintenanceRequest,
+                previousStatus,
+                Status.REPAIRED,
+                user,
+                "ITEM REPARADO",
+                "Manutenção realizada por: " + user.getName() + ", Aguardando pagamento para retirada do item."
+        ));
+
+        this.requestRepository.save(maintenanceRequest);
+
+        return ResponseEntity.ok(maintenanceRequest.getId());
     }
 }

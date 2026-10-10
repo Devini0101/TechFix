@@ -49,8 +49,6 @@ export class Maintenances {
 
 	closeCreateModal() :void {
 		this.isCreateModalOpen = false;
-		this.loadSummary();
-		this.fetchMaintenances("ALL");
 	}
 
 	changeFilter(status : string) : void {
@@ -84,4 +82,9 @@ export class Maintenances {
 		});
 	}
 
+	onMaintenanceCreated(): void {
+		this.isCreateModalOpen = false;
+		this.loadSummary();
+		this.fetchMaintenances("ALL");
+	}
 }

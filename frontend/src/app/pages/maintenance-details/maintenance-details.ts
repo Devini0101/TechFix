@@ -6,10 +6,11 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Tooltip } from '../../directives/tooltip';
 import { RedirectMaintenanceModal } from '../../components/modal/redirect-maintenance-modal/redirect-maintenance-modal';
+import { MaintenanceRepairModal } from '../../components/modal/maintenance-repair-modal/maintenance-repair-modal';
 
 @Component({
   selector: 'app-maintenance-details',
-  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip, RedirectMaintenanceModal],
+  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip, RedirectMaintenanceModal, MaintenanceRepairModal],
   templateUrl: './maintenance-details.html',
   styleUrl: './maintenance-details.css',
 })
@@ -21,10 +22,11 @@ export class MaintenanceDetails implements OnInit {
   readonly STATUS_ORDER: Record<string, number> = {
     'OPEN': 1,
     'QUOTED': 2,
+    'REJECTED': 3,
     'APPROVED': 4,
-    'FINISHED': 5,
-    'DELIVERED': 6,
-    'REJECTED': 3
+    'REDIRECTED': 4.1,
+    'REPAIRED': 5,
+    'DELIVERED': 6
   };
 
   private service = inject(MaintenanceRequestService);
@@ -33,6 +35,7 @@ export class MaintenanceDetails implements OnInit {
   readonly role = this.authService.getRole();
   isHistoryOpened = signal<Boolean>(false);
   isRedirectModalOpened = signal<Boolean>(false);
+  isRepairModalOpened = signal<boolean>(false);
   histories = signal<MaintenanceHistory[] | null>(null);
 
   ngOnInit(): void {
@@ -85,15 +88,15 @@ export class MaintenanceDetails implements OnInit {
 		}
 	}
 
-	openRedirectModal() : void {
-		this.isRedirectModalOpened.set(!this.isRedirectModalOpened());
-  	}
+  openRedirectModal() : void {
+    this.isRedirectModalOpened.set(!this.isRedirectModalOpened());
+  }
 
 	goBack(): void {
     	this.location.back(); // Retorna para a exata URL anterior no histórico
 	}
 
-	onMaintenanceRedirected() {
+	reloadMaintenance() {
 		this.loadOrderDetails(Number(this.id));
 	}
 
@@ -107,4 +110,15 @@ export class MaintenanceDetails implements OnInit {
 			},
 		});
 	}
+
+  repairMaintenance() :void {
+    this.service.repairMaintenance(Number(this.id)).subscribe( {
+      next: (data) => this.loadOrderDetails(Number(this.id)),
+      error: (err: HttpErrorResponse) => {
+				console.error("Erro ao puxar info por id", err);
+				const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';
+				this.errorMessage.set(msg);
+			},
+    });
+  }
 }

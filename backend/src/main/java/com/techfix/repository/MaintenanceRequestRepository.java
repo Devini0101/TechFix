@@ -17,7 +17,7 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             COALESCE(SUM(CASE WHEN m.status = 'OPEN' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'QUOTED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'APPROVED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status = 'FINISHED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'REPAIRED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )
         FROM MaintenanceRequest m
@@ -30,7 +30,7 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             COALESCE(SUM(CASE WHEN m.status = 'OPEN' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'QUOTED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'APPROVED' THEN 1L ELSE 0L END), 0L),
-            COALESCE(SUM(CASE WHEN m.status = 'FINISHED' THEN 1L ELSE 0L END), 0L),
+            COALESCE(SUM(CASE WHEN m.status = 'REPAIRED' THEN 1L ELSE 0L END), 0L),
             COALESCE(SUM(CASE WHEN m.status = 'REJECTED' THEN 1L ELSE 0L END), 0L)
         )
         FROM MaintenanceRequest m

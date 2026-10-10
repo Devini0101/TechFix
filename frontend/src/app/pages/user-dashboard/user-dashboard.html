@@ -14,11 +14,11 @@
                     <div class="grid grid-cols-2 gap-4 mt-2 lg:mt-0">
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 flex flex-col items-center justify-center text-center">
                             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Em andamento</span>
-                            <span class="text-xl font-bold text-blue-500">1</span>
+                            <span class="text-xl font-bold text-blue-500">{{ summary()?.inMaintenance }}</span>
                         </div>
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 flex flex-col items-center justify-center text-center">
                             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Pendentes de Orçamento</span>
-                            <span class="text-xl font-bold text-amber-500">1</span>
+                            <span class="text-xl font-bold text-amber-500"> {{ summary()?.waitingApproval }}</span>
                         </div>
                     </div>
                     <button

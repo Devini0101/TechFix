@@ -42,7 +42,7 @@ export interface Summary {
   pendingBudgets: number | null,
   waitingApproval : number | null,
   inMaintenance: number | null,
-  finished: number | null,
+  repaired: number | null,
   canceled: number | null
 }
 

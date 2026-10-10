@@ -179,7 +179,7 @@ public class MaintenanceRequestService {
 
         Status previousStatus = request.getStatus();
 
-        NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
 
         if (request.getEstimatedPrice() != null && request.getStatus() == Status.QUOTED) {
             String previousValue = currencyFormater.format(request.getEstimatedPrice());

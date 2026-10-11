@@ -8,6 +8,7 @@ import com.techfix.dto.response.RegisterUserResponseDTO;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,10 +44,20 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(new AuthUserInfoResponseDTO(response.role(), response.name()));
     }
 
+
+    @PostMapping("/register/employee")
+    public ResponseEntity<RegisterUserResponseDTO> registerEmployee(@Valid @RequestBody RegisterUserRequestDTO request, @AuthenticationPrincipal User employee) throws MessagingException {
+        if (employee.getId() != null) {
+            throw new AuthenticationFailedException("Funcionário não identificado");
+        }
+        RegisterUserResponseDTO response = userService.registerUser(request, UserRole.employee);
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResponseDTO> register (@Valid @RequestBody RegisterUserRequestDTO request) throws MessagingException {
 
-        RegisterUserResponseDTO response = userService.registerUser(request);
+        RegisterUserResponseDTO response = userService.registerUser(request, UserRole.client);
         return ResponseEntity.ok().body(response);
     }
 

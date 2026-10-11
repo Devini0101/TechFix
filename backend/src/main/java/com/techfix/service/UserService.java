@@ -6,13 +6,13 @@ import com.techfix.dto.request.RegisterUserRequestDTO;
 import com.techfix.dto.response.EmployeesResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
-import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.exception.UserAlreadyExistsException;
 import com.techfix.model.Address;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request) throws UserAlreadyExistsException, MessagingException {
+    public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request, UserRole role) throws UserAlreadyExistsException, MessagingException {
 
         if ( userRepository.findByEmail(request.email()).isPresent() || userRepository.findByCpf(request.cpf()).isPresent() ) {
             throw new UserAlreadyExistsException("Usuário já cadastrado.");
@@ -69,7 +69,7 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAddress(newAddress);
 
-        newUser.setRole(UserRole.client);
+        newUser.setRole(role);
 
         User savedUser = userRepository.save(newUser);
         emailService.sendWelcomeMail(newUser.getEmail(), rawPassword);

@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 
 export interface ViaCepAddress {
   cep: string;
-  street: string;
-  complement: string;
-  neighborhood: string;
-  city: string;
+  bairro: string;
+  complemento: string;
+  logradouro: string;
+  localidade: string;
   uf: string;
 }
 

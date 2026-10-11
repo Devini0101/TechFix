@@ -16,14 +16,12 @@ export interface RegisterRequest {
     email: string;
     cpf: string;
     phone: string;
-    password: string;
     cep: string;
     street: string;
     neighborhood: string;
     city: string;
     uf: string;
     complement?: string;
-    role?: 'client' | 'employee';
 }
 export interface RegisterResponse {
     name: string;

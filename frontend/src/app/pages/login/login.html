@@ -38,7 +38,11 @@
 
             <button (click)="onSubmit()" class="bg-blue-50 font-semibold p-3 mt-4 rounded-md">Entrar</button>
 
-            <a routerLink="/register" class="text-center text-gray-300 font-bold hover:text-blue-500 hover:cursor-pointer">Ainda não possui um cadastro? Registre-se</a>
+            <div class="flex items-center gap-2">
+                <span class="w-6 h-[1px] bg-[#94a3b8]"></span>
+                <a routerLink="/register" class="text-center text-gray-300 font-bold hover:text-blue-500 hover:cursor-pointer">Ainda não possui um cadastro? Registre-se</a>
+                <span class="w-6 h-[1px] bg-[#94a3b8]"></span>
+            </div>
         </form>
         <div class="bg-[#111C2D] flex justify-center items-center w-full h-15 border border-gray-600 rounded-bl-2xl rounded-br-2xl">
             <p class="text-[#94a3b8] text-sm">Ao continuar, você concorda com os Termos e Políticas de Privacidade.</p>

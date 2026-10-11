@@ -2,11 +2,8 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  AbstractControl,
   FormBuilder,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,26 +11,14 @@ import { Subscription } from 'rxjs';
 
 import { AddressService } from '../../core/services/address.service';
 import { AuthService } from '../../core/services/auth.service';
-
-const passwordMatchValidator = (): ValidatorFn => {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const passwordConfirmation = control.get('passwordConfirmation')?.value;
-
-    if (!password || !passwordConfirmation) {
-      return null;
-    }
-
-    return password === passwordConfirmation ? null : { passwordMismatch: true };
-  };
-};
+import { NgxMaskDirective } from 'ngx-mask';
 
 const ADDRESS_FIELDS = ['street', 'number', 'neighborhood', 'city', 'uf', 'complement'] as const;
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, NgxMaskDirective],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -43,6 +28,7 @@ export class Register implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly addressService = inject(AddressService);
   private readonly destroyRef = inject(DestroyRef);
+  private timeoutId: any;
 
   protected readonly registerForm = this.formBuilder.nonNullable.group(
     {
@@ -50,8 +36,6 @@ export class Register implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       cpf: ['', [Validators.required, Validators.minLength(11)]],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      passwordConfirmation: ['', [Validators.required]],
       cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
       // campos de endereço ficam desabilitados (fora da validação) até o CEP ser encontrado
       street: [{ value: '', disabled: true }, [Validators.required]],
@@ -60,8 +44,7 @@ export class Register implements OnInit {
       city: [{ value: '', disabled: true }, [Validators.required]],
       uf: [{ value: '', disabled: true }, [Validators.required, Validators.maxLength(2)]],
       complement: [{ value: '', disabled: true }],
-    },
-    { validators: passwordMatchValidator() },
+    }
   );
 
   protected submitted = false;
@@ -95,16 +78,17 @@ export class Register implements OnInit {
 
     this.cepSubscription = this.addressService.getByCep(cep).subscribe({
       next: (address) => {
+        this.addressLoaded.set(true);
+        ADDRESS_FIELDS.forEach((field) => this.registerForm.controls[field].enable());
         this.isSearchingCep.set(false);
         this.registerForm.patchValue({
-          street: address.street ?? '',
-          neighborhood: address.neighborhood ?? '',
-          city: address.city ?? '',
+          street: address.bairro ?? '',
+          neighborhood: address.logradouro ?? '',
+          city: address.localidade ?? '',
           uf: address.uf ?? '',
-          complement: address.complement ?? '',
+          complement: address.complemento ?? '',
         });
-        ADDRESS_FIELDS.forEach((field) => this.registerForm.controls[field].enable());
-        this.addressLoaded.set(true);
+
       },
       error: (err: HttpErrorResponse) => {
         this.isSearchingCep.set(false);
@@ -136,8 +120,7 @@ export class Register implements OnInit {
       return;
     }
 
-    const { passwordConfirmation, number, ...formValue } = this.registerForm.getRawValue();
-
+    const { number, ...formValue } = this.registerForm.getRawValue();
     this.isSubmitting.set(true);
     this.authService
       .register({
@@ -146,7 +129,6 @@ export class Register implements OnInit {
         street: `${formValue.street.trim()}, ${number.trim()}`,
         cep: formValue.cep.replace(/\D/g, ''),
         uf: formValue.uf.toUpperCase(),
-        role: 'client',
       })
       .subscribe({
         next: () => {
@@ -154,6 +136,10 @@ export class Register implements OnInit {
           this.successMessage.set('Conta criada com sucesso. Você já pode fazer login.');
           this.submitted = false;
           this.registerForm.reset();
+          const timeoutDuration = 2000;
+          this.timeoutId = setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, timeoutDuration);
         },
         error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false);
@@ -176,13 +162,6 @@ export class Register implements OnInit {
     return errorName
       ? field.hasError(errorName) && (field.touched || this.submitted)
       : field.invalid && (field.touched || this.submitted);
-  }
-
-  protected hasPasswordMismatch(): boolean {
-    return (
-      this.registerForm.hasError('passwordMismatch') &&
-      (this.registerForm.get('passwordConfirmation')?.touched || this.submitted)
-    );
   }
 
   protected goToLogin(): void {

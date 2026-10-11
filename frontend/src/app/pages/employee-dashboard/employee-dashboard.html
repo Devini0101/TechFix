@@ -28,8 +28,8 @@
 		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
 			<p class="text-gray-400 text-sm uppercase">Serviços Finalizados</p>
 			<h2 class="text-white text-3xl font-bold">
-				 @if (dashboardSummary()?.finished){
-                    {{dashboardSummary()?.finished}}
+				 @if (dashboardSummary()?.repaired){
+                    {{dashboardSummary()?.repaired}}
                 } @else {
                     0
                 }

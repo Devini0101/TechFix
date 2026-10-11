@@ -49,8 +49,6 @@ export class Register implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       cpf: ['', [Validators.required, Validators.minLength(11)]],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      passwordConfirmation: ['', [Validators.required]],
       cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
       // campos de endereço ficam desabilitados (fora da validação) até o CEP ser encontrado
       street: [{ value: '', disabled: true }, [Validators.required]],
@@ -96,11 +94,11 @@ export class Register implements OnInit {
       next: (address) => {
         this.isSearchingCep.set(false);
         this.registerForm.patchValue({
-          street: address.street ?? '',
-          neighborhood: address.neighborhood ?? '',
-          city: address.city ?? '',
+          street: address.bairro ?? '',
+          neighborhood: address.logradouro ?? '',
+          city: address.localidade ?? '',
           uf: address.uf ?? '',
-          complement: address.complement ?? '',
+          complement: address.complemento ?? '',
         });
         ADDRESS_FIELDS.forEach((field) => this.registerForm.controls[field].enable());
         this.addressLoaded.set(true);
@@ -135,7 +133,7 @@ export class Register implements OnInit {
       return;
     }
 
-    const { passwordConfirmation, number, ...formValue } = this.registerForm.getRawValue();
+    const { number, ...formValue } = this.registerForm.getRawValue();
 
     this.isSubmitting.set(true);
     this.authService
@@ -145,7 +143,6 @@ export class Register implements OnInit {
         street: `${formValue.street.trim()}, ${number.trim()}`,
         cep: formValue.cep.replace(/\D/g, ''),
         uf: formValue.uf.toUpperCase(),
-        role: 'employee',
       })
       .subscribe({
         next: (res) => {

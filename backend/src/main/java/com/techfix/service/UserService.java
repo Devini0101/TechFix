@@ -69,8 +69,7 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAddress(newAddress);
 
-        UserRole role = (request.role() != null) ? request.role() : UserRole.client;
-        newUser.setRole(role);
+        newUser.setRole(UserRole.client);
 
         User savedUser = userRepository.save(newUser);
         emailService.sendWelcomeMail(newUser.getEmail(), rawPassword);

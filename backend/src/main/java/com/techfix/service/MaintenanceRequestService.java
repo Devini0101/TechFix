@@ -4,6 +4,7 @@ import com.techfix.dto.request.ApprovalRequestDTO;
 import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
+import com.techfix.dto.request.PaymentRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
@@ -12,12 +13,14 @@ import com.techfix.exception.InvalidMaintenanceApprovalException;
 import com.techfix.exception.UpdateInvalidMaintenanceBudgetException;
 import com.techfix.model.Category;
 import com.techfix.model.MaintenanceRequest;
+import com.techfix.model.Payment;
 import com.techfix.model.RequestHistory;
 import com.techfix.model.User;
 import com.techfix.model.enums.Status;
 import com.techfix.model.enums.UserRole;
 import com.techfix.repository.CategoryRepository;
 import com.techfix.repository.MaintenanceRequestRepository;
+import com.techfix.repository.PaymentRepository;
 import com.techfix.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -40,13 +43,19 @@ public class MaintenanceRequestService {
     private final CategoryRepository categoryRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     public MaintenanceRequestService(
             MaintenanceRequestRepository requestRepository,
-            CategoryRepository categoryRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
+            CategoryRepository categoryRepository,
+            UserRepository userRepository,
+            PaymentRepository paymentRepository,
+            ApplicationEventPublisher eventPublisher
+     ) {
         this.requestRepository = requestRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
         this.eventPublisher = eventPublisher;
     }
 
@@ -81,21 +90,38 @@ public class MaintenanceRequestService {
         return requestRepository.save(maintenanceRequest);
     }
 
-    public List<MaintenanceDetailsResponseDTO> getAll(String statusCode, User user) {
-
+    public List<MaintenanceDetailsResponseDTO> getAll(
+            String statusCode,
+            User user
+    ) {
         Status statusEnum = null;
-        if (statusCode != null && !statusCode.isBlank() && !statusCode.equalsIgnoreCase("ALL")) {
+
+        if (
+                statusCode != null
+                        && !statusCode.isBlank()
+                        && !statusCode.equalsIgnoreCase("ALL")
+        ) {
             if (!Status.isValid(statusCode)) {
-                throw new EntityNotFoundException("Nao foi possivel encontrar o codigo " + statusCode);
+                throw new EntityNotFoundException(
+                        "Nao foi possivel encontrar o codigo "
+                                + statusCode
+                );
             }
+
             statusEnum = Status.valueOf(statusCode.toUpperCase());
         }
 
-        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee)
-                ? requestRepository.findAllActive(statusEnum)
-                : requestRepository.findAllActiveByClient(user.getId(), statusEnum);
+        List<MaintenanceRequest> requests =
+                (user.getRole() == UserRole.employee)
+                        ? requestRepository.findAllActive(statusEnum)
+                        : requestRepository.findAllActiveByClient(
+                                user.getId(),
+                                statusEnum
+                        );
 
-        return requests.stream().map(m -> new MaintenanceDetailsResponseDTO(m, user)).toList();
+        return requests.stream()
+                .map(m -> new MaintenanceDetailsResponseDTO(m, user))
+                .toList();
     }
 
     public MaintenanceSummaryResponseDTO getMaintenancesSummary() {
@@ -109,7 +135,10 @@ public class MaintenanceRequestService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceDetailsResponseDTO findById(String id, User user) {
+    public MaintenanceDetailsResponseDTO findById(
+            String id,
+            User user
+    ) {
         Long maintenanceId = Long.parseLong(id);
 
         if (user.getRole() == UserRole.employee) {
@@ -160,8 +189,10 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public void setEstimatedBudget(BudgetRequestDTO dto, User user) {
-
+    public void setEstimatedBudget(
+            BudgetRequestDTO dto,
+            User user
+    ) {
         MaintenanceRequest request = requestRepository
                 .findById(dto.id())
                 .orElseThrow(() ->
@@ -170,7 +201,10 @@ public class MaintenanceRequestService {
                         )
                 );
 
-        if (!request.getStatus().equals(Status.OPEN) && !request.getStatus().equals(Status.QUOTED)) {
+        if (
+                !request.getStatus().equals(Status.OPEN)
+                        && !request.getStatus().equals(Status.QUOTED)
+        ) {
             throw new UpdateInvalidMaintenanceBudgetException(
                     "Nao e possivel alterar o orcamento"
                             + " de uma manutencao invalida."
@@ -179,29 +213,53 @@ public class MaintenanceRequestService {
 
         Status previousStatus = request.getStatus();
 
-        NumberFormat currencyFormater = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+        NumberFormat currencyFormatter =
+                NumberFormat.getCurrencyInstance(
+                        Locale.of("pt", "BR")
+                );
 
-        if (request.getEstimatedPrice() != null && request.getStatus() == Status.QUOTED) {
-            String previousValue = currencyFormater.format(request.getEstimatedPrice());
-            String newValue = currencyFormater.format(dto.value());
-            eventPublisher.publishEvent(new StatusChangedEvent(
-                    request,
-                    previousStatus,
-                    Status.QUOTED,
-                    user,
-                    "ATUALIZAÇÃO DE ORÇAMENTO",
-                    "Orçamento de manutenção atualizado de " + previousValue + " para " + newValue + " ."
-            ));
+        if (
+                request.getEstimatedPrice() != null
+                        && request.getStatus() == Status.QUOTED
+        ) {
+            String previousValue =
+                    currencyFormatter.format(
+                            request.getEstimatedPrice()
+                    );
+
+            String newValue =
+                    currencyFormatter.format(dto.value());
+
+            eventPublisher.publishEvent(
+                    new StatusChangedEvent(
+                            request,
+                            previousStatus,
+                            Status.QUOTED,
+                            user,
+                            "ATUALIZAÇÃO DE ORÇAMENTO",
+                            "Orçamento de manutenção atualizado de "
+                                    + previousValue
+                                    + " para "
+                                    + newValue
+                                    + "."
+                    )
+            );
         } else {
-            String newValue = currencyFormater.format(dto.value());
-            eventPublisher.publishEvent(new StatusChangedEvent(
-                    request,
-                    previousStatus,
-                    Status.QUOTED,
-                    user,
-                    "ORÇADA",
-                    "Orçamento de manutenção realizado no valor de " + newValue + " ."
-            ));
+            String newValue =
+                    currencyFormatter.format(dto.value());
+
+            eventPublisher.publishEvent(
+                    new StatusChangedEvent(
+                            request,
+                            previousStatus,
+                            Status.QUOTED,
+                            user,
+                            "ORÇADA",
+                            "Orçamento de manutenção realizado no valor de "
+                                    + newValue
+                                    + "."
+                    )
+            );
         }
 
         request.setEstimatedPrice(dto.value());
@@ -226,10 +284,8 @@ public class MaintenanceRequestService {
             return false;
         }
 
-        MaintenanceRequest req =
-                optionalRequest.get();
+        MaintenanceRequest req = optionalRequest.get();
 
-        // Valida se o status atual é de orçacada ou rejeitada (status quem podem ir para aprovado)
         if (!req.getStatus().equals(Status.QUOTED)) {
             return false;
         }
@@ -240,25 +296,32 @@ public class MaintenanceRequestService {
         if (answer.equals("APPROVED")) {
             req.setStatus(Status.APPROVED);
             req.setPrice(req.getEstimatedPrice());
-            eventPublisher.publishEvent(new StatusChangedEvent(
-                    req,
-                    previousStatus,
-                    Status.APPROVED,
-                    user,
-                    "ORÇAMENTO APROVADO",
-                    "Orçamento de manutenção APROVADO e inserido no fluxo."
-            ));
+
+            eventPublisher.publishEvent(
+                    new StatusChangedEvent(
+                            req,
+                            previousStatus,
+                            Status.APPROVED,
+                            user,
+                            "ORÇAMENTO APROVADO",
+                            "Orçamento de manutenção aprovado e inserido no fluxo."
+                    )
+            );
         } else if (answer.equals("REJECTED")) {
             req.setStatus(Status.REJECTED);
-            eventPublisher.publishEvent(new StatusChangedEvent(
-                    req,
-                    previousStatus,
-                    Status.REJECTED,
-                    user,
-                    "ORÇAMENTO REJEITADO",
-                    "Orçamento de manutenção REJEITADA e removida no fluxo."
-            ));
 
+            eventPublisher.publishEvent(
+                    new StatusChangedEvent(
+                            req,
+                            previousStatus,
+                            Status.REJECTED,
+                            user,
+                            "ORÇAMENTO REJEITADO",
+                            "Orçamento de manutenção rejeitado e removido do fluxo."
+                    )
+            );
+        } else {
+            return false;
         }
 
         requestRepository.save(req);
@@ -267,38 +330,52 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public boolean rescueMaintenance(Long id, User user) {
-        Optional<MaintenanceRequest> optionalReq = requestRepository.findByIdAndClientId(id, user.getId());
+    public boolean rescueMaintenance(
+            Long id,
+            User user
+    ) {
+        Optional<MaintenanceRequest> optionalRequest =
+                requestRepository.findByIdAndClientId(
+                        id,
+                        user.getId()
+                );
 
-        if (optionalReq.isEmpty()) {
+        if (optionalRequest.isEmpty()) {
             return false;
         }
 
-        MaintenanceRequest req = optionalReq.get();
+        MaintenanceRequest request = optionalRequest.get();
 
-        //only rejected requests can be rescued
-        if (!req.getStatus().equals(Status.REJECTED) ) {
+        if (!request.getStatus().equals(Status.REJECTED)) {
             return false;
         }
 
-        Status previousStatus = req.getStatus();
+        Status previousStatus = request.getStatus();
 
-        req.setStatus(Status.APPROVED);
-        req.setPrice(req.getEstimatedPrice());
-        requestRepository.save(req);
-        eventPublisher.publishEvent(new StatusChangedEvent(
-                req,
-                previousStatus,
-                Status.APPROVED,
-                user,
-                "SERVIÇO RESGATADO",
-                "Manutenção resgatada de REJEITADA para APROVADA e reinserido no fluxo."
-        ));
+        request.setStatus(Status.APPROVED);
+        request.setPrice(request.getEstimatedPrice());
+
+        requestRepository.save(request);
+
+        eventPublisher.publishEvent(
+                new StatusChangedEvent(
+                        request,
+                        previousStatus,
+                        Status.APPROVED,
+                        user,
+                        "SERVIÇO RESGATADO",
+                        "Manutenção resgatada de rejeitada para aprovada."
+                )
+        );
+
         return true;
     }
 
-    public List<MaintenanceDetailsResponseDTO> searchByStatusAndTerm(String statusCode, String term, User user) {
-
+    public List<MaintenanceDetailsResponseDTO> searchByStatusAndTerm(
+            String statusCode,
+            String term,
+            User user
+    ) {
         Status statusEnum = parseStatus(statusCode);
 
         Long searchId = null;
@@ -306,110 +383,252 @@ public class MaintenanceRequestService {
 
         if (term != null && !term.isBlank()) {
             term = term.trim();
+
             if (term.matches("\\d+")) {
                 searchId = Long.parseLong(term);
             }
+
             searchPattern = "%" + term.toLowerCase() + "%";
         }
 
-        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee)
-                ? requestRepository.searchByStatusAndTerm(statusEnum, searchPattern, searchId)
-                : requestRepository.searchByStatusAndTermAndClient(statusEnum, searchPattern, searchId, user.getId());
+        List<MaintenanceRequest> requests =
+                (user.getRole() == UserRole.employee)
+                        ? requestRepository.searchByStatusAndTerm(
+                                statusEnum,
+                                searchPattern,
+                                searchId
+                        )
+                        : requestRepository.searchByStatusAndTermAndClient(
+                                statusEnum,
+                                searchPattern,
+                                searchId,
+                                user.getId()
+                        );
 
         return requests.stream()
                 .map(m -> new MaintenanceDetailsResponseDTO(m, user))
                 .toList();
     }
 
-    public List<MaintenanceHistoryResponseDTO> getMaintenanceHistory(Long id, User user) {
+    public List<MaintenanceHistoryResponseDTO> getMaintenanceHistory(
+            Long id,
+            User user
+    ) {
         Optional<MaintenanceRequest> maintenance;
 
         if (user.getRole() == UserRole.client) {
-            maintenance = requestRepository.findByIdAndClientId(id, user.getId());
+            maintenance = requestRepository
+                    .findByIdAndClientId(id, user.getId());
         } else {
             maintenance = requestRepository.findById(id);
         }
 
-        if (!maintenance.isPresent()) {
-            throw new EntityNotFoundException("Manutenção não encontrada!");
+        if (maintenance.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Manutenção não encontrada!"
+            );
         }
 
-        List<RequestHistory> history = maintenance.get().getHistory();
+        List<RequestHistory> history =
+                maintenance.get().getHistory();
 
-        return history.stream().map(MaintenanceHistoryResponseDTO::new).toList();
+        return history.stream()
+                .map(MaintenanceHistoryResponseDTO::new)
+                .toList();
     }
 
     private Status parseStatus(String statusCode) {
-        if (statusCode == null || statusCode.isBlank() || statusCode.equalsIgnoreCase("ALL")) {
+        if (
+                statusCode == null
+                        || statusCode.isBlank()
+                        || statusCode.equalsIgnoreCase("ALL")
+        ) {
             return null;
         }
 
         if (!Status.isValid(statusCode)) {
-            throw new IllegalArgumentException("Status inválido: " + statusCode);
+            throw new IllegalArgumentException(
+                    "Status inválido: " + statusCode
+            );
         }
 
         return Status.valueOf(statusCode.toUpperCase());
     }
 
-    public ResponseEntity<Long> updateMaintenanceResponsibleEmployee(Long parsedId, String employeeEmail, User user) {
+    public ResponseEntity<Long> updateMaintenanceResponsibleEmployee(
+            Long maintenanceId,
+            String employeeEmail,
+            User user
+    ) {
+        Optional<MaintenanceRequest> optionalMaintenance =
+                requestRepository.findByIdAndResponsibleEmployeeId(
+                        maintenanceId,
+                        user.getId()
+                );
 
-        Optional<MaintenanceRequest> maintenance = requestRepository.findByIdAndResponsibleEmployeeId(parsedId, user.getId());
-
-        if (!maintenance.isPresent()) {
-            throw new EntityNotFoundException("Manutenção não encontrada");
+        if (optionalMaintenance.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Manutenção não encontrada"
+            );
         }
 
-        MaintenanceRequest req = maintenance.get();
+        MaintenanceRequest request = optionalMaintenance.get();
 
-        if (req.getStatus() != Status.APPROVED && req.getStatus() != Status.REDIRECTED) {
-            throw new IllegalStateException("Uma manutenção só pode ser redirecionada após ser APROVADA pelo cliente.");
+        if (
+                request.getStatus() != Status.APPROVED
+                        && request.getStatus() != Status.REDIRECTED
+        ) {
+            throw new IllegalStateException(
+                    "Uma manutenção só pode ser redirecionada após ser aprovada pelo cliente."
+            );
         }
 
-        Optional<User> nxtEmp = userRepository.findByEmailAndRole(employeeEmail, UserRole.employee);
+        Optional<User> optionalNextEmployee =
+                userRepository.findByEmailAndRole(
+                        employeeEmail,
+                        UserRole.employee
+                );
 
-        if (!nxtEmp.isPresent()) {
-            throw new EntityNotFoundException("Funcionário não encontrado");
+        if (optionalNextEmployee.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Funcionário não encontrado"
+            );
         }
-        User nextEmployee = nxtEmp.get();
 
-        User previousEmployee = req.getResponsibleEmployee();
-        Status previousStatus = req.getStatus();
+        User nextEmployee = optionalNextEmployee.get();
+        User previousEmployee = request.getResponsibleEmployee();
+        Status previousStatus = request.getStatus();
 
-        req.setResponsibleEmployee(nextEmployee);
-        req.setStatus(Status.REDIRECTED);
-        eventPublisher.publishEvent(new StatusChangedEvent(
-                req,
-                previousStatus,
-                Status.REDIRECTED,
-                user,
-                "SERVIÇO REDIRECIONADO",
-                "Manutenção redirecionada do funcionário: " + previousEmployee.getName() + " para " + req.getResponsibleEmployee().getName() + "."
-        ));
+        request.setResponsibleEmployee(nextEmployee);
+        request.setStatus(Status.REDIRECTED);
 
-        return ResponseEntity.ok().body(req.getId());
+        eventPublisher.publishEvent(
+                new StatusChangedEvent(
+                        request,
+                        previousStatus,
+                        Status.REDIRECTED,
+                        user,
+                        "SERVIÇO REDIRECIONADO",
+                        "Manutenção redirecionada do funcionário "
+                                + previousEmployee.getName()
+                                + " para "
+                                + nextEmployee.getName()
+                                + "."
+                )
+        );
+
+        requestRepository.save(request);
+
+        return ResponseEntity.ok(request.getId());
     }
 
-    public ResponseEntity<Long> repairMaintenance(Long id, User user) {
-        Optional<MaintenanceRequest> request = this.requestRepository.findByIdAndResponsibleEmployeeId(id, user.getId());
+    public ResponseEntity<Long> repairMaintenance(
+            Long id,
+            User user
+    ) {
+        Optional<MaintenanceRequest> optionalRequest =
+                requestRepository.findByIdAndResponsibleEmployeeId(
+                        id,
+                        user.getId()
+                );
 
-        if (!request.isPresent()) {
-            throw new EntityNotFoundException("Manutenção inexistente.");
+        if (optionalRequest.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Manutenção inexistente."
+            );
         }
 
-        MaintenanceRequest maintenanceRequest = request.get();
-        Status previousStatus = maintenanceRequest.getStatus();
+        MaintenanceRequest maintenanceRequest =
+                optionalRequest.get();
+
+        Status previousStatus =
+                maintenanceRequest.getStatus();
+
         maintenanceRequest.setStatus(Status.REPAIRED);
-        eventPublisher.publishEvent(new StatusChangedEvent(
-                maintenanceRequest,
-                previousStatus,
-                Status.REPAIRED,
-                user,
-                "ITEM REPARADO",
-                "Manutenção realizada por: " + user.getName() + ", Aguardando pagamento para retirada do item."
-        ));
 
-        this.requestRepository.save(maintenanceRequest);
+        eventPublisher.publishEvent(
+                new StatusChangedEvent(
+                        maintenanceRequest,
+                        previousStatus,
+                        Status.REPAIRED,
+                        user,
+                        "ITEM REPARADO",
+                        "Manutenção realizada por: "
+                                + user.getName()
+                                + ", aguardando pagamento para retirada do item."
+                )
+        );
 
-        return ResponseEntity.ok(maintenanceRequest.getId());
+        requestRepository.save(maintenanceRequest);
+
+        return ResponseEntity.ok(
+                maintenanceRequest.getId()
+        );
+    }
+
+    @Transactional
+    public void payMaintenance(
+            Long maintenanceId,
+            PaymentRequestDTO paymentRequest,
+            User client
+    ) {
+        MaintenanceRequest maintenance =
+                requestRepository.findByIdAndClientId(
+                        maintenanceId,
+                        client.getId()
+                )
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Manutenção não encontrada para este cliente."
+                        )
+                );
+
+        if (maintenance.getStatus() != Status.REPAIRED) {
+            throw new IllegalArgumentException(
+                    "Somente serviços arrumados podem ser pagos."
+            );
+        }
+
+        if (maintenance.getPayment() != null) {
+            throw new IllegalArgumentException(
+                    "Esta manutenção já possui um pagamento."
+            );
+        }
+
+        if (maintenance.getPrice() == null) {
+            throw new IllegalArgumentException(
+                    "A manutenção não possui um valor final."
+            );
+        }
+
+        Payment payment = new Payment();
+        payment.setPaymentMethod(
+                paymentRequest.paymentMethod()
+        );
+        payment.setAmount(
+                maintenance.getPrice()
+        );
+
+        paymentRepository.save(payment);
+
+        Status previousStatus =
+                maintenance.getStatus();
+
+        maintenance.setPayment(payment);
+        maintenance.setStatus(Status.PAID);
+
+        eventPublisher.publishEvent(
+                new StatusChangedEvent(
+                        maintenance,
+                        previousStatus,
+                        Status.PAID,
+                        client,
+                        "PAGAMENTO REALIZADO",
+                        "Pagamento realizado pelo cliente no valor de "
+                                + maintenance.getPrice()
+                )
+        );
+
+        requestRepository.save(maintenance);
     }
 }

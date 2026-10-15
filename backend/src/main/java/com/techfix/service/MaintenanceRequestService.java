@@ -617,6 +617,9 @@ public class MaintenanceRequestService {
         maintenance.setPayment(payment);
         maintenance.setStatus(Status.PAID);
 
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+        String maintenancePrice = currencyFormatter.format(maintenance.getPrice());
+
         eventPublisher.publishEvent(
                 new StatusChangedEvent(
                         maintenance,
@@ -625,7 +628,7 @@ public class MaintenanceRequestService {
                         client,
                         "PAGAMENTO REALIZADO",
                         "Pagamento realizado pelo cliente no valor de "
-                                + maintenance.getPrice()
+                                + maintenancePrice
                 )
         );
 

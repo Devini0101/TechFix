@@ -23,7 +23,7 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(nullable = false, name = "payment_method")
+    @Column(nullable = false, name = "method")
     private PaymentMethod paymentMethod;
 
     @Column(nullable = false, precision = 10, scale = 2)

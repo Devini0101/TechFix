@@ -172,4 +172,21 @@ public class MaintenanceRequestController {
 
         return ResponseEntity.ok().build();
     }
+        @PostMapping("/{id}/payment")
+    public ResponseEntity<Void> payMaintenance(
+            @PathVariable Long id,
+            @Valid @RequestBody PaymentRequestDTO request,
+            @AuthenticationPrincipal User user
+    ) {
+        if (user.getRole() != UserRole.client) {
+            throw new ForbiddenAccessException(
+                    "Somente clientes podem realizar pagamentos."
+            );
+        }
+
+        service.payMaintenance(id, request, user);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

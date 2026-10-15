@@ -1,13 +1,18 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { MaintenanceDetailsResponse, MaintenanceRequestService, Summary } from '../../core/services/maintenance-request.service';
 import { ServiceRequestModal } from '../../components/modal/service-request-modal/service-request-modal';
-import { MaintenanceRequestModal } from '../../components/modal/maintenance-request-modal/maintenance-request-modal';
 import { RouterLink } from "@angular/router";
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { MaintenancePaymentModal } from '../../components/modal/maintenance-payment-modal/maintenance-payment-modal';
 
 @Component({
 	selector: 'app-user-dashboard',
-	imports: [ServiceRequestModal, RouterLink, DatePipe],
+	imports: [
+  ServiceRequestModal,
+  RouterLink,
+  DatePipe,
+  MaintenancePaymentModal
+],
 	templateUrl: './user-dashboard.html',
 	styleUrl: './user-dashboard.css',
 })
@@ -24,7 +29,10 @@ export class UserDashboard implements OnInit {
 	runningMaintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 
 	summary = signal<Summary | null>(null);
-  	private maintenanceService = inject(MaintenanceRequestService);
+  paymentModalOpen = signal<boolean>(false);
+  selectedId = signal<Number | null> (null)
+
+  private maintenanceService = inject(MaintenanceRequestService);
 
 	ngOnInit(): void {
 		this.fetchRequests();
@@ -58,4 +66,15 @@ export class UserDashboard implements OnInit {
 		this.isCreateModalOpen = false;
 		this.fetchRequests();
 	}
+
+  openPaymentModal(id : Number) {
+    this.selectedId.set(id);
+    this.paymentModalOpen.set(true);
+  }
+
+  closePaymentModal(): void {
+    this.fetchRequests();
+    //verificar se foi paga e mostra feedback
+    this.paymentModalOpen.set(false);
+  }
 }

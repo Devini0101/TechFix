@@ -1,0 +1,125 @@
+@if (maintenance(); as order) {
+<div
+    class="fixed inset-0 z-50 flex items-center justify-center
+            bg-slate-950/80 px-4 backdrop-blur-sm"
+>
+    <div
+        class="w-full max-w-md rounded-2xl
+                border border-slate-700 bg-slate-800 p-6
+                shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-title"
+    >
+        <div class="mb-6 flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-orange-400">
+                    Pagamento
+                </p>
+
+                <h2
+                    id="payment-title"
+                    class="mt-1 text-2xl font-bold text-white"
+                >
+                    Pagar Serviço
+                </h2>
+            </div>
+
+            <button
+                type="button"
+                (click)="closePaymentModal()"
+                [disabled]="isPaying()"
+                class="text-2xl text-slate-400
+                        hover:text-white disabled:opacity-50"
+            >
+                &times;
+            </button>
+        </div>
+
+        <div
+            class="mb-6 rounded-xl border border-slate-700
+                    bg-slate-900 p-4"
+        >
+            <p class="text-sm text-slate-400">
+                Solicitação
+            </p>
+
+            <p class="font-semibold text-white">
+                #{{ order.id }}
+                —
+                {{ order.item }}
+            </p>
+
+            <p class="mt-3 text-sm text-slate-400">
+                Valor do serviço
+            </p>
+
+            <p class="text-3xl font-black text-orange-400">
+                {{ order.price | currency: 'BRL' }}
+            </p>
+        </div>
+
+        <label
+            for="payment-method"
+            class="mb-2 block text-sm font-medium
+                    text-slate-300"
+        >
+            Método de pagamento
+        </label>
+
+        <select
+            id="payment-method"
+            [value]="selectedPaymentMethod"
+            (change)="changePaymentMethod($event)"
+            [disabled]="isPaying()"
+            class="mb-4 w-full rounded-xl border
+                    border-slate-600 bg-slate-900
+                    px-4 py-3 text-slate-100
+                    outline-none focus:border-orange-400"
+        >
+            <option value="pix">PIX</option>
+            <option value="debit">Cartão de débito</option>
+            <option value="credit">Cartão de crédito</option>
+        </select>
+
+        @if (paymentError()) {
+            <div
+                class="mb-4 rounded-lg border border-red-500/40
+                        bg-red-500/10 p-3 text-sm text-red-300"
+                role="alert"
+            >
+                {{ paymentError() }}
+            </div>
+        }
+
+        <p class="mb-5 text-xs leading-relaxed text-slate-400">
+            Ao confirmar, o pagamento será registrado com a data e
+            hora atuais e o serviço passará para o estado PAGO.
+        </p>
+
+        <div class="flex gap-3">
+            <button
+                type="button"
+                (click)="closePaymentModal()"
+                [disabled]="isPaying()"
+                class="flex-1 rounded-xl border border-slate-600
+                        px-4 py-3 font-semibold text-slate-300
+                        hover:bg-slate-700 disabled:opacity-50"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                (click)="confirmPayment()"
+                [disabled]="isPaying()"
+                class="flex-1 rounded-xl bg-orange-600
+                        px-4 py-3 font-bold text-white
+                        hover:bg-orange-500 disabled:opacity-50"
+            >
+                {{ isPaying() ? 'Processando...' : 'Confirmar pagamento' }}
+            </button>
+        </div>
+    </div>
+</div>
+}

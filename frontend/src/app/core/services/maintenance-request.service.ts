@@ -134,4 +134,14 @@ export class MaintenanceRequestService {
 	repairMaintenance(id: number) : Observable<Number> {
 		return this.http.post<Number>(`${this.apiUrl}/${id}/repair`, id, { withCredentials: true});
 	}
+	intenance(
+    id: number,
+    paymentMethod: 'pix' | 'debit' | 'credit'
+  ): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiUrl}/${id}/payment`,
+      { paymentMethod },
+      { withCredentials: true }
+     );
+  }
 }

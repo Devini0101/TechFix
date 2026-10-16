@@ -53,6 +53,16 @@
                 </button>
             }
 
+            @if(isCurrent('PAID') && role == "employee") {
+                <button
+                    [appTooltip]="'Finalizar manutenção do equipamento.'"
+                    class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 hover:border-emerald-400 rounded-lg px-4 py-2 text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 cursor-pointer"
+                >
+                    <i class="fa-solid fa-circle-check transition-transform duration-300 group-hover:rotate-12"></i>
+                    Finalizar Serviço
+                </button>
+            }
+
             @if (isCurrent('OPEN') && role == "employee") {
                 <button [appTooltip]="'Realizar orçamento da manutenção'" [routerLink]="['/budgets', order.id]" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2 hover:cursor-pointer">
                     <i class="fa-solid fa-dollar-sign"></i>
@@ -295,6 +305,28 @@
                         </div>
                         <p class="text-xs" [class.text-slate-400]="!isPending('REPAIRED')" [class.text-slate-500]="isPending('REPAIRED')" [class.opacity-50]="isPending('REPAIRED')">
                             Manutenção encerrada, aguardando pagamento para entrega do equipamento.
+                        </p>
+                    </div>
+
+                    <div class="relative pl-6">
+                        @if (isCurrent('PAID')) {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+                        } @else {
+                            <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-900 border-2 border-slate-700"></span>
+                        }
+
+                        <div class="flex justify-between items-start mb-1" [class.opacity-50]="!isCurrent('PAID')">
+                            <h4 class="font-bold text-sm" [class.text-blue-100]="isCurrent('PAID')" [class.text-slate-400]="!isCurrent('PAID')">
+                                Paga
+                            </h4>
+                            @if (isCurrent('PAID')) {
+                                <span class="text-[10px] font-bold tracking-wider text-blue-400 uppercase">Concluído</span>
+                            } @else {
+                                <span class="text-xs text-slate-600">Pendente</span>
+                            }
+                        </div>
+                        <p class="text-xs" [class.text-slate-400]="isCurrent('PAID')" [class.text-slate-500]="!isCurrent('PAID')" [class.opacity-50]="!isCurrent('PAID')">
+                            Serviço finalizado e pagamento realizado, aguardando entrega do equipamento.
                         </p>
                     </div>
 

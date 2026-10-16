@@ -227,6 +227,15 @@
                                         Realizar Manutenção
                                         </button>
                                     }
+                                    @if (item.statusCode == "PAID" && Role == "employee") {
+                                        <button
+                                            [appTooltip]="'Finalizar manutenção do equipamento.'"
+                                            class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 hover:border-emerald-400 rounded-lg px-2 py-1 text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 cursor-pointer"
+                                        >
+                                            <i class="fa-solid fa-circle-check transition-transform duration-300 group-hover:rotate-12"></i>
+                                            Finalizar Serviço
+                                        </button>
+                                    }
                                 </td>
                             </tr>
                         } @empty {

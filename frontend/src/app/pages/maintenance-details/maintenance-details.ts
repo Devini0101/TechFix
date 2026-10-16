@@ -26,7 +26,8 @@ export class MaintenanceDetails implements OnInit {
     'APPROVED': 4,
     'REDIRECTED': 4.1,
     'REPAIRED': 5,
-    'DELIVERED': 6
+    'PAID' : 6,
+    'DELIVERED': 7
   };
 
   private service = inject(MaintenanceRequestService);

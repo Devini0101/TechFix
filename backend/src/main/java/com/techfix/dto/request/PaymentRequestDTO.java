@@ -1,4 +1,4 @@
-package com.techfix.dto.response;
+package com.techfix.dto.request;
 
 import com.techfix.model.enums.PaymentMethod;
 import jakarta.validation.constraints.NotNull;

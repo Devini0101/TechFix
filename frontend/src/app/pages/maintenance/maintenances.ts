@@ -6,10 +6,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { CurrencyPipe } from '@angular/common';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MaintenanceRepairModal } from '../../components/modal/maintenance-repair-modal/maintenance-repair-modal';
+import { Tooltip } from '../../directives/tooltip';
 
 @Component({
   selector: 'app-maintenances',
-  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule],
+  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip],
   templateUrl: './maintenances.html',
   styleUrl: './maintenances.css',
 })
@@ -22,6 +24,8 @@ export class Maintenances {
 	activeFilter = signal<string>('ALL');
 	summary = signal<Summary | null>(null);
 	isCreateModalOpen = false;
+	isRepairModalOpened = signal<boolean>(false);
+	maintenanceId = signal<number | null>(null)
 	maintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 	totalSum = computed(() => {
 		const data = this.summary();
@@ -86,5 +90,15 @@ export class Maintenances {
 		this.isCreateModalOpen = false;
 		this.loadSummary();
 		this.fetchMaintenances("ALL");
+	}
+
+	reloadMaintenances() :void{
+		const status = this.activeFilter();
+		this.fetchMaintenances(status);
+	}
+
+	repairMaintenance( id: number) :void {
+		this.isRepairModalOpened.set(true)
+		this.maintenanceId.set(id)
 	}
 }

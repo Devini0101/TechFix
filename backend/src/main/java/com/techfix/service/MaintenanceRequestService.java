@@ -32,6 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -633,5 +636,30 @@ public class MaintenanceRequestService {
         );
 
         requestRepository.save(maintenance);
+    }
+
+    public void finishMaintenance(Long id, User user) {
+        Optional<MaintenanceRequest> request = requestRepository.findByIdAndResponsibleEmployeeId(id, user.getId());
+
+        if (!request.isPresent()) {
+            throw new EntityNotFoundException("Serviço de manutenção não encontrado.");
+        }
+
+        MaintenanceRequest maintenance = request.get();
+
+        Status previousStatus = maintenance.getStatus();
+        maintenance.setStatus(Status.FINISHED);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", Locale.of("pt", "BR"));
+        String formattedDate = LocalDate.now().format(formatter);
+        eventPublisher.publishEvent(
+                new StatusChangedEvent(
+                        maintenance,
+                        previousStatus,
+                        Status.FINISHED,
+                        user,
+                        "FINALIZAÇÃO DE SERVIÇO",
+                        "Serviço finalizado em " + formattedDate + ", por " + user.getName()
+                )
+        );
     }
 }

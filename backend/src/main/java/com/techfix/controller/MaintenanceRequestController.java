@@ -174,11 +174,8 @@ public class MaintenanceRequestController {
     }
 
     @PostMapping("/{id}/payment")
-    public ResponseEntity<Void> payMaintenance(
-            @PathVariable Long id,
-            @Valid @RequestBody PaymentRequestDTO request,
-            @AuthenticationPrincipal User user
-    ) {
+    public ResponseEntity<Void> payMaintenance(@PathVariable Long id, @Valid @RequestBody PaymentRequestDTO request,
+            @AuthenticationPrincipal User user) {
         if (user.getRole() != UserRole.client) {
             throw new ForbiddenAccessException(
                     "Somente clientes podem realizar pagamentos."
@@ -186,6 +183,17 @@ public class MaintenanceRequestController {
         }
 
         service.payMaintenance(id, request, user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/finish")
+    public ResponseEntity<Void> finishMaintenance( @PathVariable Long id, @AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Não foi possível finalizar serviço");
+        }
+
+        service.finishMaintenance(id, user);
 
         return ResponseEntity.ok().build();
     }

@@ -29,10 +29,10 @@ export class UserDashboard implements OnInit {
 	runningMaintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 
 	summary = signal<Summary | null>(null);
-  paymentModalOpen = signal<boolean>(false);
-  selectedId = signal<Number | null> (null)
+	paymentModalOpen = signal<boolean>(false);
+	selectedId = signal<Number | null> (null)
 
-  private maintenanceService = inject(MaintenanceRequestService);
+  	private maintenanceService = inject(MaintenanceRequestService);
 
 	ngOnInit(): void {
 		this.fetchRequests();
@@ -67,14 +67,14 @@ export class UserDashboard implements OnInit {
 		this.fetchRequests();
 	}
 
-  openPaymentModal(id : Number) {
-    this.selectedId.set(id);
-    this.paymentModalOpen.set(true);
-  }
+	openPaymentModal(id : Number) {
+		this.selectedId.set(id);
+		this.paymentModalOpen.set(true);
+	}
 
-  closePaymentModal(): void {
-    this.fetchRequests();
-    //verificar se foi paga e mostra feedback
-    this.paymentModalOpen.set(false);
-  }
+	closePaymentModal(): void {
+		this.fetchRequests();
+		//verificar se foi paga e mostra feedback
+		this.paymentModalOpen.set(false);
+	}
 }

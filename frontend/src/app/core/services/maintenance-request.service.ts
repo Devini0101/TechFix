@@ -136,10 +136,14 @@ export class MaintenanceRequestService {
 	}
 
 	payMaintenance(id: number, paymentMethod: 'pix' | 'debit' | 'credit'): Observable<void> {
-    return this.http.post<void>(
-      `${this.apiUrl}/${id}/payment`,
-      { paymentMethod },
-      { withCredentials: true }
-     );
-  }
+		return this.http.post<void>(
+		`${this.apiUrl}/${id}/payment`,
+		{ paymentMethod },
+		{ withCredentials: true }
+		);
+	}
+
+	finishMaintenance(id : number) : Observable<void> {
+		return this.http.patch<void>(`${this.apiUrl}/${id}/finish`, null, { withCredentials : true});
+	}
 }

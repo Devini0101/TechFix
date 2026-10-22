@@ -7,10 +7,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { Tooltip } from '../../directives/tooltip';
 import { RedirectMaintenanceModal } from '../../components/modal/redirect-maintenance-modal/redirect-maintenance-modal';
 import { MaintenanceRepairModal } from '../../components/modal/maintenance-repair-modal/maintenance-repair-modal';
+import { FinishMaintenanceModal } from '../../components/modal/finish-maintenance-modal/finish-maintenance-modal';
+import { MaintenancePaymentModal } from '../../components/modal/maintenance-payment-modal/maintenance-payment-modal';
 
 @Component({
   selector: 'app-maintenance-details',
-  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip, RedirectMaintenanceModal, MaintenanceRepairModal],
+  imports: [DatePipe, CurrencyPipe, RouterLink, Tooltip, RedirectMaintenanceModal, MaintenanceRepairModal, FinishMaintenanceModal, MaintenancePaymentModal],
   templateUrl: './maintenance-details.html',
   styleUrl: './maintenance-details.css',
 })
@@ -19,6 +21,7 @@ export class MaintenanceDetails implements OnInit {
 
   details = signal<MaintenanceDetailsResponse | null>(null);
   errorMessage = signal<string | null>(null);
+  paymentModalOpen = signal<boolean>(false);
   readonly STATUS_ORDER: Record<string, number> = {
     'OPEN': 1,
     'QUOTED': 2,
@@ -26,7 +29,8 @@ export class MaintenanceDetails implements OnInit {
     'APPROVED': 4,
     'REDIRECTED': 4.1,
     'REPAIRED': 5,
-    'DELIVERED': 6
+    'PAID' : 6,
+    'FINISHED': 7
   };
 
   private service = inject(MaintenanceRequestService);
@@ -36,6 +40,7 @@ export class MaintenanceDetails implements OnInit {
   isHistoryOpened = signal<Boolean>(false);
   isRedirectModalOpened = signal<Boolean>(false);
   isRepairModalOpened = signal<boolean>(false);
+  isFinishModalOpened = signal<boolean>(false);
   histories = signal<MaintenanceHistory[] | null>(null);
 
   ngOnInit(): void {
@@ -44,7 +49,7 @@ export class MaintenanceDetails implements OnInit {
       return;
     }
 
-    this.loadOrderDetails(Number(this.id));
+    this.loadOrderDetails();
   }
 
   private get currentStatusCode(): string | null {
@@ -97,10 +102,10 @@ export class MaintenanceDetails implements OnInit {
 	}
 
 	reloadMaintenance() {
-		this.loadOrderDetails(Number(this.id));
+		this.loadOrderDetails();
 	}
 
-	loadOrderDetails(id: number) {
+	loadOrderDetails() {
 		this.service.getById(Number(this.id) ).subscribe({
 			next: (data) => this.details.set(data),
 			error: (err: HttpErrorResponse) => {
@@ -113,7 +118,7 @@ export class MaintenanceDetails implements OnInit {
 
   repairMaintenance() :void {
     this.service.repairMaintenance(Number(this.id)).subscribe( {
-      next: (data) => this.loadOrderDetails(Number(this.id)),
+      next: (data) => this.loadOrderDetails(),
       error: (err: HttpErrorResponse) => {
 				console.error("Erro ao puxar info por id", err);
 				const msg = err.error?.message || 'Ocorreu um erro ao carregar a solicitação.';
@@ -121,4 +126,19 @@ export class MaintenanceDetails implements OnInit {
 			},
     });
   }
+
+  closeFinishMaintenanceModal() :void {
+    this.isFinishModalOpened.set(false);
+    this.loadOrderDetails();
+  }
+
+  openPaymentModal(id : Number) {
+		this.paymentModalOpen.set(true);
+  }
+
+	closePaymentModal(): void {
+		this.loadOrderDetails();
+		this.paymentModalOpen.set(false);
+	}
+
 }

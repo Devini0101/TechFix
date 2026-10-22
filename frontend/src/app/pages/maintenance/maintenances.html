@@ -63,8 +63,8 @@
 
         <div class="bg-white text-gray-600 shadow-md p-2 flex flex-col items-center rounded-md gap-1">
             <div class="flex items-center gap-2 border-b border-gray-300">
-                <i class="fa-solid fa-circle-check fa-sm"></i>
-                <p>Concluídos:</p>
+                <i class="fa-solid fa-check-to-slot"></i>
+                <p>Arrumados:</p>
             </div>
             <p class="mr-auto text-2xl font-bold">
                 @if (summary()?.repaired){
@@ -139,7 +139,7 @@
                 <p class="font-bold text-sm"
                     [class.text-white]="activeFilter() != 'REPAIRED'"
                     [class.text-black]="activeFilter() === 'REPAIRED'">
-                    Concluídos
+                    Arrumados
                 </p>
             </button>
             <button
@@ -153,6 +153,18 @@
                 [class.text-black]="activeFilter() === 'REJECTED'"
                 >
                     Cancelados
+                </p>
+            </button>
+            <button
+                (click)="changeFilter('FINISHED')"
+                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
+                [class.bg-white]="activeFilter() === 'FINISHED'"
+                [class.bg-gray-900]="activeFilter() !== 'FINISHED'"
+                >
+                <p class="font-bold text-sm"
+                    [class.text-white]="activeFilter() != 'FINISHED'"
+                    [class.text-black]="activeFilter() === 'FINISHED'">
+                    Concluídos
                 </p>
             </button>
             <button
@@ -219,6 +231,40 @@
                                             Realizar Orçamento
                                         </a>
                                     }
+                                    @if ((item.statusCode == "APPROVED" || item.statusCode == "REDIRECTED") && Role == "employee" && item.isCurrentResponsible){
+                                        <button (click)="OpenRepairMaintenance(item.id)"
+                                        [appTooltip]="'Iniciar reparo do equipamento'"
+                                        class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 hover:border-emerald-400 rounded-lg px-2 py-1 text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 cursor-pointer">
+                                        <i class="fa-solid fa-screwdriver-wrench transition-transform duration-300 group-hover:rotate-12"></i>
+                                        Realizar Manutenção
+                                        </button>
+                                    }
+                                    @if (item.statusCode == "REPAIRED" && Role != "employee") {
+                                        <button
+                                            type="button"
+                                            (click)="openPaymentModal(item.id)"
+                                            class="inline-flex items-center justify-center gap-2
+                                                text-xs font-semibold text-slate-300
+                                                bg-slate-800 hover:bg-orange-600
+                                                hover:text-white hover:cursor-pointer
+                                                px-3 py-1.5 rounded-lg
+                                                border border-orange-400
+                                                hover:border-orange-500 transition-colors"
+                                        >
+                                            <i class="fa-solid fa-credit-card"></i>
+                                            Pagar Serviço
+                                        </button>
+                                    }
+                                    @if (item.statusCode == "PAID" && Role == "employee") {
+                                        <button
+                                            (click)="openFinishMaintenanceModal(item.id)"
+                                            [appTooltip]="'Finalizar manutenção do equipamento.'"
+                                            class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 hover:border-emerald-400 rounded-lg px-2 py-1 text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 cursor-pointer"
+                                        >
+                                            <i class="fa-solid fa-circle-check transition-transform duration-300 group-hover:rotate-12"></i>
+                                            Finalizar Serviço
+                                        </button>
+                                    }
                                 </td>
                             </tr>
                         } @empty {
@@ -240,4 +286,31 @@
         (requestCreated)="onMaintenanceCreated()"
 		(closeModal)="isCreateModalOpen = false">
 	</app-service-request-modal>
+}
+
+@if (Role === "employee") {
+    @if (isRepairModalOpened()) {
+
+        <app-maintenance-repair-modal
+            [maintenanceId]="selectedId()"
+            (closeModal)="isRepairModalOpened.set(false)"
+            (repairEmmiter)="closeRepairModal()"
+        >
+        </app-maintenance-repair-modal>
+    }
+    @if (isFinishModalOpened()) {
+        <app-finish-maintenance-modal
+            [maintenanceId]="selectedId()"
+            (closeModalEmitter)="this.isFinishModalOpened.set(false)"
+            (sucessfullyFinishedEmitter)="closeFinishMaintenanceModal()"
+        >
+        </app-finish-maintenance-modal>
+    }
+}
+
+@if (paymentModalOpen() && Role !== "employee") {
+    <app-maintenance-payment-modal
+        [maintenanceId]="selectedId()"
+        (closeModal)="closePaymentModal()">
+    </app-maintenance-payment-modal>
 }

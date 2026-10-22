@@ -6,10 +6,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { CurrencyPipe } from '@angular/common';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MaintenanceRepairModal } from '../../components/modal/maintenance-repair-modal/maintenance-repair-modal';
+import { Tooltip } from '../../directives/tooltip';
+import { MaintenancePaymentModal } from '../../components/modal/maintenance-payment-modal/maintenance-payment-modal';
+import { FinishMaintenanceModal } from '../../components/modal/finish-maintenance-modal/finish-maintenance-modal';
 
 @Component({
   selector: 'app-maintenances',
-  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule],
+  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip, MaintenancePaymentModal, FinishMaintenanceModal],
   templateUrl: './maintenances.html',
   styleUrl: './maintenances.css',
 })
@@ -22,7 +26,12 @@ export class Maintenances {
 	activeFilter = signal<string>('ALL');
 	summary = signal<Summary | null>(null);
 	isCreateModalOpen = false;
+	isRepairModalOpened = signal<boolean>(false);
 	maintenances = signal<MaintenanceDetailsResponse[] | null>(null);
+	paymentModalOpen = signal<boolean>(false);
+	isFinishModalOpened = signal<boolean>(false);
+	selectedId = signal<Number | null> (null)
+
 	totalSum = computed(() => {
 		const data = this.summary();
 		if (!data) return 0;
@@ -60,8 +69,7 @@ export class Maintenances {
 		this.maintenanceService.getMaintenances(status).subscribe({
 			next: (data) => {
 				this.maintenances.set(data);
-			},
-			error: (err) => console.error("erro ao buscar dados", err)
+			}
 		});
 	}
 
@@ -77,8 +85,7 @@ export class Maintenances {
 		this.maintenanceService.searchMaintenancesByTermAndStatus(searchTerm, status).subscribe({
 			next: (data) => {
 				this.maintenances.set(data);
-			},
-			error: (err) => console.error("erro ao buscar dados", err)
+			}
 		});
 	}
 
@@ -86,5 +93,43 @@ export class Maintenances {
 		this.isCreateModalOpen = false;
 		this.loadSummary();
 		this.fetchMaintenances("ALL");
+	}
+
+	reloadMaintenances() :void{
+		const status = this.activeFilter();
+		this.fetchMaintenances(status);
+	}
+
+	OpenRepairMaintenance( id: number) :void {
+		this.isRepairModalOpened.set(true)
+		this.selectedId.set(id)
+	}
+
+	closeRepairModal() : void {
+		this.isRepairModalOpened.set(false)
+		const status = this.activeFilter();
+		this.fetchMaintenances(status);
+	}
+
+	openPaymentModal(id : Number) {
+		this.selectedId.set(id);
+		this.paymentModalOpen.set(true);
+  	}
+
+	closePaymentModal(): void {
+		const status = this.activeFilter();
+		this.fetchMaintenances(status);
+		this.paymentModalOpen.set(false);
+	}
+
+	openFinishMaintenanceModal(id : Number) :void {
+		this.selectedId.set(id);
+		this.isFinishModalOpened.set(true);
+	}
+
+	closeFinishMaintenanceModal() :void {
+		const status = this.activeFilter();
+		this.isFinishModalOpened.set(false);
+		this.fetchMaintenances(status);
 	}
 }

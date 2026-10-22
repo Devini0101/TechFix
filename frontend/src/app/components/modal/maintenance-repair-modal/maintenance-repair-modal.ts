@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { MaintenanceRequestService } from '../../../core/services/maintenance-request.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -11,15 +11,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class MaintenanceRepairModal{
   	private maintenanceService = inject(MaintenanceRequestService);
 
-    @Input() maintenanceId: number | null = null;
+    @Input() maintenanceId : Number | null = null;
     @Output() closeModal = new EventEmitter<void>();
     @Output() repairEmmiter = new EventEmitter<void>();
 
 	repairMaintenance() :void {
 		this.maintenanceService.repairMaintenance(Number(this.maintenanceId)).subscribe({
 			next: () => {
-				this.repairEmmiter.emit(),
-	            this.closeModal.emit();
+				this.repairEmmiter.emit()
 			},
 			error: (err: HttpErrorResponse) => {
 				console.error("Erro ao puxar info por id", err);

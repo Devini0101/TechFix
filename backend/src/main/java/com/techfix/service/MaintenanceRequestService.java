@@ -558,7 +558,7 @@ public class MaintenanceRequestService {
                         "ITEM REPARADO",
                         "Manutenção realizada por: "
                                 + user.getName()
-                                + ", aguardando pagamento para retirada do item."
+                                + ", aguardando pagamento para finalizaçao do serviço."
                 )
         );
 

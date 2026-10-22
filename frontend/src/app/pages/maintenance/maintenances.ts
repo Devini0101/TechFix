@@ -27,7 +27,6 @@ export class Maintenances {
 	summary = signal<Summary | null>(null);
 	isCreateModalOpen = false;
 	isRepairModalOpened = signal<boolean>(false);
-	maintenanceId = signal<number | null>(null)
 	maintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 	paymentModalOpen = signal<boolean>(false);
 	isFinishModalOpened = signal<boolean>(false);
@@ -70,8 +69,7 @@ export class Maintenances {
 		this.maintenanceService.getMaintenances(status).subscribe({
 			next: (data) => {
 				this.maintenances.set(data);
-			},
-			error: (err) => console.error("erro ao buscar dados", err)
+			}
 		});
 	}
 
@@ -87,8 +85,7 @@ export class Maintenances {
 		this.maintenanceService.searchMaintenancesByTermAndStatus(searchTerm, status).subscribe({
 			next: (data) => {
 				this.maintenances.set(data);
-			},
-			error: (err) => console.error("erro ao buscar dados", err)
+			}
 		});
 	}
 
@@ -103,9 +100,15 @@ export class Maintenances {
 		this.fetchMaintenances(status);
 	}
 
-	repairMaintenance( id: number) :void {
+	OpenRepairMaintenance( id: number) :void {
 		this.isRepairModalOpened.set(true)
-		this.maintenanceId.set(id)
+		this.selectedId.set(id)
+	}
+
+	closeRepairModal() : void {
+		this.isRepairModalOpened.set(false)
+		const status = this.activeFilter();
+		this.fetchMaintenances(status);
 	}
 
 	openPaymentModal(id : Number) {

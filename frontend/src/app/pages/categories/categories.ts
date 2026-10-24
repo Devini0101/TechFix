@@ -1,134 +1,98 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Category, CategoryService } from '../../core/services/category.service';
-    
-    @Component({
-      selector: 'app-categories',
-      standalone: true,
-      imports: [CommonModule, FormsModule],
-      templateUrl: './categories.html',
-      styleUrl: './categories.css',
-    })
-    export class Categories implements OnInit {
-      private catService = inject(CategoryService);
-    
-      // dados iniciais exigidos pela ufpr para testes
-      categories = signal<Category[]>([
-        { id: 1, name: 'Notebook', code: 'NOTE-01', active: true },
-        { id: 2, name: 'Desktop', code: 'DSK-02', active: true },
-        { id: 3, name: 'Impressora', code: 'IMP-03', active: true },
-        { id: 4, name: 'Mouse', code: 'MOU-04', active: true },
-        { id: 5, name: 'Teclado', code: 'TEC-05', active: false }
-      ]);
-    
-      // controle do modal de criacao e edicao
-      isModalOpen = signal(false);
-      isEditing = signal(false);
-    
-      // categoria selecionada para o formulario
-      currentCategory = signal<Category>({
-        id: 0,
-        name: '',
-        code: '',
-        active: true
-      });
-    
-      // contadores automaticos pros cards de resumo
-      totalCategories = computed(() => this.categories().length);
-      activeCategories = computed(() => this.categories().filter(c => c.
-  active).length);
-      inactiveCategories = computed(() => this.categories().filter(c => !c.
-  active).length);
+import { Category, CategoryService, CategorySummary } from '../../core/services/category.service';
+import { CategoryRegisterModal } from '../../components/modal/category-register-modal/category-register-modal';
+import { Tooltip } from '../../directives/tooltip';
 
-        // painel de insights (adicionado)
-  showInsights = signal(true);
+@Component({
+	selector: 'app-categories',
+	standalone: true,
+	imports: [CommonModule, FormsModule, CategoryRegisterModal, Tooltip],
+	templateUrl: './categories.html',
+	styleUrl: './categories.css',
+})
 
-  percentActive = computed(() => {
-    const total = this.categories().length;
-    return total === 0 ? 0 : Math.round((this.activeCategories() / total) * 100);
-  });
+export class Categories implements OnInit {
+	private catService = inject(CategoryService);
 
-  percentInactive = computed(() => {
-    const total = this.categories().length;
-    return total === 0 ? 0 : 100 - this.percentActive();
-  });
+	categories = signal<Category[] | null>(null);
+	selectedId = signal<number | null>(null);
+	selectedName = signal<string | null>(null);
+	isModalOpen = signal(false);
+	isDeleteModalOpen = signal(false);
+	summary = signal<CategorySummary | null>(null);
 
-  // as 3 últimas categorias da lista, da mais recente pra mais antiga
-  latestCategories = computed(() => [...this.categories()].slice(-3).reverse());
+	loadSummary() :void {
+		this.catService.loadSummary().subscribe({
+			next: (value) => {
+				this.summary.set(value);
+			}
+		})
+	}
 
-  // códigos técnicos das categorias ativas
-  activeCodesList = computed(() =>
-    this.categories().filter(c => c.active).map(c => c.code)
-  );
+	ngOnInit() {
+		this.loadSummary();
+		this.loadCategories();
+	}
 
-  toggleInsights() {
-    this.showInsights.update(v => !v);
-  }
-    
-      ngOnInit() {
-        this.loadCategories();
-      }
-    
-      // tenta buscar do backend se tiver rodando
-      loadCategories() {
+	loadCategories() {
         this.catService.getAll().subscribe({
           next: (data) => {
             if (data && data.length > 0) this.categories.set(data);
-          },
-          error: () => console.log('usando dados mockados')
+          }
         });
-      }
-    
-      // abre modal limpo para novo cadastro
-      openCreateModal() {
-        this.currentCategory.set({
-          id: Date.now(),
-          name: '',
-          code: '',
-          active: true
+	}
+
+	reloadCategories() {
+		this.selectedId.set(null);
+		this.loadCategories();
+		this.loadSummary()
+		this.closeModal();
+	}
+
+	openCreateModal() {
+		this.selectedId.set(null);
+		this.isModalOpen.set(true);
+	}
+
+	openEditModal(id : number) {
+		this.selectedId.set(id);
+		this.isModalOpen.set(true);
+	}
+
+	openDeleteModal(category : Category) {
+		this.selectedName.set(category.name);
+		this.selectedId.set(category.id);
+		this.isDeleteModalOpen.set(true);
+	}
+
+	closeModal() {
+		this.selectedId.set(null);
+		this.isModalOpen.set(false);
+	}
+
+	closeDeleteModal() {
+		this.isDeleteModalOpen.set(false);
+	}
+
+	delete(id : number | null) {
+		this.catService.delete(Number(id)).subscribe({
+			next: () => {
+				this.loadSummary()
+                this.loadCategories();
+				this.closeDeleteModal();
+            }
+		})
+	}
+
+	toggleStatus(cat: any): void {
+        const newStatus = !cat.active;
+        this.catService.toggleStatus(cat.id, newStatus).subscribe({
+            next: () => {
+				this.loadSummary()
+                this.loadCategories();
+            }
         });
-        this.isEditing.set(false);
-        this.isModalOpen.set(true);
-      }
-    
-      // abre modal preenchido para editar
-      openEditModal(cat: Category) {
-        this.currentCategory.set({ ...cat });
-        this.isEditing.set(true);
-        this.isModalOpen.set(true);
-      }
-    
-      closeModal() {
-        this.isModalOpen.set(false);
-      }
-    
-      // salva a nova categoria ou a alteracao
-      saveCategory() {
-        const item = this.currentCategory();
-        if (!item.name || !item.code) {
-          alert('Preencha o nome e o código da categoria.');
-          return;
-        }
-    
-        if (this.isEditing()) {
-          this.categories.update(list =>
-            list.map(c => c.id === item.id ? item : c)
-          );
-        } else {
-          this.categories.update(list => [...list, item]);
-        }
-    
-        this.closeModal();
-      }
-    
-      // desativa ou reativa a categoria
-      toggleStatus(cat: Category) {
-        const msg = cat.active ? 'desativar' : 'ativar';
-        if (confirm(`Deseja ${msg} a categoria "${cat.name}"?`)) {
-          this.categories.update(list =>
-            list.map(c => c.id === cat.id ? { ...c, active: !c.active } : c)
-          );
-        }
-      }
     }
+}

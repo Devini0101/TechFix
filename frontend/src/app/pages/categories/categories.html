@@ -1,362 +1,181 @@
 <div class="p-6 text-slate-100 min-h-screen">
-      <div class="max-w-7xl mx-auto flex flex-col gap-6">
-    
-        <!-- cabecalho da pagina e botao de adicionar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between
-  gap-4">
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-white">Gestão de
-  Categorias</h1>
-            <p class="text-gray-400 text-sm mt-1">Gerenciamento e controle de
-  categorias de equipamentos</p>
-          </div>
-    
-          <button 
-            (click)="openCreateModal()"
-            class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-
-  4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all
-  shadow-lg shadow-blue-900/30 active:scale-95 cursor-pointer">
-            <span>+ Nova Categoria</span>
-          </button>
+    <div class="max-w-7xl mx-auto flex flex-col gap-6">
+
+        <!-- Cabeçalho da página -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-white">Gestão de Categorias</h1>
+                <p class="text-slate-400 text-sm mt-1">Gerenciamento e controle de categorias de equipamentos</p>
+            </div>
+
+            <button
+                (click)="openCreateModal()"
+                class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/30 active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-plus"></i>
+                <span>Nova Categoria</span>
+            </button>
         </div>
-    
-        <!-- cards com resumo das categorias -->
+
+        <!-- Cards com resumo -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-gray-800/80 border border-gray-700/60 p-4 rounded-xl
-  flex items-center justify-between shadow-sm">
-            <div>
-              <p class="text-xs font-mono uppercase tracking-wider text-gray-
-  400">Total de Categorias</p>
-              <p class="text-2xl font-bold text-white mt-1">{{
-  totalCategories() }}</p>
+            <!-- Total -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm group hover:border-slate-700 transition-colors">
+                <div>
+                    <p class="text-xs font-mono uppercase tracking-wider text-slate-400">Total de Categorias</p>
+                    <p class="text-2xl font-bold text-white mt-1">{{ summary()?.totalAmount ?? 0 }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-400 group-hover:text-white transition-colors">
+                    <i class="fa-solid fa-tags text-xl"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center
-  justify-center text-lg">
-              🏷️
+
+            <!-- Ativas -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm group hover:border-emerald-900 transition-colors">
+                <div>
+                    <p class="text-xs font-mono uppercase tracking-wider text-slate-400">Categorias Ativas</p>
+                    <p class="text-2xl font-bold text-emerald-400 mt-1">{{ summary()?.active ?? 0 }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                </div>
             </div>
-          </div>
-    
-          <div class="bg-gray-800/80 border border-gray-700/60 p-4 rounded-xl
-  flex items-center justify-between shadow-sm">
-            <div>
-              <p class="text-xs font-mono uppercase tracking-wider text-gray-
-  400">Categorias Ativas</p>
-              <p class="text-2xl font-bold text-emerald-400 mt-1">{{
-  activeCategories() }}</p>
+
+            <!-- Inativas -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm group hover:border-amber-900 transition-colors">
+                <div>
+                    <p class="text-xs font-mono uppercase tracking-wider text-slate-400">Categorias Inativas</p>
+                    <p class="text-2xl font-bold text-amber-400 mt-1">{{ summary()?.inactive ?? 0 }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-circle-pause text-xl"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-emerald-950/60 border border-
-  emerald-800/40 flex items-center justify-center text-lg">
-              ✅
-            </div>
-          </div>
-    
-          <div class="bg-gray-800/80 border border-gray-700/60 p-4 rounded-xl
-  flex items-center justify-between shadow-sm">
-            <div>
-              <p class="text-xs font-mono uppercase tracking-wider text-gray-
-  400">Categorias Inativas</p>
-              <p class="text-2xl font-bold text-amber-400 mt-1">{{
-  inactiveCategories() }}</p>
-            </div>
-            <div class="w-10 h-10 rounded-lg bg-amber-950/60 border border-
-  amber-800/40 flex items-center justify-center text-lg">
-              ⏸️
-            </div>
-          </div>
         </div>
-    
-        <!-- painel de insights (adicionado) -->
-<div class="bg-gray-800 border border-gray-700 rounded-xl p-5 flex flex-col gap-4 shadow-sm">
-  <div class="flex items-center justify-between">
-    <h2 class="text-lg font-bold text-white">Painel de Insights</h2>
-    <button
-      (click)="toggleInsights()"
-      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs font-semibold text-white rounded-lg transition cursor-pointer">
-      {{ showInsights() ? 'Ocultar' : 'Mostrar' }}
-    </button>
-  </div>
 
-  @if (showInsights()) {
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-      <!-- distribuição por status -->
-      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
-        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Distribuição por status</p>
-        <div class="w-full h-3 bg-gray-700 rounded-full overflow-hidden flex">
-          <div class="h-full bg-emerald-500" [style.width.%]="percentActive()"></div>
-          <div class="h-full bg-amber-500" [style.width.%]="percentInactive()"></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg mt-2">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-950/80 text-slate-400 font-bold text-[11px] uppercase tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="px-6 py-4 w-20">ID</th>
+                            <th class="px-6 py-4 w-40">Código</th>
+                            <th class="px-6 py-4">Nome da Categoria</th>
+                            <th class="px-6 py-4 w-32 text-center">Status</th>
+                            <th class="px-6 py-4 text-right w-48">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        @for (cat of categories(); track $index) {
+                            <tr class="hover:bg-slate-800/50 transition-colors">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-500">
+                                    #{{ cat.id || ($index + 1) }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="font-mono text-[11px] px-2 py-1 rounded bg-slate-800 border border-slate-700 text-blue-400 font-bold tracking-wider">
+                                        {{ cat.code || 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 font-medium text-slate-200">
+                                    {{ cat.name || cat.code }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    @if (cat.active) {
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                            Ativa
+                                        </span>
+                                    } @else {
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                            Inativa
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button
+                                            (click)="openEditModal(cat.id)"
+                                            [appTooltip]="'Editar categoria'"
+                                            class="w-8 h-8 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-slate-700 hover:border-slate-500">
+                                            <i class="fa-solid fa-pen text-xs"></i>
+                                        </button>
+                                        <button
+                                            (click)="toggleStatus(cat)"
+                                            [class]="cat.active ? 'bg-slate-800 hover:bg-rose-900/50 text-slate-300 hover:text-rose-400 border border-slate-700 hover:border-rose-500/50' : 'bg-slate-800 hover:bg-emerald-900/50 text-slate-300 hover:text-emerald-400 border border-slate-700 hover:border-emerald-500/50'"
+                                            class="w-8 h-8 rounded flex items-center justify-center transition-colors cursor-pointer"
+                                            [appTooltip]="cat.active ? 'Desativar categoria' : 'Ativar categoria'">
+                                            <i class="fa-solid text-xs" [class.fa-eye-slash]="cat.active" [class.fa-check]="!cat.active"></i>
+                                        </button>
+                                        <button
+                                            (click)="openDeleteModal(cat)"
+                                            [class]="cat.active ? 'bg-slate-800 hover:bg-rose-900/50 text-slate-300 hover:text-rose-400 border border-slate-700 hover:border-rose-500/50' : 'bg-slate-800 hover:bg-emerald-900/50 text-slate-300 hover:text-emerald-400 border border-slate-700 hover:border-emerald-500/50'"
+                                            class="w-8 h-8 rounded flex items-center justify-center transition-colors cursor-pointer"
+                                            [appTooltip]="'Remover Categoria'">
+                                            <i class="fa-solid text-xs fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                                    <i class="fa-solid fa-folder-open text-3xl mb-3 opacity-50 block"></i>
+                                    Nenhuma categoria cadastrada no sistema.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="flex justify-between text-xs">
-          <span class="text-emerald-400">Ativas: {{ percentActive() }}%</span>
-          <span class="text-amber-400">Inativas: {{ percentInactive() }}%</span>
-        </div>
-      </div>
-
-      <!-- últimas categorias -->
-      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
-        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Últimas categorias</p>
-        <ul class="flex flex-col gap-2">
-          @for (item of latestCategories(); track item.id) {
-            <li class="flex items-center justify-between text-sm">
-              <span class="text-white">{{ item.name }}</span>
-              <span class="font-mono text-xs text-blue-400">{{ item.code }}</span>
-            </li>
-          } @empty {
-            <li class="text-sm text-gray-400">Nenhuma categoria cadastrada.</li>
-          }
-        </ul>
-      </div>
-
-      <!-- códigos ativos -->
-      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-col gap-3">
-        <p class="text-xs font-mono uppercase tracking-wider text-gray-400">Códigos ativos</p>
-        <div class="flex flex-wrap gap-2">
-          @for (codeItem of activeCodesList(); track codeItem) {
-            <span class="font-mono text-xs px-2.5 py-1 rounded bg-emerald-950/60 border border-emerald-800/40 text-emerald-300">
-              {{ codeItem }}
-            </span>
-          } @empty {
-            <span class="text-sm text-gray-400">Nenhum código ativo.</span>
-          }
-        </div>
-      </div>
-
     </div>
-  }
 </div>
 
-<!-- banner explicativo e legenda das categorias -->
-        <div class="bg-gray-800/60 border border-gray-700/60 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg bg-blue-950/60 border border-blue-800/40 flex items-center justify-center text-blue-400 text-sm">
-              ℹ️
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-white">Instruções do Sistema</p>
-              <p class="text-xs text-gray-400 mt-0.5">Categorias inativas não ficam visíveis para novos cadastros de equipamentos.</p>
-            </div>
-          </div>
+@if (isModalOpen()) {
+  <app-category-register-modal
+    [categoryId]="selectedId()"
+    (closeModalEmitter)="closeModal()"
+    (succesfullyRequested)="reloadCategories()"
+  >
+  </app-category-register-modal>
+}
 
-          <div class="flex items-center gap-4 text-xs font-mono text-gray-400 border-t sm:border-t-0 border-gray-700/60 pt-2 sm:pt-0">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span>Em uso</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span>Pendente</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-gray-500"></span>
-              <span>Desativado</span>
-            </div>
-          </div>
+@if (isDeleteModalOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl flex flex-col gap-5">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-4">
+        <div>
+          <h3 class="text-xl font-bold text-white">
+            Remoção de Categoria
+          </h3>
         </div>
 
-        <!-- card de regras de cadastro e padronizacao -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-gray-800/40 border border-gray-700/40 rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2">
-              <span class="text-blue-400 text-xs font-bold font-mono">[REGRA 01]</span>
-              <h4 class="text-xs font-semibold text-white">Padrão de Nomenclatura</h4>
-            </div>
-            <p class="text-xs text-gray-400">
-              Mantenha o prefixo de código técnico em caixa alta para garantir a ordenação correta nas buscas do inventário.
-            </p>
-          </div>
-
-          <div class="bg-gray-800/40 border border-gray-700/40 rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-400 text-xs font-bold font-mono">[REGRA 02]</span>
-              <h4 class="text-xs font-semibold text-white">Segurança de Dados</h4>
-            </div>
-            <p class="text-xs text-gray-400">
-              Categorias associadas a ordens de serviço ativas não devem ser excluídas, apenas desativadas temporariamente.
-            </p>
-          </div>
-        </div>
-
-        <!-- rodape informativo de ajuda tecnica -->
-        <div class="bg-gradient-to-r from-gray-900 to-gray-800 border border-gray-700 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2 text-gray-300">
-            <span class="font-bold text-blue-400">Dica Técnica:</span>
-            <span>Os códigos das categorias (ex: NOTE-01) devem seguir o padrão interno da equipe.</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-1 rounded bg-gray-950 border border-gray-700 font-mono text-gray-400">v1.2.0</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">Módulo de Cadastro TechFix</span>
-          </div>
-        </div>
-
-        <!-- tabela principal de categorias -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-
-  hidden shadow-sm">
-  
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-gray-900 text-gray-400 font-mono text-xs
-  uppercase border-b border-gray-700">
-                <tr>
-                  <th class="px-6 py-3.5">ID</th>
-                  <th class="px-6 py-3.5">Código</th>
-                  <th class="px-6 py-3.5">Nome da Categoria</th>
-                  <th class="px-6 py-3.5">Status</th>
-                  <th class="px-6 py-3.5 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-700/60">
-                @for (cat of categories(); track $index) {
-                  <tr class="hover:bg-gray-700/40 transition-colors">
-                    <td class="px-6 py-4 font-mono text-xs text-gray-400">#{{
-  cat.id || ($index + 1) }}</td>
-                    <td class="px-6 py-4">
-                      <span class="font-mono text-xs px-2.5 py-1 rounded bg-
-  gray-900 border border-gray-700 text-blue-400 font-semibold">
-                        {{ cat.code || 'N/A' }}
-                      </span>
-                    </td>
-                    <td class="px-6 py-4 font-medium text-white">{{ cat.name ||
-  cat.code }}</td>
-                    <td class="px-6 py-4">
-                      @if (cat.active) {
-                        <span class="inline-flex items-center gap-1.5 px-2.5
-  py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-
-  400 border border-emerald-500/20">
-                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-
-  400"></span>
-                          Ativo
-                        </span>
-                      } @else {
-                        <span class="inline-flex items-center gap-1.5 px-2.5
-  py-0.5 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400
-  border border-gray-500/20">
-                          <span class="w-1.5 h-1.5 rounded-full bg-gray-
-  400"></span>
-                          Inativo
-                        </span>
-                      }
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                      <div class="flex items-center justify-end gap-2">
-                        <button 
-                          (click)="openEditModal(cat)"
-                          class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600
-  text-xs font-semibold text-white rounded-lg transition cursor-pointer">
-                          Editar
-                        </button>
-                        <button 
-                          (click)="toggleStatus(cat)"
-                          [class]="cat.active ? 'bg-rose-950/60 text-rose-300
-  border border-rose-800/40 hover:bg-rose-900' : 'bg-emerald-950/60 text-
-  emerald-300 border border-emerald-800/40 hover:bg-emerald-900'"
-                          class="px-3 py-1.5 text-xs font-semibold rounded-lg
-  transition cursor-pointer">
-                          {{ cat.active ? 'Desativar' : 'Ativar' }}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-
-  400">
-                      Nenhuma categoria cadastrada no sistema.
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-    
+        <button (click)="closeDeleteModal()" class="text-slate-400 hover:text-white transition text-xl cursor-pointer p-1">
+            &times;
+        </button>
       </div>
-    
-      <!-- modal para cadastrar ou editar categoria -->
-      @if (isModalOpen()) {
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-
-  black/70 backdrop-blur-sm p-4">
-          <div class="bg-gray-900 border border-gray-700 rounded-2xl max-w-md
-  w-full p-6 shadow-2xl flex flex-col gap-5">
-            
-            <div class="flex items-center justify-between border-b border-
-  gray-800 pb-3">
-              <h3 class="text-lg font-bold text-white">
-                {{ isEditing() ? 'Editar Categoria' : 'Nova Categoria' }}
-              </h3>
-              <button (click)="closeModal()" class="text-gray-400 hover:text-
-  white transition text-lg cursor-pointer">
-                ✕
-              </button>
-            </div>
-    
-            <form (ngSubmit)="saveCategory()" class="flex flex-col gap-4">
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-semibold uppercase tracking-wider
-  text-gray-300">
-                  Nome da Categoria <span class="text-rose-500">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="currentCategory().name" 
-                  name="name"
-                  required
-                  placeholder="Ex: Notebook Corporativo, Servidor..."
-                  class="w-full bg-gray-950 border border-gray-700 rounded-lg
-  px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500
-  transition"/>
-              </div>
-    
-              <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-semibold uppercase tracking-wider
-  text-gray-300">
-                  Código Técnico <span class="text-rose-500">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="currentCategory().code" 
-                  name="code"
-                  required
-                  placeholder="Ex: NOTE-01, SRV-02..."
-                  class="w-full bg-gray-950 border border-gray-700 rounded-lg
-  px-4 py-2.5 text-sm text-white font-mono uppercase focus:outline-none
-  focus:border-blue-500 transition"/>
-              </div>
-    
-              <div class="flex items-center gap-2 pt-2">
-                <input 
-                  type="checkbox" 
-                  id="activeCheckbox"
-                  [(ngModel)]="currentCategory().active" 
-                  name="active"
-                  class="w-4 h-4 rounded bg-gray-950 border-gray-700 text-
-  blue-600 focus:ring-0 cursor-pointer"/>
-                <label for="activeCheckbox" class="text-xs text-gray-300
-  cursor-pointer">
-                  Categoria Ativa no Sistema
-                </label>
-              </div>
-    
-              <div class="flex items-center justify-end gap-3 pt-4 border-t
-  border-gray-800 mt-2">
-                <button 
-                  type="button" 
-                  (click)="closeModal()"
-                  class="px-4 py-2 text-xs font-semibold text-gray-400
-  hover:text-white rounded-lg hover:bg-gray-800 transition cursor-pointer">
-                  Cancelar
-                </button>
-                <button 
-                  type="submit"
-                  class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white
-  text-xs font-semibold rounded-lg transition shadow-md shadow-blue-900/30
-  cursor-pointer">
-                  {{ isEditing() ? 'Salvar Alterações' : 'CadastrarCategoria' }}
-                </button>
-              </div>
-            </form>
 
-          </div>
-        </div>
-      }
+      <div class="flex items-center">
+        <p class="text-sm">Tem certeza que deseja remover a categoria "{{ selectedName() ?? ''  }}" ? </p>
+      </div>
+
+      <div class="flex items-center gap-3 pt-4 border-t border-slate-700 mt-2">
+        <button
+        type="button"
+        (click)="closeDeleteModal()"
+        class="flex-1 px-4 py-3 text-sm font-semibold text-slate-300 border border-slate-600 hover:bg-slate-700 hover:text-white rounded-xl transition cursor-pointer">
+        Cancelar
+        </button>
+
+        <button
+        type="submit"
+        (click)="delete(selectedId())"
+        class="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-xl transition shadow-lg shadow-blue-900/20 active:scale-95 cursor-pointer">
+        Remover
+        </button>
+
+      </div>
+
     </div>
+  </div>
+}

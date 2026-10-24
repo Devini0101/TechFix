@@ -2,6 +2,7 @@ package com.techfix.service;
 
 import com.techfix.dto.request.CategoryRequestDTO;
 import com.techfix.dto.response.CategoryResponseDTO;
+import com.techfix.dto.response.CategorySummaryResponseDTO;
 import com.techfix.model.Category;
 import com.techfix.repository.CategoryRepository;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class CategoryService {
     }
 
     public List<Category> findAll() {
-        return repository.findAllByActiveTrueOrderByNameAsc();
+        return repository.findAllByOrderByActiveDescNameAsc();
     }
 
     @Transactional
@@ -34,7 +35,7 @@ public class CategoryService {
         Category category = new Category();
         category.setName(request.name().trim());
         category.setCode(code);
-        category.setActive(true);
+        category.setActive(request.active());
         return repository.save(category);
     }
 
@@ -54,11 +55,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deactivate(Long id) {
-        Category category = repository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
-        category.setActive(false);
-        repository.save(category);
+    public void delete(Long id) {
+        Category category = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+        repository.delete(category);
     }
 
     public List<CategoryResponseDTO> getActive() {
@@ -71,4 +70,22 @@ public class CategoryService {
         return categories;
     }
 
+    public CategorySummaryResponseDTO getSummary() {
+        return repository.getSummary();
+    }
+
+    @Transactional
+    public CategoryResponseDTO updateStatus(Long id, Boolean val) {
+        Category category = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+
+        category.setActive(val);
+        repository.save(category);
+
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCode(), category.isActive());
+    }
+
+    public CategoryResponseDTO findById(Long id) {
+        Category category = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCode(), category.isActive());
+    }
 }

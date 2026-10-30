@@ -1,0 +1,166 @@
+<div class="min-h-full grid place-items-start justify-items-center text-slate-200">
+
+  <section class="bg-slate-950/40 p-8 md:p-10 rounded-2xl w-full max-w-6xl">
+
+    <header class="flex flex-col gap-2 mb-8 text-center md:text-left border-b border-slate-800 pb-6">
+      <h1 class="font-extrabold text-3xl text-white">Configurações</h1>
+      <p class="text-sm text-slate-400">Gerencie seus dados de acesso e a aparência do sistema.</p>
+    </header>
+
+    <div class="flex flex-col gap-10">
+
+      <!-- Perfil -->
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <span class="w-6 h-[1px] bg-blue-400/50"></span> Perfil <span class="flex-1 h-[1px] bg-blue-400/50"></span>
+        </h3>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="name" class="font-semibold text-sm text-slate-300">Nome de usuário</label>
+          <div class="flex flex-col md:flex-row gap-3">
+            <input
+              id="name" type="text" formControlName="name" placeholder="Digite seu nome" autocomplete="name"
+              class="flex-1 h-11 bg-slate-950/50 border border-slate-700 rounded-lg text-sm px-4 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            />
+            <button
+              type="submit"
+              [disabled]="isSavingProfile() || profileForm.invalid || profileForm.pristine"
+              class="h-11 px-6 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] disabled:shadow-none active:scale-95 cursor-pointer disabled:cursor-not-allowed flex justify-center items-center gap-2"
+            >
+              @if (isSavingProfile()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Salvando...
+              } @else {
+                Salvar nome
+              }
+            </button>
+          </div>
+          <div class="h-5 text-xs">
+            @if (hasError('profile', 'name', 'required')) { <span class="text-red-400">Informe seu nome de usuário.</span> }
+            @else if (hasError('profile', 'name', 'minlength')) { <span class="text-red-400">O nome deve ter pelo menos 3 caracteres.</span> }
+          </div>
+        </div>
+
+        @if (profileSuccess()) {
+          <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg p-4 text-sm font-medium flex items-center gap-2">
+            <i class="fa-regular fa-circle-check"></i> {{ profileSuccess() }}
+          </div>
+        }
+        @if (profileError()) {
+          <div class="bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg p-4 text-sm font-medium flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ profileError() }}
+          </div>
+        }
+      </form>
+
+      <!-- Segurança -->
+      <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" novalidate>
+        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <span class="w-6 h-[1px] bg-blue-400/50"></span> Alterar senha <span class="flex-1 h-[1px] bg-blue-400/50"></span>
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label for="currentPassword" class="font-semibold text-sm text-slate-300">Senha atual</label>
+              <button
+                type="button" (click)="showPasswords.set(!showPasswords())"
+                class="text-xs text-slate-400 hover:text-blue-400 transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <i class="fa-regular" [class.fa-eye]="!showPasswords()" [class.fa-eye-slash]="showPasswords()"></i>
+                {{ showPasswords() ? 'Ocultar senhas' : 'Mostrar senhas' }}
+              </button>
+            </div>
+            <input
+              id="currentPassword" [type]="showPasswords() ? 'text' : 'password'" formControlName="currentPassword" placeholder="Digite sua senha atual" autocomplete="current-password"
+              class="w-full h-11 bg-slate-950/50 border border-slate-700 rounded-lg text-sm px-4 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            />
+            <div class="h-5 text-xs">
+              @if (hasError('password', 'currentPassword', 'required')) { <span class="text-red-400">Informe sua senha atual.</span> }
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="newPassword" class="font-semibold text-sm text-slate-300">Nova senha</label>
+            <input
+              id="newPassword" [type]="showPasswords() ? 'text' : 'password'" formControlName="newPassword" placeholder="Mínimo de 6 caracteres" autocomplete="new-password"
+              class="w-full h-11 bg-slate-950/50 border border-slate-700 rounded-lg text-sm px-4 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            />
+            <div class="h-5 text-xs">
+              @if (hasError('password', 'newPassword', 'required')) { <span class="text-red-400">Informe a nova senha.</span> }
+              @else if (hasError('password', 'newPassword', 'minlength')) { <span class="text-red-400">A senha deve ter pelo menos 6 caracteres.</span> }
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="confirmPassword" class="font-semibold text-sm text-slate-300">Confirmar nova senha</label>
+            <input
+              id="confirmPassword" [type]="showPasswords() ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Repita a nova senha" autocomplete="new-password"
+              class="w-full h-11 bg-slate-950/50 border border-slate-700 rounded-lg text-sm px-4 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            />
+            <div class="h-5 text-xs">
+              @if (hasError('password', 'confirmPassword', 'required')) { <span class="text-red-400">Confirme a nova senha.</span> }
+              @else if (passwordMismatch()) { <span class="text-red-400">As senhas não coincidem.</span> }
+            </div>
+          </div>
+        </div>
+
+        @if (passwordSuccess()) {
+          <div class="mb-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg p-4 text-sm font-medium flex items-center gap-2">
+            <i class="fa-regular fa-circle-check"></i> {{ passwordSuccess() }}
+          </div>
+        }
+        @if (passwordError()) {
+          <div class="mb-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg p-4 text-sm font-medium flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ passwordError() }}
+          </div>
+        }
+
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            [disabled]="isSavingPassword() || passwordForm.invalid"
+            class="w-full md:w-auto h-11 px-6 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] disabled:shadow-none active:scale-95 cursor-pointer disabled:cursor-not-allowed flex justify-center items-center gap-2"
+          >
+            @if (isSavingPassword()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Alterando...
+            } @else {
+              <i class="fa-solid fa-lock"></i> Alterar senha
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- Aparência -->
+      <div>
+        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <span class="w-6 h-[1px] bg-blue-400/50"></span> Aparência <span class="flex-1 h-[1px] bg-blue-400/50"></span>
+        </h3>
+
+        <p class="font-semibold text-sm text-slate-300 mb-3">Tema do site</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="radiogroup" aria-label="Tema do site">
+          @for (option of themeOptions; track option.value) {
+            <button
+              type="button" role="radio"
+              [attr.aria-checked]="themeService.theme() === option.value"
+              (click)="selectTheme(option.value)"
+              class="relative text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              [class]="themeService.theme() === option.value
+                ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.2)]'
+                : 'bg-slate-950/50 border-slate-700 hover:border-slate-500'"
+            >
+              <span class="flex items-center gap-2 font-bold text-sm text-white">
+                <i class="fa-solid {{ option.icon }}" [class.text-blue-400]="themeService.theme() === option.value"></i>
+                {{ option.label }}
+              </span>
+              <span class="text-xs text-slate-400">{{ option.description }}</span>
+              @if (themeService.theme() === option.value) {
+                <i class="fa-solid fa-circle-check text-blue-400 absolute top-4 right-4"></i>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>

@@ -90,6 +90,11 @@ export class AuthService {
         return this.name.value;
     }
 
+    // atualiza o nome em memória depois de alterado nas configurações
+    setName(name : string) {
+        this.name.next(name);
+    }
+
     //manda o request para anular o token e revogar independentemente de ser aceito ou não
     logout() {
         this.http.post(`${this.apiUrl}/logout`, {}, {withCredentials : true})

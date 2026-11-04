@@ -21,8 +21,8 @@ public class TechfixApplication {
     private static void runFlyway() {
         String host = getEnvOrDefault("DB_HOST", "localhost");
         String port = getEnvOrDefault("DB_PORT", "5432");
-        String user = getEnvOrDefault("DB_USER", "postgres");
-        String password = getEnvOrDefault("DB_PASSWORD", "postgres");
+        String user = getEnvOrDefault("DB_USER", "root");
+        String password = getEnvOrDefault("DB_PASSWORD", "root");
         String dbName = getEnvOrDefault("DB_NAME", "techfix");
 
         String url = "jdbc:postgresql://" + host + ":" + port + "/" + dbName;
@@ -48,8 +48,8 @@ public class TechfixApplication {
         // Lendo variáveis de ambiente com fallback para os valores default
         String host = getEnvOrDefault("DB_HOST", "localhost");
         String port = getEnvOrDefault("DB_PORT", "5432");
-        String user = getEnvOrDefault("DB_USER", "postgres");
-        String password = getEnvOrDefault("DB_PASSWORD", "postgres");
+        String user = getEnvOrDefault("DB_USER", "root");
+        String password = getEnvOrDefault("DB_PASSWORD", "root");
         String dbName = getEnvOrDefault("DB_NAME", "techfix");
 
         // connection URL

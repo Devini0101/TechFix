@@ -11,11 +11,13 @@ import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -196,6 +198,19 @@ public class MaintenanceRequestController {
         service.finishMaintenance(id, user);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<byte[]> getRevenueReport(@RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado.");
+        }
+
+        byte[] pdf = service.generateRevenueReport(startDate, endDate);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio-receitas.pdf")
+                .body(pdf);
     }
 
 }

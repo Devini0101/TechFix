@@ -1,5 +1,9 @@
 package com.techfix.service;
 
+import com.lowagie.text.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.pdf.*;
+import com.techfix.dto.response.DailyRevenueResponseDTO;
 import com.techfix.dto.request.ApprovalRequestDTO;
 import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
@@ -30,7 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -660,5 +665,51 @@ public class MaintenanceRequestService {
                         "Serviço finalizado em " + formattedDate + ", por " + user.getName()
                 )
         );
+    }
+
+    public byte[] generateRevenueReport(LocalDate startDate, LocalDate endDate) {
+        List<DailyRevenueResponseDTO> revenues = requestRepository.findRevenuesByPeriod(startDate, endDate);
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            // Título
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+            Paragraph title = new Paragraph("Relatório de Receitas", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+
+            // Tabela com 2 colunas
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100);
+            table.addCell(new PdfPCell(new Phrase("Data", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+            table.addCell(new PdfPCell(new Phrase("Receita (R$)", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+
+            BigDecimal grandTotal = BigDecimal.ZERO;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            // Preenche os dados
+            for (DailyRevenueResponseDTO dto : revenues) {
+                table.addCell(dto.date().format(formatter));
+                table.addCell(dto.totalRevenue().toString());
+                grandTotal = grandTotal.add(dto.totalRevenue());
+            }
+
+            document.add(table);
+
+            // Total Geral
+            Paragraph total = new Paragraph("\nTotal no Período: R$ " + grandTotal.toString(), titleFont);
+            total.setAlignment(Element.ALIGN_RIGHT);
+            document.add(total);
+
+            document.close();
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar relatório em PDF", e);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.techfix.service;
 import com.techfix.config.TokenConfig;
 import com.techfix.dto.request.LoginRequestDTO;
 import com.techfix.dto.request.RegisterUserRequestDTO;
+import com.techfix.dto.response.EmployeeResponseDTO;
 import com.techfix.dto.response.EmployeesResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
@@ -39,7 +40,8 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    @Transactional
+    // rollback também quando o e-mail falha, senão o usuário fica salvo com uma senha que ninguém recebeu
+    @Transactional(rollbackFor = MessagingException.class)
     public RegisterUserResponseDTO registerUser(RegisterUserRequestDTO request, UserRole role) throws UserAlreadyExistsException, MessagingException {
 
         if ( userRepository.findByEmail(request.email()).isPresent() || userRepository.findByCpf(request.cpf()).isPresent() ) {
@@ -88,5 +90,9 @@ public class UserService {
     public List<EmployeesResponseDTO> getAvailableEmployees(User user) {
 
         return userRepository.findByRoleAndIdNot(UserRole.employee, user.getId()).stream().map(emp -> new EmployeesResponseDTO(emp.getName(), emp.getEmail())).toList();
+    }
+
+    public List<EmployeeResponseDTO> listEmployees() {
+        return userRepository.findByRoleOrderByNameAsc(UserRole.employee).stream().map(emp -> new EmployeeResponseDTO(emp.getId(), emp.getName(), emp.getEmail(), emp.getPhone())).toList();
     }
 }

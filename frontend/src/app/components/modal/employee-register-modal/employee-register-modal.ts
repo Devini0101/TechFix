@@ -1,69 +1,47 @@
 import { Component, DestroyRef, EventEmitter, OnInit, Output, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { AddressService } from '../../../core/services/address.service';
-import { AuthService } from '../../../core/services/auth.service';
-
-const passwordMatchValidator = (): ValidatorFn => {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const passwordConfirmation = control.get('passwordConfirmation')?.value;
-
-    if (!password || !passwordConfirmation) {
-      return null;
-    }
-
-    return password === passwordConfirmation ? null : { passwordMismatch: true };
-  };
-};
+import { RegisterResponse } from '../../../core/services/auth.service';
+import { EmployeeService } from '../../../core/services/employee.service';
 
 const ADDRESS_FIELDS = ['street', 'number', 'neighborhood', 'city', 'uf', 'complement'] as const;
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-employee-register-modal',
   imports: [ReactiveFormsModule],
-  templateUrl: './register.html',
-  styleUrl: './register.css',
+  templateUrl: './employee-register-modal.html',
+  styleUrl: './employee-register-modal.css',
 })
-export class Register implements OnInit {
+export class EmployeeRegisterModal implements OnInit {
   @Output() closeModal = new EventEmitter<void>();
+  @Output() created = new EventEmitter<RegisterResponse>();
 
   private readonly formBuilder = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
+  private readonly employeeService = inject(EmployeeService);
   private readonly addressService = inject(AddressService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly registerForm = this.formBuilder.nonNullable.group(
-    {
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      cpf: ['', [Validators.required, Validators.minLength(11)]],
-      phone: ['', [Validators.required, Validators.minLength(10)]],
-      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
-      // campos de endereço ficam desabilitados (fora da validação) até o CEP ser encontrado
-      street: [{ value: '', disabled: true }, [Validators.required]],
-      number: [{ value: '', disabled: true }, [Validators.required]],
-      neighborhood: [{ value: '', disabled: true }, [Validators.required]],
-      city: [{ value: '', disabled: true }, [Validators.required]],
-      uf: [{ value: '', disabled: true }, [Validators.required, Validators.maxLength(2)]],
-      complement: [{ value: '', disabled: true }],
-    },
-    { validators: passwordMatchValidator() },
-  );
+  protected readonly registerForm = this.formBuilder.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    cpf: ['', [Validators.required, Validators.minLength(11)]],
+    phone: ['', [Validators.required, Validators.minLength(10)]],
+    cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
+    // campos de endereço ficam desabilitados (fora da validação) até o CEP ser encontrado
+    street: [{ value: '', disabled: true }, [Validators.required]],
+    number: [{ value: '', disabled: true }, [Validators.required]],
+    neighborhood: [{ value: '', disabled: true }, [Validators.required]],
+    city: [{ value: '', disabled: true }, [Validators.required]],
+    uf: [{ value: '', disabled: true }, [Validators.required, Validators.maxLength(2)]],
+    complement: [{ value: '', disabled: true }],
+  });
 
   protected submitted = false;
   protected readonly isSubmitting = signal(false);
-  protected readonly successMessage = signal('');
   protected readonly errorMessage = signal('');
 
   protected readonly addressLoaded = signal(false);
@@ -94,8 +72,8 @@ export class Register implements OnInit {
       next: (address) => {
         this.isSearchingCep.set(false);
         this.registerForm.patchValue({
-          street: address.bairro ?? '',
-          neighborhood: address.logradouro ?? '',
+          street: address.logradouro ?? '',
+          neighborhood: address.bairro ?? '',
           city: address.localidade ?? '',
           uf: address.uf ?? '',
           complement: address.complemento ?? '',
@@ -125,7 +103,6 @@ export class Register implements OnInit {
 
   protected submit(): void {
     this.submitted = true;
-    this.successMessage.set('');
     this.errorMessage.set('');
 
     if (this.registerForm.invalid || !this.addressLoaded()) {
@@ -136,8 +113,8 @@ export class Register implements OnInit {
     const { number, ...formValue } = this.registerForm.getRawValue();
 
     this.isSubmitting.set(true);
-    this.authService
-      .register({
+    this.employeeService
+      .registerEmployee({
         ...formValue,
         // o back não tem campo de número, ele vai junto com a rua
         street: `${formValue.street.trim()}, ${number.trim()}`,
@@ -147,9 +124,7 @@ export class Register implements OnInit {
       .subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
-          this.successMessage.set(`Funcionário ${res.name} cadastrado com sucesso.`);
-          this.submitted = false;
-          this.registerForm.reset();
+          this.created.emit(res);
         },
         error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false);
@@ -172,12 +147,5 @@ export class Register implements OnInit {
     return errorName
       ? field.hasError(errorName) && (field.touched || this.submitted)
       : field.invalid && (field.touched || this.submitted);
-  }
-
-  protected hasPasswordMismatch(): boolean {
-    return (
-      this.registerForm.hasError('passwordMismatch') &&
-      (this.registerForm.get('passwordConfirmation')?.touched || this.submitted)
-    );
   }
 }

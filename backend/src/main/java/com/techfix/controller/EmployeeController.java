@@ -1,5 +1,6 @@
 package com.techfix.controller;
 
+import com.techfix.dto.response.EmployeeResponseDTO;
 import com.techfix.dto.response.EmployeesResponseDTO;
 import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.model.User;
@@ -30,5 +31,13 @@ public class EmployeeController {
         }
         List<EmployeesResponseDTO> employees = userService.getAvailableEmployees(user);
         return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<EmployeeResponseDTO>> listEmployees (@AuthenticationPrincipal User user) {
+        if (user.getRole() != UserRole.employee){
+            throw new ForbiddenAccessException("Acesso negado");
+        }
+        return ResponseEntity.ok(userService.listEmployees());
     }
 }

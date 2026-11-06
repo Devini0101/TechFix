@@ -5,10 +5,10 @@ import com.techfix.dto.request.RegisterUserRequestDTO;
 import com.techfix.dto.response.AuthUserInfoResponseDTO;
 import com.techfix.dto.response.LoginResponseDTO;
 import com.techfix.dto.response.RegisterUserResponseDTO;
+import com.techfix.exception.ForbiddenAccessException;
 import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.UserService;
-import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -47,8 +47,8 @@ public class AuthController {
 
     @PostMapping("/register/employee")
     public ResponseEntity<RegisterUserResponseDTO> registerEmployee(@Valid @RequestBody RegisterUserRequestDTO request, @AuthenticationPrincipal User employee) throws MessagingException {
-        if (employee.getId() != null) {
-            throw new AuthenticationFailedException("Funcionário não identificado");
+        if (employee.getRole() != UserRole.employee) {
+            throw new ForbiddenAccessException("Acesso negado.");
         }
         RegisterUserResponseDTO response = userService.registerUser(request, UserRole.employee);
         return ResponseEntity.ok().body(response);

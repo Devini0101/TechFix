@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +82,18 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
 
     Optional<MaintenanceRequest> findByIdAndResponsibleEmployeeId(Long parsedId, Long id);
 
+    boolean existsByResponsibleEmployeeId(Long employeeId);
+
+    boolean existsByClientId(Long clientId);
+
+    @Query("""
+        SELECT m.responsibleEmployee.id, COUNT(m) FROM MaintenanceRequest m
+        WHERE m.deletedAt IS NULL
+        AND m.responsibleEmployee IS NOT NULL
+        AND m.status IN :statuses
+        GROUP BY m.responsibleEmployee.id
+    """)
+    List<Object[]> countByResponsibleEmployeeAndStatusIn(@Param("statuses") Collection<Status> statuses);
     @Query("""
         SELECT new com.techfix.dto.response.DailyRevenueResponseDTO(
             CAST(m.createdAt AS LocalDate),

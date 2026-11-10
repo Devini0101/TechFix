@@ -58,6 +58,16 @@
 						<span class="font-medium">Categorias</span>
 					}
 				</a>
+
+				<a routerLink="/users"
+					class="flex items-center p-3 text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors"
+					[class.justify-center]="isCollapsed"
+					[class.gap-3]="!isCollapsed">
+					<i class="fas fa-user-tie text-lg w-6 text-center"></i>
+					@if (!isCollapsed) {
+						<span class="font-medium">Equipe</span>
+					}
+				</a>
             }
 
         </nav>

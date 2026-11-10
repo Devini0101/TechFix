@@ -2,17 +2,15 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const roleGuard: CanActivateFn = (route, state) => {
+// exige o papel informado em data: { role: '...' }; usar junto com o authGuard
+export const roleGuard: CanActivateFn = (route) => {
 	const authService = inject(AuthService);
 	const router = inject(Router);
 
-	const neededRole = route.data?.['role'];
-	const userRole = authService.getRole();
-
-	if (neededRole === userRole) {
-	return true;
+	if (!authService.isAuthenticated()) {
+		return router.createUrlTree(['/login']);
 	}
 
-	router.navigate(['/dashboard']);
-	return false;
+	const neededRole = route.data?.['role'];
+	return neededRole === authService.getRole() ? true : router.createUrlTree(['/dashboard']);
 };

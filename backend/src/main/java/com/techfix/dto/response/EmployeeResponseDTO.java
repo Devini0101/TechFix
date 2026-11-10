@@ -4,6 +4,7 @@ public record EmployeeResponseDTO(
         Long id,
         String name,
         String email,
-        String phone
+        String phone,
+        long activeOrders
 ) {
 }

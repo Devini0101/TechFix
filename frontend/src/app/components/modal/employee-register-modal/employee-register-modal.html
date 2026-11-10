@@ -3,14 +3,21 @@
 
     <header class="flex flex-row justify-between items-start gap-2 pb-8">
       <div class="flex flex-col gap-2">
-        <h1 id="register-title" class="font-bold text-3xl">Novo funcionário</h1>
-        <p class="text-sm text-gray-400">Preencha os dados para cadastrar um novo funcionário.</p>
+        <h1 id="register-title" class="font-bold text-3xl">{{ isEditing ? 'Editar funcionário' : 'Novo funcionário' }}</h1>
+        <p class="text-sm text-gray-400">
+          {{ isEditing ? 'Altere os dados do funcionário e salve.' : 'Preencha os dados para cadastrar um novo funcionário.' }}
+        </p>
       </div>
       <button type="button" (click)="closeModal.emit()" aria-label="Fechar" class="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
         <i class="fas fa-xmark text-xl"></i>
       </button>
     </header>
 
+    @if (isLoading()) {
+      <p class="text-gray-400 text-sm py-10 text-center">Carregando dados do funcionário...</p>
+    } @else if (loadError()) {
+      <p class="text-red-400 text-sm py-10 text-center" role="alert">{{ loadError() }}</p>
+    } @else {
     <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
 
@@ -56,11 +63,14 @@
           <label for="cpf" class="font-bold text-sm">CPF</label>
           <input
             class="h-10 border-[#475569] border bg-[#0f172a] rounded-md text-sm pl-2 focus:outline-none focus:border-blue-600"
+            [class.opacity-60]="isEditing"
+            [class.cursor-not-allowed]="isEditing"
+            [title]="isEditing ? 'O CPF não pode ser alterado' : ''"
             id="cpf"
             type="text"
             formControlName="cpf"
-            placeholder="00000000000"
-            maxlength="11"
+            mask="000.000.000-00"
+            placeholder="000.000.000-00"
             inputmode="numeric"
             autocomplete="off"
           />
@@ -80,8 +90,8 @@
             id="phone"
             type="tel"
             formControlName="phone"
-            placeholder="11999999999"
-            maxlength="11"
+            mask="(00) 0000-0000||(00) 00000-0000"
+            placeholder="(00) 00000-0000"
             inputmode="tel"
             autocomplete="tel"
           />
@@ -101,8 +111,8 @@
             id="cep"
             type="text"
             formControlName="cep"
-            placeholder="00000000"
-            maxlength="9"
+            mask="00000-000"
+            placeholder="00000-000"
             inputmode="numeric"
             autocomplete="postal-code"
           />
@@ -224,7 +234,9 @@
 
       </div>
 
-      <p class="text-gray-400 text-xs">A senha de acesso será gerada automaticamente e enviada para o e-mail informado.</p>
+      @if (!isEditing) {
+        <p class="text-gray-400 text-xs">A senha de acesso será gerada automaticamente e enviada para o e-mail informado.</p>
+      }
 
       @if (errorMessage()) {
         <p class="text-red-400 text-sm mt-1" role="alert">{{ errorMessage() }}</p>
@@ -241,9 +253,14 @@
           type="submit"
           [disabled]="isSubmitting()"
           class="min-h-[2.85rem] px-6 border-0 rounded-[0.55rem] cursor-pointer text-white font-extrabold bg-[#2563eb] transition-[background,transform] duration-150 ease-out hover:bg-[#1d4ed8] hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-          {{ isSubmitting() ? 'Cadastrando...' : 'Cadastrar funcionário' }}
+          @if (isEditing) {
+            {{ isSubmitting() ? 'Salvando...' : 'Salvar alterações' }}
+          } @else {
+            {{ isSubmitting() ? 'Cadastrando...' : 'Cadastrar funcionário' }}
+          }
         </button>
       </div>
     </form>
+    }
   </div>
 </div>

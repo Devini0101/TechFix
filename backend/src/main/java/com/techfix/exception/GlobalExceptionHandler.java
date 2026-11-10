@@ -60,6 +60,17 @@ public class GlobalExceptionHandler{
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(EmployeeDeletionNotAllowedException.class)
+    public ResponseEntity<StandardError> handleEmployeeDeletionNotAllowedException (EmployeeDeletionNotAllowedException ex, HttpServletRequest req) {
+        StandardError error =  new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(), //409,
+                "Conflict",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<StandardError> EntityNotFoundException (EntityNotFoundException ex, HttpServletRequest req) {
         StandardError error =  new StandardError(

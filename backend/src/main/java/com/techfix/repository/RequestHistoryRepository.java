@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RequestHistoryRepository extends JpaRepository<RequestHistory, Long> {
+
+    boolean existsByResponsibleId(Long userId);
 }

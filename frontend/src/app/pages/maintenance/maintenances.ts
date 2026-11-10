@@ -10,10 +10,11 @@ import { MaintenanceRepairModal } from '../../components/modal/maintenance-repai
 import { Tooltip } from '../../directives/tooltip';
 import { MaintenancePaymentModal } from '../../components/modal/maintenance-payment-modal/maintenance-payment-modal';
 import { FinishMaintenanceModal } from '../../components/modal/finish-maintenance-modal/finish-maintenance-modal';
+import { ReceiptReportModal } from '../../components/modal/receipt-report-modal/receipt-report-modal';
 
 @Component({
   selector: 'app-maintenances',
-  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip, MaintenancePaymentModal, FinishMaintenanceModal],
+  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip, MaintenancePaymentModal, FinishMaintenanceModal, ReceiptReportModal],
   templateUrl: './maintenances.html',
   styleUrl: './maintenances.css',
 })
@@ -27,6 +28,7 @@ export class Maintenances {
 	summary = signal<Summary | null>(null);
 	isCreateModalOpen = false;
 	isRepairModalOpened = signal<boolean>(false);
+	isReportModalOpened = signal<boolean>(false);
 	maintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 	paymentModalOpen = signal<boolean>(false);
 	isFinishModalOpened = signal<boolean>(false);
@@ -132,4 +134,5 @@ export class Maintenances {
 		this.isFinishModalOpened.set(false);
 		this.fetchMaintenances(status);
 	}
+	
 }

@@ -146,4 +146,17 @@ export class MaintenanceRequestService {
 	finishMaintenance(id : number) : Observable<void> {
 		return this.http.patch<void>(`${this.apiUrl}/${id}/finish`, null, { withCredentials : true});
 	}
+
+	downloadRevenueReport(startDate?: string, endDate?: string) {
+        let params = new HttpParams();
+        if (startDate) params = params.append('startDate', startDate);
+        if (endDate) params = params.append('endDate', endDate);
+
+        // responseType: blob for files such as PDF, images, Excel
+        return this.http.get(`${this.apiUrl}/report`, {
+            params,
+            responseType: 'blob',
+            withCredentials: true
+        });
+    }
 }

@@ -1,6 +1,7 @@
 package com.techfix.repository;
 
 import com.techfix.dto.response.DailyRevenueResponseDTO;
+import com.techfix.dto.response.CategoryRevenueResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
 import com.techfix.model.MaintenanceRequest;
 import com.techfix.model.enums.Status;
@@ -106,4 +107,28 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
         ORDER BY CAST(m.createdAt AS LocalDate) ASC
         """)
     List<DailyRevenueResponseDTO> findRevenuesByPeriod(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+        @Query("""
+        SELECT new com.techfix.dto.response.CategoryRevenueResponseDTO(
+            c.code,
+            c.name,
+            SUM(p.amount)
+        )
+        FROM MaintenanceRequest m
+        JOIN m.payment p
+        JOIN m.category c
+        WHERE (
+            CAST(:startDate AS LocalDate) IS NULL
+            OR CAST(p.createdAt AS LocalDate) >= :startDate
+        )
+        AND (
+            CAST(:endDate AS LocalDate) IS NULL
+            OR CAST(p.createdAt AS LocalDate) <= :endDate
+        )
+        GROUP BY c.code, c.name
+        ORDER BY c.name ASC
+        """)
+    List<CategoryRevenueResponseDTO> findCategoryRevenuesByPeriod(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

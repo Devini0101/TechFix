@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    @Value("${spring.mail.username}") // 2. Use o @Value para puxar do application.properties
+    @Value("${spring.mail.username}")
     private String email;
 
 

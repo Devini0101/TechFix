@@ -212,20 +212,16 @@ public class MaintenanceRequestController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio-receitas.pdf")
                 .body(pdf);
     }
+
     @GetMapping("/report/category")
     public ResponseEntity<byte[]> getCategoryRevenueReport(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
             @AuthenticationPrincipal User user
     ) {
         if (user.getRole() != UserRole.employee) {
             throw new ForbiddenAccessException("Acesso negado.");
         }
 
-        byte[] pdf = service.generateCategoryRevenueReport(
-                startDate,
-                endDate
-        );
+        byte[] pdf = service.generateCategoryRevenueReport();
 
         return ResponseEntity.ok()
                 .header(

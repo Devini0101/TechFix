@@ -1,0 +1,30 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-lg p-6 bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-700">
+        <div class="flex justify-between items-start border-b border-gray-700 pb-3">
+            <div>
+                Gerar relatório de receitas por categoria
+            </div>
+            <button
+                (click)="closeModal.emit()"
+                class="text-gray-400 hover:text-white text-2xl font-bold hover:cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <div>
+            <div class="flex flex-col gap-4 mb-6">
+                <div>
+                    <label class="text-md font-bold text-slate-300">Gerar relatório de receitas por categorias:</label>
+                    <p class="text-xs">gerar relatório de receita conseguida pela empresa, desde sempre, agrupado por categoria de equipamento.</p>
+                </div>
+            </div>
+
+            <button
+                (click)="generateReport()"
+                [disabled]="isLoading"
+                class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition disabled:opacity-50 hover:cursor-pointer">
+                {{ isLoading ? 'Gerando...' : 'Baixar PDF' }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -11,7 +11,6 @@ import { Users } from './pages/users/users';
 import { Categories } from './pages/categories/categories';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found';
 import { Budget } from './pages/budget/budget';
-import { Settings } from './pages/settings/settings';
 
 export const routes: Routes = [
   // telas de visitante: quem já está logado é mandado para o dashboard
@@ -25,7 +24,6 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: Dashboard },
-      { path: 'settings', component: Settings },
       { path: 'maintenances', component: Maintenances },
       { path: 'maintenances/:id', component: MaintenanceDetails },
       { path: 'budgets/:id', component: Budget }, // a própria tela decide entre a visão de funcionário e de cliente

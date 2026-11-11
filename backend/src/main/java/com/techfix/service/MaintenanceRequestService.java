@@ -4,6 +4,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.*;
 import com.techfix.dto.response.DailyRevenueResponseDTO;
+import com.techfix.dto.response.CategoryRevenueResponseDTO;
 import com.techfix.dto.request.ApprovalRequestDTO;
 import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
@@ -667,49 +668,238 @@ public class MaintenanceRequestService {
         );
     }
 
-    public byte[] generateRevenueReport(LocalDate startDate, LocalDate endDate) {
-        List<DailyRevenueResponseDTO> revenues = requestRepository.findRevenuesByPeriod(startDate, endDate);
+    public byte[] generateRevenueReport(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        List<DailyRevenueResponseDTO> revenues =
+                requestRepository.findRevenuesByPeriod(
+                        startDate,
+                        endDate
+                );
 
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Document document = new Document();
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // Título
-            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-            Paragraph title = new Paragraph("Relatório de Receitas", titleFont);
+            Font titleFont = FontFactory.getFont(
+                    FontFactory.HELVETICA_BOLD,
+                    18
+            );
+
+            Paragraph title = new Paragraph(
+                    "Relatório de Receitas",
+                    titleFont
+            );
+
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingAfter(20);
             document.add(title);
 
-            // Tabela com 2 colunas
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100);
-            table.addCell(new PdfPCell(new Phrase("Data", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
-            table.addCell(new PdfPCell(new Phrase("Receita (R$)", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+
+            Font headerFont = FontFactory.getFont(
+                    FontFactory.HELVETICA_BOLD,
+                    11
+            );
+
+            table.addCell(new PdfPCell(
+                    new Phrase("Data", headerFont)
+            ));
+
+            table.addCell(new PdfPCell(
+                    new Phrase("Receita (R$)", headerFont)
+            ));
 
             BigDecimal grandTotal = BigDecimal.ZERO;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-            // Preenche os dados
-            for (DailyRevenueResponseDTO dto : revenues) {
-                table.addCell(dto.date().format(formatter));
-                table.addCell(dto.totalRevenue().toString());
-                grandTotal = grandTotal.add(dto.totalRevenue());
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            NumberFormat currencyFormatter =
+                    NumberFormat.getCurrencyInstance(
+                            Locale.of("pt", "BR")
+                    );
+
+            for (DailyRevenueResponseDTO revenue : revenues) {
+                table.addCell(
+                        revenue.date().format(formatter)
+                );
+
+                table.addCell(
+                        currencyFormatter.format(
+                                revenue.totalRevenue()
+                        )
+                );
+
+                grandTotal = grandTotal.add(
+                        revenue.totalRevenue()
+                );
+            }
+
+            if (revenues.isEmpty()) {
+                PdfPCell emptyCell = new PdfPCell(
+                        new Phrase(
+                                "Nenhuma receita encontrada no período."
+                        )
+                );
+
+                emptyCell.setColspan(2);
+                table.addCell(emptyCell);
             }
 
             document.add(table);
 
-            // Total Geral
-            Paragraph total = new Paragraph("\nTotal no Período: R$ " + grandTotal.toString(), titleFont);
+            Paragraph total = new Paragraph(
+                    "\nTotal no período: "
+                            + currencyFormatter.format(grandTotal),
+                    titleFont
+            );
+
             total.setAlignment(Element.ALIGN_RIGHT);
             document.add(total);
 
             document.close();
+
             return out.toByteArray();
 
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar relatório em PDF", e);
+        } catch (Exception exception) {
+            throw new RuntimeException(
+                    "Erro ao gerar relatório de receitas",
+                    exception
+            );
+        }
+    }
+
+    public byte[] generateCategoryRevenueReport(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        List<CategoryRevenueResponseDTO> revenues =
+                requestRepository.findCategoryRevenuesByPeriod(
+                        startDate,
+                        endDate
+                );
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            Font titleFont = FontFactory.getFont(
+                    FontFactory.HELVETICA_BOLD,
+                    18
+            );
+
+            Font headerFont = FontFactory.getFont(
+                    FontFactory.HELVETICA_BOLD,
+                    11
+            );
+
+            Paragraph title = new Paragraph(
+                    "Relatório de Receitas por Categoria",
+                    titleFont
+            );
+
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(10);
+            document.add(title);
+
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            String periodText = "Período: ";
+
+            if (startDate != null) {
+                periodText += startDate.format(formatter);
+            } else {
+                periodText += "início";
+            }
+
+            periodText += " até ";
+
+            if (endDate != null) {
+                periodText += endDate.format(formatter);
+            } else {
+                periodText += "atual";
+            }
+
+            Paragraph period = new Paragraph(periodText);
+            period.setAlignment(Element.ALIGN_CENTER);
+            period.setSpacingAfter(20);
+            document.add(period);
+
+            PdfPTable table = new PdfPTable(3);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{2.0f, 4.0f, 2.5f});
+
+            table.addCell(new PdfPCell(
+                    new Phrase("Código", headerFont)
+            ));
+
+            table.addCell(new PdfPCell(
+                    new Phrase("Categoria", headerFont)
+            ));
+
+            table.addCell(new PdfPCell(
+                    new Phrase("Receita", headerFont)
+            ));
+
+            NumberFormat currencyFormatter =
+                    NumberFormat.getCurrencyInstance(
+                            Locale.of("pt", "BR")
+                    );
+
+            BigDecimal grandTotal = BigDecimal.ZERO;
+
+            for (CategoryRevenueResponseDTO revenue : revenues) {
+                table.addCell(revenue.categoryCode());
+                table.addCell(revenue.categoryName());
+
+                table.addCell(
+                        currencyFormatter.format(
+                                revenue.totalRevenue()
+                        )
+                );
+
+                grandTotal = grandTotal.add(
+                        revenue.totalRevenue()
+                );
+            }
+
+            if (revenues.isEmpty()) {
+                PdfPCell emptyCell = new PdfPCell(
+                        new Phrase(
+                                "Nenhuma receita encontrada no período."
+                        )
+                );
+
+                emptyCell.setColspan(3);
+                table.addCell(emptyCell);
+            }
+
+            document.add(table);
+
+            Paragraph total = new Paragraph(
+                    "\nTotal geral: "
+                            + currencyFormatter.format(grandTotal),
+                    titleFont
+            );
+
+            total.setAlignment(Element.ALIGN_RIGHT);
+            document.add(total);
+
+            document.close();
+
+            return out.toByteArray();
+
+        } catch (Exception exception) {
+            throw new RuntimeException(
+                    "Erro ao gerar relatório de receitas por categoria",
+                    exception
+            );
         }
     }
 }

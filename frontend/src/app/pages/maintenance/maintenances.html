@@ -13,8 +13,14 @@
         </div>
 
         @if (Role === "employee"){
-            <div class="ml-auto p-2">
-                <button (click)="isReportModalOpened.set(true)" class="rounded p-2 bg-blue-500 hover:cursor-pointer hover:bg-blue-600 font-bold">Gerar Relatório de Receitas</button>
+            <div class="flex items-center">
+                <div class="ml-auto p-2">
+                    <button (click)="isReportModalOpened.set(true)" class="rounded p-2 bg-blue-500 hover:cursor-pointer hover:bg-blue-600 font-bold">Gerar Relatório de Receitas</button>
+                </div>
+
+                <div class="ml-auto p-2">
+                    <button (click)="isCategoryReportModalOpened.set(true)" class="rounded p-2 bg-blue-500 hover:cursor-pointer hover:bg-blue-600 font-bold">Gerar Relatório por Categorias</button>
+                </div>
             </div>
         }
 
@@ -320,6 +326,13 @@
             (closeModal)="isReportModalOpened.set(false)"
         >
         </app-receipt-report-modal>
+    }
+
+    @if (isCategoryReportModalOpened()){
+        <app-category-report-modal
+            (closeModal)="isCategoryReportModalOpened.set(false)"
+        >
+        </app-category-report-modal>
     }
 }
 

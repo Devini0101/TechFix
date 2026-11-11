@@ -11,10 +11,11 @@ import { Tooltip } from '../../directives/tooltip';
 import { MaintenancePaymentModal } from '../../components/modal/maintenance-payment-modal/maintenance-payment-modal';
 import { FinishMaintenanceModal } from '../../components/modal/finish-maintenance-modal/finish-maintenance-modal';
 import { ReceiptReportModal } from '../../components/modal/receipt-report-modal/receipt-report-modal';
+import { CategoryReportModal } from '../../components/modal/category-report-modal/category-report-modal';
 
 @Component({
   selector: 'app-maintenances',
-  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip, MaintenancePaymentModal, FinishMaintenanceModal, ReceiptReportModal],
+  imports: [ServiceRequestModal, RouterLink, CurrencyPipe, ReactiveFormsModule, MaintenanceRepairModal, Tooltip, MaintenancePaymentModal, FinishMaintenanceModal, ReceiptReportModal, CategoryReportModal],
   templateUrl: './maintenances.html',
   styleUrl: './maintenances.css',
 })
@@ -29,6 +30,7 @@ export class Maintenances {
 	isCreateModalOpen = false;
 	isRepairModalOpened = signal<boolean>(false);
 	isReportModalOpened = signal<boolean>(false);
+	isCategoryReportModalOpened = signal<boolean>(false);
 	maintenances = signal<MaintenanceDetailsResponse[] | null>(null);
 	paymentModalOpen = signal<boolean>(false);
 	isFinishModalOpened = signal<boolean>(false);

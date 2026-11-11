@@ -159,4 +159,14 @@ export class MaintenanceRequestService {
             withCredentials: true
         });
     }
+
+	downloadCategoryRevenueReport() {
+		let params = new HttpParams();
+
+		return this.http.get(`${this.apiUrl}/report/category`, {
+			params,
+			responseType: 'blob',
+			withCredentials: true
+		});
+	}
 }

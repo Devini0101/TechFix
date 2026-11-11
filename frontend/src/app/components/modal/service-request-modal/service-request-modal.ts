@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Category, CategoryService } from '../../../core/services/category.service';
@@ -30,29 +31,30 @@ export class ServiceRequestModal implements OnInit {
 
   protected readonly requestForm = this.formBuilder.nonNullable.group({
     item: ['', [Validators.required, Validators.maxLength(255)]],
-    itemDescription: [''],
+    itemDescription: ['', [Validators.maxLength(30)]], // mesmo limite do @Length no MaintenanceRequestDTO
     itemDefect: ['', [Validators.required]],
     categoryCode: ['', [Validators.required, Validators.min(1)]],
   });
 
-  protected isSubmitting = false;
-  protected successMessage = '';
-  protected errorMessage = '';
+  // signals: o app é zoneless, então propriedades comuns alteradas no callback do HTTP não atualizam a tela
+  protected readonly isSubmitting = signal(false);
+  protected readonly successMessage = signal('');
+  protected readonly errorMessage = signal('');
 
   protected submit(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
+    this.successMessage.set('');
+    this.errorMessage.set('');
 
     if (this.requestForm.invalid) {
       this.requestForm.markAllAsTouched();
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.requestService.create(this.requestForm.getRawValue()).subscribe({
       next: () => {
-        this.isSubmitting = false;
-        this.successMessage = 'Solicitação registrada com sucesso.';
+        this.isSubmitting.set(false);
+        this.successMessage.set('Solicitação registrada com sucesso.');
         this.requestForm.reset({
           item: '',
           itemDescription: '',
@@ -61,11 +63,14 @@ export class ServiceRequestModal implements OnInit {
         });
         this.requestCreated.emit();
       },
-      error: () => {
-        this.isSubmitting = false;
-        this.errorMessage =
-          'Não foi possível registrar a solicitação. Tente novamente.';
-      },
+      error: (err: HttpErrorResponse) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(
+          err.status === 400
+            ? 'Verifique os dados informados e tente novamente.'
+            : 'Não foi possível registrar a solicitação. Tente novamente.',
+        );
+        },
     });
   }
 

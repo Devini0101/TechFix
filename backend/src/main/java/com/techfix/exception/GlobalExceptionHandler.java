@@ -1,16 +1,20 @@
 package com.techfix.exception;
 
 import com.techfix.dto.StandardError;
+import com.techfix.dto.response.ValidationErrorResponseDTO;
+
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
@@ -145,5 +149,35 @@ public class GlobalExceptionHandler{
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_CONTENT)
                 .body(error);
+    }
+
+    @ExceptionHandler(ValidationErrorDTO.class)
+    public ResponseEntity<StandardError> handleValidationErrorDTO(
+            ValidationErrorDTO ex,
+            HttpServletRequest request
+    ) {
+        StandardError error = new StandardError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ValidationErrorResponseDTO>> handleValidationsErrors(
+            MethodArgumentNotValidException ex
+    ) {
+        List<ValidationErrorResponseDTO> errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(err -> new ValidationErrorResponseDTO(err.getField(), err.getDefaultMessage()))
+                .toList();
+
+
+        return ResponseEntity.badRequest().body(errors);
     }
 }

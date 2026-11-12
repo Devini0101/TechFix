@@ -47,7 +47,9 @@
           >
             <option selected hidden value="" class="text-slate-500">-- Selecione a categoria --</option>
             @for (cat of categories(); track cat.code) {
-              <option class="bg-slate-900 text-slate-100" [value]="cat.code">{{ cat.name }}</option>
+              @if (cat.active) {
+                <option class="bg-slate-900 text-slate-100" [value]="cat.code">{{ cat.name }}</option>
+              }
             }
           </select>
           @if (hasError('categoryCode')) {
@@ -82,22 +84,28 @@
           <textarea
             id="itemDescription"
             rows="2"
+            maxlength="30"
             formControlName="itemDescription"
             placeholder="Cor, número de série, arranhões pré-existentes..."
             class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none"
           ></textarea>
+          @if (hasError('itemDescription')) {
+            <small class="text-rose-400 text-xs font-medium flex items-center gap-1 mt-0.5">
+              <i class="fa-solid fa-circle-exclamation text-[10px]"></i> A descrição deve ter no máximo 30 caracteres.
+            </small>
+          }
         </div>
 
-        @if (successMessage) {
+        @if (successMessage()) {
           <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex items-center gap-2" role="status">
             <i class="fa-solid fa-check-circle text-emerald-500"></i>
-            <p class="text-emerald-400 text-xs font-medium">{{ successMessage }}</p>
+            <p class="text-emerald-400 text-xs font-medium">{{ successMessage() }}</p>
           </div>
         }
-        @if (errorMessage) {
+        @if (errorMessage()) {
           <div class="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 flex items-center gap-2" role="alert">
             <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
-            <p class="text-rose-400 text-xs font-medium">{{ errorMessage }}</p>
+            <p class="text-rose-400 text-xs font-medium">{{ errorMessage() }}</p>
           </div>
         }
 
@@ -112,10 +120,10 @@
 
           <button
             type="submit"
-            [disabled]="isSubmitting || requestForm.invalid"
+            [disabled]="isSubmitting() || requestForm.invalid"
             class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-900/20 hover:cursor-pointer"
           >
-            {{ isSubmitting ? 'Registrando...' : 'Registrar Solicitação' }}
+            {{ isSubmitting() ? 'Registrando...' : 'Registrar Solicitação' }}
           </button>
         </div>
 

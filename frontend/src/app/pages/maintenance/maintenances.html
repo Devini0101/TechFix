@@ -114,85 +114,49 @@
                 placeholder="Buscar pelo nº do serviço ou item..."
             >
         </div>
-        <div class="flex items-center p-2 justify-center gap-3 ml-auto">
-            <button (click)="changeFilter('QUOTED')"
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'QUOTED'"
-                [class.bg-yellow-200]="activeFilter() !== 'QUOTED'"
-            >
-                <p class="font-bold text-sm"
-                [class.text-black]="activeFilter() === 'QUOTED'"
-                [class.text-yellow-800]="activeFilter() != 'QUOTED'">
-                    Pendentes
-                </p>
-                @if (summary()?.waitingApproval){
-                    <p class="bg-yellow-700 text-sm font-bold rounded-lg text-yellow-300 px-0.5">{{summary()?.waitingApproval}}</p>
-                }
+        <div class="flex items-center p-2 justify-center gap-4 ml-auto bg-gray-800 rounded-lg">
+            <!-- Botão HOJE -->
+            <button (click)="filterByDate('TODAY')"
+                class="rounded-md p-2 px-4 font-bold text-sm transition-transform hover:scale-105"
+                [class.bg-white]="activeFilter() === 'TODAY'"
+                [class.text-black]="activeFilter() === 'TODAY'"
+                [class.bg-gray-700]="activeFilter() !== 'TODAY'"
+                [class.text-white]="activeFilter() !== 'TODAY'">
+                Hoje
             </button>
-            <button
-                (click)="changeFilter('OPEN')"
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'OPEN'"
-                [class.bg-gray-900]="activeFilter() !== 'OPEN'"
-                >
-                <p class="font-bold text-sm"
-                    [class.text-white]="activeFilter() != 'OPEN'"
-                    [class.text-black]="activeFilter() === 'OPEN'">
-                    Novos
-                </p>
-                @if (summary()?.pendingBudgets){
-                    <p class="bg-gray-700 text-sm font-bold rounded-lg text-gray-300 px-0.5">{{summary()?.pendingBudgets}}</p>
-                }
-            </button>
-            <button
-                (click)="changeFilter('REPAIRED')"
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'REPAIRED'"
-                [class.bg-gray-900]="activeFilter() !== 'REPAIRED'"
-                >
-                <p class="font-bold text-sm"
-                    [class.text-white]="activeFilter() != 'REPAIRED'"
-                    [class.text-black]="activeFilter() === 'REPAIRED'">
-                    Arrumados
-                </p>
-            </button>
-            <button
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                (click)="changeFilter('REJECTED')"
-                [class.bg-white]="activeFilter() === 'REJECTED'"
-                [class.bg-gray-900]="activeFilter() !== 'REJECTED'"
-            >
-                <p class="font-bold text-sm"
-                [class.text-white]="activeFilter() != 'REJECTED'"
-                [class.text-black]="activeFilter() === 'REJECTED'"
-                >
-                    Cancelados
-                </p>
-            </button>
-            <button
-                (click)="changeFilter('FINISHED')"
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                [class.bg-white]="activeFilter() === 'FINISHED'"
-                [class.bg-gray-900]="activeFilter() !== 'FINISHED'"
-                >
-                <p class="font-bold text-sm"
-                    [class.text-white]="activeFilter() != 'FINISHED'"
-                    [class.text-black]="activeFilter() === 'FINISHED'">
-                    Concluídos
-                </p>
-            </button>
-            <button
-                class="rounded-md p-2 flex gap-2 hover:scale-105 hover:cursor-pointer"
-                (click)="changeFilter('ALL')"
-                [class.bg-white]="activeFilter() === 'ALL'"
-                [class.bg-gray-900]="activeFilter() !== 'ALL'">
 
-                <p class="font-bold text-sm"
-                [class.text-white]="activeFilter() != 'ALL'"
+            <!-- Filtro por PERÍODO -->
+            <div class="flex items-center gap-2 bg-gray-900 p-1.5 rounded-md">
+                <label class="text-xs font-bold text-gray-300 ml-1">Período:</label>
+                <input type="text"
+                    mask="d0/M0/0000"
+                    [dropSpecialCharacters]="false"
+                    placeholder="dd/mm/aaaa"
+                    [(ngModel)]="startDate"
+                    class="bg-gray-700 text-white text-sm rounded px-2 py-1">
+                <span class="text-gray-400">até</span>
+                <input type="text"
+                    mask="d0/M0/0000"
+                    [dropSpecialCharacters]="false"
+                    placeholder="dd/mm/aaaa"
+                    [(ngModel)]="endDate" class="bg-gray-700 text-white text-sm rounded px-2 py-1">
+
+                <button (click)="filterByDate('PERIOD')"
+                    class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded px-3 py-1 ml-2 transition-transform hover:scale-105 hover:cursor-pointer"
+                    [class.ring-2]="activeFilter() === 'PERIOD'"
+                    [class.ring-white]="activeFilter() === 'PERIOD'">
+                    Buscar
+                </button>
+            </div>
+
+            <!-- Botão TODAS -->
+            <button (click)="filterByDate('ALL')"
+                class="rounded-md p-2 px-4 font-bold text-sm transition-transform hover:scale-105"
+                [class.bg-white]="activeFilter() === 'ALL'"
                 [class.text-black]="activeFilter() === 'ALL'"
-                >
-                    Todos
-                </p>
+                [class.bg-gray-700]="activeFilter() !== 'ALL'"
+                [class.text-white]="activeFilter() !== 'ALL'">
+                Todas
             </button>
         </div>
     </div>
@@ -217,6 +181,7 @@
                         <th scope="col" class="px-6 py-3.5">Status</th>
                         <th scope="col" class="px-6 py-3.5">Categoria</th>
                         <th scope="col" class="px-6 py-3.5">Orçamento</th>
+                        <th scope="col" class="px-6 py-3.5">Data Criação</th>
                         <th scope="col" class="px-6 py-3.5 text-center">Ações</th>
                     </tr>
                     </thead>
@@ -236,6 +201,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.categoryCode }}</td>
                                 <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.estimatedPrice ? (item.estimatedPrice | currency:'BRL':'symbol':'1.2-2')  : 'Aguardando orçamento' }}</td>
+                                <td class="px-6 py-4 text-gray-400 italic text-xs">{{ item.createdAt | date:'dd/M/yyyy HH:mm'}}</td>
                                 <td class="px-6 py-4 flex justify-center items-center gap-2">
                                     <a [routerLink]="['/maintenances', item.id]" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white font-medium text-xs rounded-md transition border border-gray-600">
                                         Visualizar

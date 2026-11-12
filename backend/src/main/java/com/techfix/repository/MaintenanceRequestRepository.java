@@ -131,4 +131,66 @@ public interface MaintenanceRequestRepository extends JpaRepository<MaintenanceR
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // busca geral para func quando redirect
+    @Query("""
+        SELECT m FROM MaintenanceRequest m
+        WHERE (CAST(:startDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) >= :startDate)
+          AND (CAST(:endDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) <= :endDate)
+          AND (m.status != 'REDIRECTED' OR m.responsibleEmployee.id = :employeeId)
+        ORDER BY m.createdAt ASC
+    """)
+    List<MaintenanceRequest> findAllByDateForEmployee(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("employeeId") Long employeeId
+    );
+
+    //search on client only by date
+    @Query("""
+        SELECT m FROM MaintenanceRequest m
+        WHERE m.client.id = :clientId
+          AND (CAST(:startDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) >= :startDate)
+          AND (CAST(:endDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) <= :endDate)
+        ORDER BY m.createdAt ASC
+    """)
+    List<MaintenanceRequest> findAllByDateForClient(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("clientId") Long clientId
+    );
+
+    //search term by employee
+    @Query("""
+        SELECT m FROM MaintenanceRequest m
+        WHERE (CAST(:startDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) >= :startDate)
+          AND (CAST(:endDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) <= :endDate)
+          AND (m.status != 'REDIRECTED' OR m.responsibleEmployee.id = :employeeId)
+          AND (:searchId IS NOT NULL AND m.id = :searchId OR LOWER(m.item) LIKE :searchPattern)
+        ORDER BY m.createdAt ASC
+    """)
+    List<MaintenanceRequest> searchByTermAndDateForEmployee(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("searchPattern") String searchPattern,
+            @Param("searchId") Long searchId,
+            @Param("employeeId") Long employeeId
+    );
+
+    // search term by client
+    @Query("""
+        SELECT m FROM MaintenanceRequest m
+        WHERE m.client.id = :clientId
+          AND (CAST(:startDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) >= :startDate)
+          AND (CAST(:endDate AS LocalDate) IS NULL OR CAST(m.createdAt AS LocalDate) <= :endDate)
+          AND (:searchId IS NOT NULL AND m.id = :searchId OR LOWER(m.item) LIKE :searchPattern)
+        ORDER BY m.createdAt ASC
+    """)
+    List<MaintenanceRequest> searchByTermAndDateForClient(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("searchPattern") String searchPattern,
+            @Param("searchId") Long searchId,
+            @Param("clientId") Long clientId
+    );
 }

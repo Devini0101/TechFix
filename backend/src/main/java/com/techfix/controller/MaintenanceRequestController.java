@@ -57,20 +57,23 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MaintenanceDetailsResponseDTO>> searchMaintenancesByStatusAndTerm(
-            @RequestParam(required = false) String status,
+    public ResponseEntity<List<MaintenanceDetailsResponseDTO>> searchMaintenancesByTermAndDate(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) String term,
             @AuthenticationPrincipal User user
-    ){
-        List<MaintenanceDetailsResponseDTO> result = service.searchByStatusAndTerm(status, term, user);
+    ) {
+        List<MaintenanceDetailsResponseDTO> result = service.searchByTermAndDate(startDate, endDate, term, user);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping
-    public List<MaintenanceDetailsResponseDTO> getAll(@AuthenticationPrincipal User client, @RequestParam(required = false) String status) {
-        String formattedStatus = status != null ? status.toUpperCase() : null;
-
-        return service.getAll(formattedStatus, client);
+    public List<MaintenanceDetailsResponseDTO> getAll(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @AuthenticationPrincipal User user
+    ) {
+        return service.getAll(startDate, endDate, user);
     }
 
     @GetMapping("/{id}/history")

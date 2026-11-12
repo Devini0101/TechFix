@@ -839,4 +839,30 @@ public class MaintenanceRequestService {
             throw new RuntimeException("Erro ao gerar relatório de receitas por categoria", exception);
         }
     }
+
+    public List<MaintenanceDetailsResponseDTO> getAll(LocalDate startDate, LocalDate endDate, User user) {
+        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee) ? requestRepository.findAllByDateForEmployee(startDate, endDate, user.getId())
+                : requestRepository.findAllByDateForClient(startDate, endDate, user.getId());
+
+        return requests.stream().map(m -> new MaintenanceDetailsResponseDTO(m, user)).toList();
+    }
+
+    public List<MaintenanceDetailsResponseDTO> searchByTermAndDate(LocalDate startDate, LocalDate endDate, String term, User user) {
+        Long searchId = null;
+        String searchPattern = null;
+
+        if (term != null && !term.isBlank()) {
+            term = term.trim();
+            if (term.matches("\\d+")) {
+                searchId = Long.parseLong(term);
+            }
+            searchPattern = "%" + term.toLowerCase() + "%";
+        }
+
+        List<MaintenanceRequest> requests = (user.getRole() == UserRole.employee)
+                ? requestRepository.searchByTermAndDateForEmployee(startDate, endDate, searchPattern, searchId, user.getId())
+                : requestRepository.searchByTermAndDateForClient(startDate, endDate, searchPattern, searchId, user.getId());
+
+        return requests.stream().map(m -> new MaintenanceDetailsResponseDTO(m, user)).toList();
+    }
 }

@@ -17,10 +17,16 @@ export class ReceiptReportModal {
 	endDate: string = '';
 	isLoading = false;
 
+    private formatDateToAPI(dateBR: string): string {
+        if (!dateBR || dateBR.length !== 10) return '';
+        const [day, month, year] = dateBR.split('/');
+        return `${year}-${month}-${day}`;
+    }
+
 	generateReport() {
 		this.isLoading = true;
 
-		this.service.downloadRevenueReport(this.startDate, this.endDate).subscribe({
+		this.service.downloadRevenueReport(this.formatDateToAPI(this.startDate), this.formatDateToAPI(this.endDate)).subscribe({
             next: (blob: Blob) => {
 				// on click on the constructed link build the file
                 const url = window.URL.createObjectURL(blob);

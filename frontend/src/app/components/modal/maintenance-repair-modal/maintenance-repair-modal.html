@@ -14,27 +14,73 @@
                     &times;
                 </button>
             </div>
-            <div class="flex flex-col gap-4 mt-4 text-sm">
+            <form [formGroup]="repairForm" (ngSubmit)="repairMaintenance()" novalidate class="flex flex-col gap-4 mt-4 text-sm">
                 <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
                     <span class="text-xs text-gray-400 block">Redirecionar Manutenção</span>
                     <p class="mt-1 text-gray-300">
                         Esta ação irá tornar a manutenção como consertada.
                     </p>
                 </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="fixDescription" class="text-xs text-gray-400">
+                        Descrição da manutenção <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea
+                        id="fixDescription"
+                        rows="3"
+                        formControlName="fixDescription"
+                        placeholder="O que foi feito no equipamento..."
+                        class="w-full bg-gray-900/50 p-3 rounded-lg border border-gray-700 text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+                    ></textarea>
+                    @if (hasError('fixDescription')) {
+                        <small class="text-rose-400 text-xs font-medium flex items-center gap-1 mt-0.5">
+                            <i class="fa-solid fa-circle-exclamation text-[10px]"></i> Informe a descrição da manutenção.
+                        </small>
+                    }
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="orientation" class="text-xs text-gray-400">
+                        Orientações para o cliente <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea
+                        id="orientation"
+                        rows="3"
+                        formControlName="orientation"
+                        placeholder="Cuidados de uso, garantia, recomendações..."
+                        class="w-full bg-gray-900/50 p-3 rounded-lg border border-gray-700 text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+                    ></textarea>
+                    @if (hasError('orientation')) {
+                        <small class="text-rose-400 text-xs font-medium flex items-center gap-1 mt-0.5">
+                            <i class="fa-solid fa-circle-exclamation text-[10px]"></i> Informe as orientações para o cliente.
+                        </small>
+                    }
+                </div>
+
+                @if (errorMessage()) {
+                    <div class="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 flex items-center gap-2" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                        <p class="text-rose-400 text-xs font-medium">{{ errorMessage() }}</p>
+                    </div>
+                }
+
                 <div class="flex justify-end mt-6 gap-2">
-                    <button (click)="repairMaintenance()"
-                    class="px-4 py-2 bg-green-500 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer"
+                    <button type="submit"
+                    [disabled]="isSubmitting() || repairForm.invalid"
+                    class="px-4 py-2 bg-green-500 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-green-500 disabled:cursor-not-allowed"
                     >
-                        Efetuar Manutenção
+                        {{ isSubmitting() ? 'Salvando...' : 'Efetuar Manutenção' }}
                     </button>
                     <button
+                        type="button"
                         (click)="closeModal.emit()"
                         class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm font-medium transition hover:cursor-pointer">
                         Fechar
                     </button>
                 </div>
-            </div>
-    
+            </form>
+
         </div>
     </div>
 }

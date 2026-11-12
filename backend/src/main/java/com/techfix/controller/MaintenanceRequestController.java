@@ -86,12 +86,12 @@ public class MaintenanceRequestController {
     }
 
     @PostMapping("/{id}/repair")
-    public ResponseEntity<Long> repairMaintenance (@RequestBody Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Long> repairMaintenance (@PathVariable Long id, @Valid @RequestBody RepairRequestDTO request, @AuthenticationPrincipal User user) {
         if (user.getRole() != UserRole.employee) {
             throw new ForbiddenAccessException("Acesso negado!");
         }
 
-        return this.service.repairMaintenance(id,user);
+        return this.service.repairMaintenance(id, request, user);
     }
 
     @PutMapping("/{id}/redirect")

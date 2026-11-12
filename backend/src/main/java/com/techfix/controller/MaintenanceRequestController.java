@@ -11,6 +11,7 @@ import com.techfix.model.User;
 import com.techfix.model.enums.UserRole;
 import com.techfix.service.MaintenanceRequestService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -204,7 +205,10 @@ public class MaintenanceRequestController {
     }
 
     @GetMapping("/report")
-    public ResponseEntity<byte[]> getRevenueReport(@RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @AuthenticationPrincipal User user) {
+    public ResponseEntity<byte[]> getRevenueReport(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
+            @AuthenticationPrincipal User user) {
         if (user.getRole() != UserRole.employee) {
             throw new ForbiddenAccessException("Acesso negado.");
         }

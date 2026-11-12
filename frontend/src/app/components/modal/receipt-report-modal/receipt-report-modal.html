@@ -15,11 +15,22 @@
             <div class="flex flex-col gap-4 mb-6">
                 <div>
                     <label class="text-xs font-bold text-slate-300">Data Inicial</label>
-                    <input type="date" [(ngModel)]="startDate" class="w-full h-11 bg-slate-900 border border-slate-600 rounded-lg px-4 text-white">
+                    <input
+                        type="text"
+                        mask="d0/M0/0000"
+                        [dropSpecialCharacters]="false"
+                        placeholder="dd/mm/aaaa"
+                        [(ngModel)]="startDate"
+                        class="w-full h-11 bg-slate-900 border border-slate-600 rounded-lg px-4 text-white">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-300">Data Final</label>
-                    <input type="date" [(ngModel)]="endDate" class="w-full h-11 bg-slate-900 border border-slate-600 rounded-lg px-4 text-white">
+                    <input
+                        type="text"
+                        mask="d0/M0/0000" 
+                        [dropSpecialCharacters]="false" 
+                        placeholder="dd/mm/aaaa"
+                        [(ngModel)]="endDate" class="w-full h-11 bg-slate-900 border border-slate-600 rounded-lg px-4 text-white">
                 </div>
             </div>
 

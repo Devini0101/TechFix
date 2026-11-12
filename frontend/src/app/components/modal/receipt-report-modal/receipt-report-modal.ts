@@ -1,10 +1,11 @@
 import { Component, EventEmitter, inject, Inject, Injectable, Output } from '@angular/core';
 import { MaintenanceRequestService } from '../../../core/services/maintenance-request.service';
 import { FormsModule, NgModel } from '@angular/forms';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-receipt-report-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, NgxMaskDirective],
   templateUrl: './receipt-report-modal.html',
   styleUrl: './receipt-report-modal.css',
 })

@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { MaintenanceDetailsResponse, MaintenanceHistory, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
+import { MaintenanceDetailsResponse, MaintenanceHistory, MaintenanceRepairPayload, MaintenanceRequestService } from '../../core/services/maintenance-request.service';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -116,8 +116,8 @@ export class MaintenanceDetails implements OnInit {
 		});
 	}
 
-  repairMaintenance() :void {
-    this.service.repairMaintenance(Number(this.id)).subscribe( {
+  repairMaintenance(payload: MaintenanceRepairPayload) :void {
+    this.service.repairMaintenance(Number(this.id), payload).subscribe( {
       next: (data) => this.loadOrderDetails(),
       error: (err: HttpErrorResponse) => {
 				console.error("Erro ao puxar info por id", err);

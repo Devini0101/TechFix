@@ -9,6 +9,12 @@ export interface MaintenanceRequestPayload {
   categoryCode: string;
 }
 
+// espelha o RepairRequestDTO do back
+export interface MaintenanceRepairPayload {
+  fixDescription: string;
+  orientation: string;
+}
+
 export interface MaintenanceRequest {
   id : number,
   item : string,
@@ -33,6 +39,7 @@ export interface MaintenanceDetailsResponse {
   statusColor: string | null;
   createdAt: string; // java local time vai vir como string
   orientation: string | null;
+  fixDescription: string | null;
   responsibleEmployeeName: string | null;
   clientName: string | null;
   isCurrentResponsible: boolean | null;
@@ -131,8 +138,8 @@ export class MaintenanceRequestService {
 		return this.http.put<Number>(`${this.apiUrl}/${id}/redirect`, payload, { withCredentials: true });
 	}
 
-	repairMaintenance(id: number) : Observable<Number> {
-		return this.http.post<Number>(`${this.apiUrl}/${id}/repair`, id, { withCredentials: true});
+	repairMaintenance(id: number, payload: MaintenanceRepairPayload) : Observable<Number> {
+		return this.http.post<Number>(`${this.apiUrl}/${id}/repair`, payload, { withCredentials: true});
 	}
 
 	payMaintenance(id: number, paymentMethod: 'pix' | 'debit' | 'credit'): Observable<void> {

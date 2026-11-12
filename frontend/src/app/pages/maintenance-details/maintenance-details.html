@@ -142,6 +142,31 @@
 
             </div>
 
+            <!-- preenchidos pelo funcionário ao efetuar a manutenção -->
+            @if (order.fixDescription || order.orientation) {
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+                    <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-white">
+                        <i class="fa-solid fa-screwdriver-wrench text-slate-400"></i> Manutenção Realizada
+                    </h3>
+
+                    <div class="flex flex-col gap-4">
+                    @if (order.fixDescription) {
+                        <div class="bg-slate-950 rounded-lg p-4 border-l-4 border-l-emerald-500/70 border-t border-r border-b border-slate-800 shadow-inner">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Descrição da Manutenção</p>
+                            <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{{ order.fixDescription }}</p>
+                        </div>
+                    }
+
+                    @if (order.orientation) {
+                        <div class="bg-slate-950 rounded-lg p-4 border-l-4 border-l-blue-500/70 border-t border-r border-b border-slate-800 shadow-inner">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Orientações para o Cliente</p>
+                            <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{{ order.orientation }}</p>
+                        </div>
+                    }
+                    </div>
+                </div>
+            }
+
             <!-- Card 2: Orçamento e Valores -->
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
                 <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-white">

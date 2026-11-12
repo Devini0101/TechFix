@@ -4,17 +4,6 @@
 
 	<div class="flex items-center justify-end gap-6 mt-3">
 		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
-			<p class="text-gray-400 text-sm uppercase">Solicitações ativas</p>
-			<h2 class="text-white text-3xl font-bold">
-				@if (dashboardSummary()?.inMaintenance){
-                    {{dashboardSummary()?.inMaintenance}}
-                } @else {
-                    0
-                }
-			</h2>
-		</div>
-
-		<div class="border border-blue-500 rounded-lg p-6 shadow-md">
 			<p class="text-gray-400 text-sm uppercase">Orçamentos Pendentes</p>
 			<h2 class="text-white text-3xl font-bold">
 				@if (dashboardSummary()?.pendingBudgets) {

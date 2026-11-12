@@ -21,9 +21,9 @@ export class EmployeeDashboard implements OnInit {
 	}
 
 	fetchRequests() : void {
-		this.maintenanceService.getMaintenances("OPEN").subscribe({
+		this.maintenanceService.getMaintenances().subscribe({
 			next: (data) => {
-				this.maintenanceRequests.set(data)
+				this.maintenanceRequests.set(data.filter((m) => m.statusCode === 'OPEN'))
 			},
 			error: (err) => {
 				console.error('erro ao buscar', err);

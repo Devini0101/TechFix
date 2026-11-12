@@ -44,7 +44,7 @@ export class UserDashboard implements OnInit {
 	}
 
 	fetchRequests(): void {
-		this.maintenanceService.getMaintenances("ALL").subscribe({
+		this.maintenanceService.getMaintenances().subscribe({
 		next: (data) => {
 			this.maintenanceRequests.set(data);
 		},
@@ -74,7 +74,6 @@ export class UserDashboard implements OnInit {
 
 	closePaymentModal(): void {
 		this.fetchRequests();
-		//verificar se foi paga e mostra feedback
 		this.paymentModalOpen.set(false);
 	}
 }

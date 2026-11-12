@@ -85,18 +85,12 @@ export class MaintenanceRequestService {
 			);
 	}
 
-	getMaintenances(status?: string): Observable<MaintenanceDetailsResponse[]> {
+	getMaintenances(startDate?: string, endDate?: string): Observable<MaintenanceDetailsResponse[]> {
 		let params = new HttpParams();
+		if (startDate) params = params.append('startDate', startDate);
+		if (endDate) params = params.append('endDate', endDate);
 
-		// only adds "status=" param into url when status different than ALL
-		if (status && status !== 'ALL') {
-			params = params.set('status', status);
-		}
-
-		return this.http.get<MaintenanceDetailsResponse[]>(this.apiUrl, {
-			withCredentials: true,
-			params: params
-		});
+		return this.http.get<MaintenanceDetailsResponse[]>(this.apiUrl, { params, withCredentials: true });
 	}
 
 	setBudget(id: Number, budgetValue: Number  ) : Observable<unknown> {
@@ -119,9 +113,27 @@ export class MaintenanceRequestService {
 		return this.http.post<void>(`${this.apiUrl}/rescue`,  id, { withCredentials : true});
 	}
 
-	searchMaintenancesByTermAndStatus(searchTerm: string, status: string): Observable<MaintenanceDetailsResponse[]> {
-		return this.http.get<MaintenanceDetailsResponse[]>(`${this.apiUrl}/search?status=${status}&term=${searchTerm}`, { withCredentials: true });
-  	}
+	searchMaintenancesByTermAndDate(searchTerm: string, startDate?: string, endDate?: string): Observable<MaintenanceDetailsResponse[]> {
+        let params = new HttpParams();
+        if (searchTerm) {
+            params = params.set('term', searchTerm);
+        }
+        if (startDate) {
+            params = params.set('startDate', startDate);
+        }
+        if (endDate) {
+            params = params.set('endDate', endDate);
+        }
+
+        return this.http.get<MaintenanceDetailsResponse[]>(`${this.apiUrl}/search`, {
+            withCredentials: true,
+            params: params
+        });
+    }
+
+	//searchMaintenancesByTermAndStatus(searchTerm: string, status: string): Observable<MaintenanceDetailsResponse[]> {
+	//	return this.http.get<MaintenanceDetailsResponse[]>(`${this.apiUrl}/search?status=${status}&term=${searchTerm}`, { withCredentials: true });
+  	//}
 
 	getHistory(id: Number): Observable<MaintenanceHistory[]> {
 		return this.http.get<MaintenanceHistory[]>(`${this.apiUrl}/${id}/history`, { withCredentials: true });

@@ -21,6 +21,7 @@ public record MaintenanceDetailsResponseDTO (
         String statusColor,
         LocalDateTime createdAt,
         String orientation,
+        String fixDescription,
         String responsibleEmployeeName,
         String clientName,
         boolean isCurrentResponsible
@@ -39,6 +40,7 @@ public record MaintenanceDetailsResponseDTO (
                 m.getStatus() != null ? m.getStatus().getColor() : null,
                 m.getCreatedAt(),
                 m.getOrientation(),
+                m.getFixDescription(),
                 m.getResponsibleEmployee() != null ? m.getResponsibleEmployee().getName() : null,
                 m.getClient() != null ? m.getClient().getName() : null,
                 loggedUser.getRole() == UserRole.employee &&

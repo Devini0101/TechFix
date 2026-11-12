@@ -9,6 +9,7 @@ import com.techfix.dto.request.BudgetAnswerRequestDTO;
 import com.techfix.dto.request.BudgetRequestDTO;
 import com.techfix.dto.request.MaintenanceRequestDTO;
 import com.techfix.dto.request.PaymentRequestDTO;
+import com.techfix.dto.request.RepairRequestDTO;
 import com.techfix.dto.response.MaintenanceDetailsResponseDTO;
 import com.techfix.dto.response.MaintenanceHistoryResponseDTO;
 import com.techfix.dto.response.MaintenanceSummaryResponseDTO;
@@ -531,6 +532,7 @@ public class MaintenanceRequestService {
 
     public ResponseEntity<Long> repairMaintenance(
             Long id,
+            RepairRequestDTO repairRequest,
             User user
     ) {
         Optional<MaintenanceRequest> optionalRequest =
@@ -552,6 +554,8 @@ public class MaintenanceRequestService {
                 maintenanceRequest.getStatus();
 
         maintenanceRequest.setStatus(Status.REPAIRED);
+        maintenanceRequest.setFixDescription(repairRequest.fixDescription().trim());
+        maintenanceRequest.setOrientation(repairRequest.orientation().trim());
 
         eventPublisher.publishEvent(
                 new StatusChangedEvent(
